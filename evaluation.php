@@ -4,7 +4,7 @@
 
     if ($_SESSION['id'] == "") {
         header("location: login.php");
-    } else {
+    } elseif ($_SESSION['user_type'] = "USER")  {
 ?>
 <html lang="en" class="pc chrome88 js">
 <head>
@@ -204,6 +204,9 @@ main > header {
   <nav class="site-nav">
 
     <div class="name">
+    <?php 
+    echo $_SESSION['firstname'] ;
+    ?>
     ECO Audit Database Web Application
 
       <svg width="24" height="24" viewBox="0 0 24 24">
@@ -240,16 +243,8 @@ main > header {
       <div class="breadcrumbs">
         <a href="index.php">Home</a>
       </div>
-      <div class="col2">
-        <div class="item">
-          <h1>นิคม <a href="#0" ><span>+</span></a></h1>
-        </div>
-      </div>
-      <div class="col3">
-        <div class="item">
-          <h1>นิคม <a href="#0" ><span>+</span></a></h1>
-        </div>
-      </div>
+      
+      <h1>นิคม <a href="#0" ><span>+</span></a></h1>
       
       
       <nav class="nav-tabs" id="nav-tabs">
