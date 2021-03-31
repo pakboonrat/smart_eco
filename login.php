@@ -17,14 +17,14 @@
             $_SESSION['fname'] = $num['firstname'];
             $_SESSION['user_type'] = $num['user_type'];
             echo "<script>alert('Login Successful!');</script>";
-            if( $_SESSION['user_type'] = "ADMIN" ){
-              echo "<script>window.location.href='index.php'</script>";
-            }elseif ($_SESSION['user_type'] = "AUDIT" ) {
+            if( strtoupper($_SESSION['user_type']) == "ADMIN" ){
+              echo "<script>window.location.href='eco_level.php'</script>";
+            }elseif (strtoupper($_SESSION['user_type']) == "AUDIT" ) {
               echo "<script>window.location.href='audit.php'</script>";
-            }elseif ($_SESSION['user_type'] = "USER" ) {
+            }elseif (strtoupper($_SESSION['user_type']) == "USER" ) {
               echo "<script>window.location.href='evaluation.php'</script>";
             }else{
-            echo "<script>window.location.href='index.php'</script>";
+            echo "<script>window.location.href='login.php'</script>";
             }
         } else {
             echo "<script>alert('Something went wrong! Please try again.');</script>";
@@ -37,7 +37,7 @@
 <html lang="en" class="pc chrome88 js">
 <head>
 <meta charset="UTF-8">
-<title>A Pen by Pak Boonrat</title>
+<title>log in</title>
 <link rel = "stylesheet" type = "text/css" href = "css\login.css" >
 
 </head>
