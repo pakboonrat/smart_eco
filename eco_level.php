@@ -58,9 +58,11 @@
   type="text/javascript"
   src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"
 ></script>
-
-
-
+<!-- <script type="text/javascript" >
+$('#collapseOne').collapse({
+            toggle: false
+            })
+</script> -->
 </head>
 <body>
 <div class="site-wrap">
@@ -80,6 +82,19 @@
             // $level_id = $_GET['id'];
             // $set_lebel = $_GET['set_lebel'];
             $year_set = 2564;
+
+            if(!isset($_GET['level_label'])){
+                $level_array = array();   
+                $LVDB = new DB_con();
+                $sql = $LVDB->fetch_level_menu();
+                while($rowlm = mysqli_fetch_array($sql)) {
+                    if( $rowlm['level_label'] != null ){
+                        
+                array_push($level_array,$rowlm['level_label']);
+                    }
+                }
+                $_GET['level_label'] = $level_array[0];
+            }
             $level_label = $_GET['level_label'];
             $updatelevel = new DB_con();
             $sql = $updatelevel->fetch_level_header($level_label);
@@ -200,7 +215,7 @@
                         $sql2 = $fetchdata2->fetch_list($row['level_id']);
                         if( $sql2 != '' ){
                             ?> <div class="item2"> <?php 
-                        
+                                    
                                     while($row_list = mysqli_fetch_array($sql2)) {
                                     ?>
                                         
@@ -208,34 +223,33 @@
                                             //  Admin จะเป็นกล่องสำหรับแก้ไขได้     ?>
                                             <div contentEditable='true' class='edit' id='list_label_<?php echo $row_list['list_id']; ?>' name='list_label_<?php echo $row_list['list_id']; ?>'><?php echo $row_list['list_label']; ?></div> 
                                             <?php }else{ ?>
-                                                <div  id='list_label_<?php echo $row_list['list_id']; ?>' name='list_label_<?php echo $row_list['list_id']; ?>'><?php echo $row_list['list_label']; ?></div>
-                                                <button type="button" class="btn btn-primary">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-down" viewBox="0 0 16 16">
-                                                        <path fill-rule="evenodd" d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"></path>
-                                                        <path fill-rule="evenodd" d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"></path>
-                                                    </svg>
-                                                    Button (USER กดขยายเพื่อ เพิ่มหลักฐาน ตามหัวข้อ)
-                                                </button>
+                                                <!-- <div  id='list_label_<?php echo $row_list['list_id']; ?>' name='list_label_<?php echo $row_list['list_id']; ?>'><?php echo $row_list['list_label']; ?></div> -->
+                                                
 
-                                                <div id="accordion">
+                                            <div id="accordion">
                                                 <div class="card">
                                                     <div class="card-header" id="headingOne">
-                                                    <h5 class="mb-0">
-                                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                                        Collapsible Group Item #1
+                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?>
+                                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
+                                                        >>
                                                         </button>
-                                                    </h5>
+                                                    </p>
                                                     </div>
 
-                                                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                                                    <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                                                     <div class="card-body">
-                                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <label for="File___<?php echo $row_list['list_id'];?>">File</label>
+                                                            <input type="file" class="form-control-file" id="File___<?php echo $row_list['list_id'];?>">
+                                                        </div>
+                                                        </form>
                                                     </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <?php };  
+                                            <?php  };  
                                     }; ?>
                             
 
@@ -289,9 +303,68 @@
             aria-controls="multiCollapseExample1">เพิ่ม</button>
       </div>
       <?php }; ?>
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0"> xxxx 
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Collapsible Group Item #1
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Collapsible Group Item #2
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Collapsible Group Item #3
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+      </div>
+    </div>
+  </div>
+</div>
+
+<p>
+  <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Link with href
+  </a>
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+    Button with data-target
+  </button>
+</p>
+<div class="collapse" id="collapseExample">
+  <div class="card card-body">
+    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+  </div>
+</div>
       </div>
     
-    <!-- <script type="text/javascript">
+    <!-- <scripttype= type="text/javascript">
       $(document).ready(function(){
         $('[data-toogle="tooltip"]').tooltip();
         
@@ -303,7 +376,7 @@
           $(this).parents("tr").find(".add, .edit").toggle();
         });
       });
-    </script> -->
+    </scripttype=> -->
       <script type="text/javascript">
         const collapseElementList = [].slice.call(document.querySelectorAll('.collapse'))
         const collapseList = collapseElementList.map((collapseEl) => {
@@ -311,8 +384,6 @@
             toggle: false,
           });
         });
-
-        
       </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous"></script>

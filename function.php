@@ -37,9 +37,9 @@
             return $checkuser;
         }
 
-        public function registration($username ,$password ,$email ,$user_type, $firstname, $surname, $active) {
-            $reg = mysqli_query($this->dbcon, "INSERT INTO user(username,password, email,user_type, firstname, surname , active ) VALUES('$username' ,'$password' ,'$email' ,'$user_type', '$firstname', '$surname', $active)");
-            //echo "INSERT INTO user(username,password, email,user_type, firstname, surname , active ) VALUES('$username' ,'$password' ,'$email' ,'$user_type', '$firstname', '$surname', $active)" ;
+        public function registration($username ,$password ,$email ,$user_type, $firstname, $surname, $phone_no, $department,  $active) {
+            $reg = mysqli_query($this->dbcon, "INSERT INTO user(username, password, user_type, email, firstname, surname, phone_no, department , active ) VALUES('$username' ,'$password', '$user_type' ,'$email', '$firstname', '$surname', '$phone_no', '$department', $active) ");
+           // echo INSERT INTO user(username, password, user_type, email, firstname, surname, phone_no, department , active ) VALUES('$username' ,'$password', '$user_type' ,'$email', '$firstname', '$surname', '$phone_no', '$department', $active)";
             return $reg;
         }
 
@@ -94,6 +94,16 @@
 		
 		public function selectuser($usertype) {
             $selectuser = mysqli_query($this->dbcon, "SELECT * FROM `user` where user_type = '$usertype'");
+            return $selectuser;
+        }
+		
+		public function deleteuser($userid) {
+            $deleteuser = mysqli_query($this->dbcon, "delete  FROM `user` where user_id = $userid");
+            return $selectuser;
+        }
+		
+		public function selectuseredit($userid) {
+            $selectuser = mysqli_query($this->dbcon, "SELECT * FROM `user` where user_id = $userid");
             return $selectuser;
         }
     }

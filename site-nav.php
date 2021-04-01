@@ -41,8 +41,8 @@
             if($_SESSION['user_type']=="ADMIN"){
 
         ?>
-      <li><a href="nikom_all.php?usertype=USER">นิคม</a></li>
-      <li><a href="evaluation.php">ผู้ตรวจประเมิน</a></li>
+      <li><a href="nikom_all.php?usertype=USER">ผู้ใช้นิคม</a></li>
+      <li><a href="nikom_all.php?usertype=AUDITOR">ผู้ตรวจประเมิน</a></li>
       <?php } ?>
       <li><a href="report.php">รายงาน</a></li>
       <li><a href="database.php">DATABASE</a></li>
