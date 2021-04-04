@@ -16,13 +16,13 @@
             $_SESSION['id'] = $num['user_id'];
             $_SESSION['fname'] = $num['firstname'];
             $_SESSION['user_type'] = $num['user_type'];
-            echo "<script>alert('Login Successful!');</script>";
+            //echo "<script>alert('Login Successful!');</script>";
             if( strtoupper($_SESSION['user_type']) == "ADMIN" ){
               echo "<script>window.location.href='eco_level.php'</script>";
             }elseif (strtoupper($_SESSION['user_type']) == "AUDIT" ) {
               echo "<script>window.location.href='audit.php'</script>";
             }elseif (strtoupper($_SESSION['user_type']) == "USER" ) {
-              echo "<script>window.location.href='evaluation.php'</script>";
+              echo "<script>window.location.href='eco_level.php'</script>";
             }else{
             echo "<script>window.location.href='login.php'</script>";
             }

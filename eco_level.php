@@ -223,26 +223,30 @@ $('#collapseOne').collapse({
                                             //  Admin จะเป็นกล่องสำหรับแก้ไขได้     ?>
                                             <div contentEditable='true' class='edit' id='list_label_<?php echo $row_list['list_id']; ?>' name='list_label_<?php echo $row_list['list_id']; ?>'><?php echo $row_list['list_label']; ?></div> 
                                             <?php }else{ ?>
-                                                <!-- <div  id='list_label_<?php echo $row_list['list_id']; ?>' name='list_label_<?php echo $row_list['list_id']; ?>'><?php echo $row_list['list_label']; ?></div> -->
+                                                <!-- <div  id='list_label_<?php // echo $row_list['list_id']; ?>' name='list_label_<?php // echo $row_list['list_id']; ?>'><?php //echo $row_list['list_label']; ?></div> -->
                                                 
 
-                                            <div id="accordion">
+                                            <div id="accordion<?php echo $row_list['list_id'];?>">
                                                 <div class="card">
                                                     <div class="card-header" id="headingOne">
-                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?>
+                                                    <p class="mb-0">list id : <?php echo $row_list['list_id'];?> / <?php echo $row_list['list_label']; ?>
                                                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
                                                         >>
                                                         </button>
                                                     </p>
                                                     </div>
 
-                                                    <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                                    <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
                                                     <div class="card-body">
-                                                    <form>
-                                                        <div class="form-group">
-                                                            <label for="File___<?php echo $row_list['list_id'];?>">File</label>
-                                                            <input type="file" class="form-control-file" id="File___<?php echo $row_list['list_id'];?>">
-                                                        </div>
+                                                        <form>
+                                                            <div class="form-group">
+                                                                <input type="text" id="transaction_<?php echo $row_list['list_id'];?>">
+                                                                <label for="File___<?php echo $row_list['list_id'];?>">File</label>
+                                                                <input type="file" class="form-control-file" id="File___<?php echo $row_list['list_id'];?>">
+                                                                <button type="button" class="btn btn-primary" value="บันทึก">บันทึก</button>
+                                                                <button type="button" class="btn btn-primary" value="ส่งพิจารณา">ส่งพิจารณา</button>
+                                                                
+                                                            </div>
                                                         </form>
                                                     </div>
                                                     </div>
@@ -303,7 +307,7 @@ $('#collapseOne').collapse({
             aria-controls="multiCollapseExample1">เพิ่ม</button>
       </div>
       <?php }; ?>
-<div id="accordion">
+<!-- <div id="accordion">
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0"> xxxx 
@@ -349,7 +353,7 @@ $('#collapseOne').collapse({
   </div>
 </div>
 
-<p>
+<!-- <p>
   <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Link with href
   </a>
@@ -361,8 +365,8 @@ $('#collapseOne').collapse({
   <div class="card card-body">
     Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
   </div>
-</div>
-      </div>
+</div> -->
+      </div 1234> -->
     
     <!-- <scripttype= type="text/javascript">
       $(document).ready(function(){

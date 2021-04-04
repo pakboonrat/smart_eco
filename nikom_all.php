@@ -7,27 +7,60 @@
     include_once('function.php');
 
     if (isset($_POST['submit'])) {
-      
-        
-		$username = $_POST['username'];
-        $password = $_POST['password'];
-        $email = $_POST['email'];
-        $firstname = $_POST['firstname'];
-        $surname = $_POST['surname'];
-		$user_type = $_GET['usertype'];
-		$phone_no = $_POST['tel'];
-		$department = "";
-        
-		$userdata = new DB_con();
-		$sql = $userdata->registration($username ,$password, $email, $user_type , $firstname, $surname, $phone_no, $department ,true);
-		//$username ,$password ,$email ,$user_type, $firstname, $surname, $phone_no, $department,  $active
-        if ($sql) {
-            echo "<script>alert('เพิ่มข้อมูลเรียบร้อย !');</script>";
-            echo "<script>window.location.href='nikom_all.php?usertype=USER'</script>";
-        } else {
-            echo "<script>alert('Something went wrong! Please try again!');</script>";
-            echo "<script>window.location.href='nikom_all.php?usertype=USER'</script>";
-        }
+		if ($_POST['submit']=="add") {
+				
+				$username = $_POST['username'];
+				$password = $_POST['password'];
+				$email = $_POST['email'];
+				$firstname = $_POST['firstname'];
+				$surname = $_POST['surname'];
+				$user_type = $_GET['usertype'];
+				$phone_no = $_POST['tel'];
+				$department = "";
+				
+				$userdata = new DB_con();
+				$sql = $userdata->registration($username ,$password, $email, $user_type , $firstname, $surname, $phone_no, $department ,true);
+				//$username ,$password ,$email ,$user_type, $firstname, $surname, $phone_no, $department,  $active
+				if ($sql) {
+					echo "<script>alert('เพิ่มข้อมูลเรียบร้อย !');</script>";
+					echo "<script>window.location.href='nikom_all.php?usertype='$user_type''</script>";
+				} else {
+					echo "<script>alert('Something went wrong! Please try again!');</script>";
+					echo "<script>window.location.href='nikom_all.php?usertype='$user_type''</script>";
+				}
+		} elseif ($_POST['submit']=="update") {
+				$username = $_POST['username'];
+				$password = $_POST['password'];
+				$email = $_POST['email'];
+				$firstname = $_POST['firstname'];
+				$surname = $_POST['surname'];
+				$user_type = $_GET['usertype'];
+				$phone_no = $_POST['tel'];
+				
+				$userid	= $_POST['user_id'];
+				$department = "";
+		
+				if ($_POST['active']){
+					$useractive = '1';
+				//	echo $useractive;
+				} else {
+					$useractive = '0';
+				//	echo $useractive;
+				}
+				$userdata = new DB_con();
+				$sql = $userdata->updateuser($username ,$password, $email, $user_type , $firstname, $surname, $phone_no, $department ,$useractive, $userid );
+				//$sql = $userdata->updateuser($username ,$password, $email, $user_type , $firstname, $surname, $phone_no, $department ,$useractive,$userid );
+				//updateuser($username ,$password ,$email ,$user_type, $firstname, $surname, $phone_no, $department,  $active, $userid)
+				if ($sql) {
+					echo "<script>alert('แก้ไขข้อมูลเรียบร้อย !');</script>";
+					echo "<script>window.location.href='nikom_all.php?usertype='$user_type''</script>";
+				} else {
+					echo "<script>alert('Something went wrong! Please try again!');</script>";
+					echo "<script>window.location.href='nikom_all.php?usertype='$user_type''</script>";
+				}
+			
+			
+		}
     }
 		$edit_type = $_GET['edit'];
 		$user_id = $_GET['userid'];
@@ -142,15 +175,15 @@ function validateForm() {
   </tr>
   <tr>
     <td height="10"><label for="user">USER NAME</label></td>
-    <td height="10"><input name="username" type="text" id="username" size="25"></td>
+    <td height="10"><input name="username" type="text" id="username" size="25"><font color="#CC0000">**</font></td>
   </tr>
   <tr>
     <td height="10"><label for="pwd">PASSWORD</label></td>
-    <td height="10"><input name="password" type="password"  id="password" size="25"  inputmode="text" ></td>
+    <td height="10"><input name="password" type="password"  id="password" size="25"  inputmode="text" ><font color="#CC0000">**</font></td>
   </tr>
   <tr>
     <td height="10"><label for="firstname">ชื่อ </label></td>
-    <td height="10"> <input  name="firstname" type="text" id="firstname" size="40" ></td>
+    <td height="10"> <input  name="firstname" type="text" id="firstname" size="40" ><font color="#CC0000">**</font></td>
   </tr>
   <tr>
     <td height="10"><label for="surname">นามสกุล</label></td>
@@ -166,7 +199,7 @@ function validateForm() {
   </tr>
     </tr>
     <tr>
-    <td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit" name="submit" id="submit">เพิ่มผู้ใช้งาน</button></td>
+    <td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit" name="submit" id="submit" value="add">เพิ่มผู้ใช้งาน</button></td>
     </tr>
 </table>
 	<?php  }
@@ -185,20 +218,20 @@ function validateForm() {
     <td height="10">&nbsp;</td>
   </tr>
     <tr>
-    <td height="10">USER ID</td>
-    <td height="10"><?php echo $userdata['user_id']; ?></td>
+    <td height="10"><label for="user">USER ID</label></td>
+    <td height="10"><input name="user_id" type="hidden" value="<?php echo $userdata['user_id']; ?>"><?php echo $userdata['user_id']; ?></td>
   </tr>
   <tr>
     <td height="10"><label for="user">USER NAME</label></td>
-    <td height="10"><input name="username" type="text" id="username" size="25" value="<?php echo $userdata['username']; ?>"></td>
+    <td height="10"><input name="username" type="text" id="username" size="25" value="<?php echo $userdata['username']; ?>"><font color="#CC0000">**</font></td>
   </tr>
   <tr>
     <td height="10"><label for="pwd">PASSWORD</label></td>
-    <td height="10"><input name="password" type="password"  id="password" size="25"  inputmode="text" ></td>
+    <td height="10"><input name="password" type="password"  id="password" size="25"  inputmode="text" ><font color="#CC0000">**</font></td>
   </tr>
   <tr>
     <td height="10"><label for="firstname">ชื่อ </label></td>
-    <td height="10"> <input  name="firstname" type="text" id="firstname" value="<?php echo $userdata['firstname']; ?>" size="40" ></td>
+    <td height="10"> <input  name="firstname" type="text" id="firstname" value="<?php echo $userdata['firstname']; ?>" size="40" ><font color="#CC0000">**</font></td>
   </tr>
   <tr>
     <td height="10"><label for="surname">นามสกุล</label></td>
@@ -211,10 +244,19 @@ function validateForm() {
     <tr>
     <td height="10"><label for="tel">เบอร์โทร</label></td>
     <td height="10"><input name="tel" type="text"  id="tel" value="<?php echo $userdata['phone_no']; ?>"></td>
+  </tr>    
+  <tr>
+    <td height="10">Active</td>
+    <td height="10">&nbsp;
+      <input name="active" type="checkbox" id="active" <?php if ($userdata['active']=='1') {echo "checked='checked'";} ; ?> value="true">
+      <label for="active"></label></td>
   </tr>
-    </tr>
+  <tr>
+    <td height="7"></td>
+    <td height="7"></td>
+  </tr>
     <tr>
-    <td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit" name="submit" id="submit">&nbsp;Update&nbsp;</button></td>
+    <td colspan="2">&nbsp;&nbsp;&nbsp;<button type="submit" name="submit" id="submit" value="update">&nbsp;Update</button></td>
     </tr>
 </table> <?php  }; ?>
     </form>   

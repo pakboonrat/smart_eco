@@ -99,12 +99,34 @@
 		
 		public function deleteuser($userid) {
             $deleteuser = mysqli_query($this->dbcon, "delete  FROM `user` where user_id = $userid");
-            return $selectuser;
+            return $deleteuser;
         }
 		
 		public function selectuseredit($userid) {
             $selectuser = mysqli_query($this->dbcon, "SELECT * FROM `user` where user_id = $userid");
             return $selectuser;
+        }
+		
+		public function updateuser($username ,$password,$email ,$user_type, $firstname, $surname, $phone_no, $department, $active, $userid) {
+            $updateuserdata = mysqli_query($this->dbcon, "UPDATE `user` SET `username`='$username',`password`='$password',`user_type`='$user_type',`email`='$email',`firstname`='$firstname',`surname`='$surname',`phone_no`='$phone_no',`department`='',`active`=$active WHERE user_id = $userid");
+			//echo  "UPDATE `user` SET `username`='$username',`password`='$password',`user_type`='$user_type',`email`='$email',`firstname`='$firstname',`surname`='$surname',`phone_no`='$phone_no',`department`="",`active`=$active WHERE user_id = $userid";
+		    return $updateuserdata;
+        }
+		
+		public function iuploadfile($username, $subject, $description, $ori_filename, $filename, $savedate) {
+            $recordfilename = mysqli_query($this->dbcon, "INSERT INTO `user_filedb`(`user`, `subject`, `description`, `ori_filename`, `save_filename`, `save_date`) VALUES ('$username', '$subject', '$description', '$ori_filename','$filename','$savedate')");
+			//INSERT INTO `user_filedb`(`id`, `user`, `subject`, `description`, `ori_filename`, `save_filename`, `save_date`) VALUES ([value-1],[value-2],[value-3],[value-4],[value-5],[value-6],[value-7])
+			return $recordfilename;
+        }
+		
+		public function selectfiledb($userid) {
+            $selectuserfile = mysqli_query($this->dbcon, "SELECT * FROM `user_filedb` where user = $userid");
+            return $selectuserfile;
+        }
+		
+		public function deleteuserfile($userid) {
+            $deleteuserfiledb = mysqli_query($this->dbcon, "delete  FROM `user_filedb` where id = $userid");
+            return $deleteuserfiledb;
         }
     }
 
