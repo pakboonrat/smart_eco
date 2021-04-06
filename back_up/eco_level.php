@@ -7,46 +7,23 @@
 
 
     include_once('function.php');
-      
-    if (isset($_POST['submit']) && ($_POST['submit']== "add-level")) {
+
+    if (isset($_POST['submit'])) {
       
         
         $level_label = $_POST['level_label'];
         $year_set = $_POST['year_set'];
         $set_lebel = $_POST['set_lebel'];
         $sub_lebel = $_POST['sub_lebel'];
-        
-        if( isset($_POST['set_lebel']) and ( trim($_POST['set_lebel']) == "basic")  ) {
-          
-          $updatedata = new DB_con();
-          $sql = $updatedata->insertlevel($level_label, $year_set, $set_lebel, $sub_lebel);
-          print_r($sql);
-          if ($sql) {
-              echo "<script>alert('Updated Successfully!');</script>";
-              echo "<script>window.location.href='index.php'</script>";
-          } else {
-              echo "<script>alert('Something went wrong! Please try again!');</script>";
-              echo "<script>window.location.href='update.php'</script>";
-          }
-
-
-        }elseif( isset($_POST["set_lebel"]) && ( trim($_POST['set_lebel']) == "Guidelines") ) {
-
-          $level_type = $_POST['level_type'];
-
-          $updatedata = new DB_con();
-          $sql = $updatedata->insertlevel2($level_label, $year_set, $set_lebel, $sub_lebel ,$level_type );
-          print_r($sql);
-          if ($sql) {
-              echo "<script>alert('Updated Successfully!');</script>";
-              echo "<script>window.location.href='index.php'</script>";
-          } else {
-              echo "<script>alert('Something went wrong! Please try again!');</script>";
-              echo "<script>window.location.href='update.php'</script>";
-          }
-
-        }else{ echo json_encode( ( ($_POST['set_lebel'] == "basic")  )) ; }
-        
+        $updatedata = new DB_con();
+        $sql = $updatedata->insertlevel($level_label, $year_set, $set_lebel, $sub_lebel);
+        if ($sql) {
+            echo "<script>alert('Updated Successfully!');</script>";
+            echo "<script>window.location.href='index.php'</script>";
+        } else {
+            echo "<script>alert('Something went wrong! Please try again!');</script>";
+            echo "<script>window.location.href='update.php'</script>";
+        }
     }
 
     if (isset($_POST['score'])) {
@@ -66,69 +43,6 @@
         }
     }
 
-    //------------start upload file--------------
-		$message = ''; 
-		if (isset($_POST['uploadBtn']) && $_POST['uploadBtn'] == 'บันทึกข้อมูล')
-		{
-		  if (isset($_FILES['uploadedFile']) && $_FILES['uploadedFile']['error'] === UPLOAD_ERR_OK)
-		  {
-			// get details of the uploaded file
-			$fileTmpPath = $_FILES['uploadedFile']['tmp_name'];
-			$fileName = $_FILES['uploadedFile']['name'];
-			$fileSize = $_FILES['uploadedFile']['size'];
-			$fileType = $_FILES['uploadedFile']['type'];
-			$fileNameCmps = explode(".", $fileName);
-			$fileExtension = strtolower(end($fileNameCmps));
-			$subject = 	$_POST['subject'];
-			$description = 	$_POST['description'];
-      $level_id = $_POST['level_id'];
-			$now  = new DateTime;
-			$savedate = $now->format( 'Y-m-d' );
-						
-			// sanitize file-name
-			$newFileName = md5(time() . $fileName) . '.' . $fileExtension;
-
-			// insert into database
-			include_once('function.php'); 
-			$insert_filedb = new DB_con();
-                                  // $level_id, $user_id , $list_label, $remark, $ori_filename, $filename, $savedate
-			$inserttodb = $insert_filedb->user_uploadfile($level_id , $_SESSION['id'],$subject, $description , $fileName, $newFileName, $savedate);
-			mysqli_fetch_array($inserttodb);
-
-
-			// check if file has one of the following extensions
-			$allowedfileExtensions = array('jpg', 'gif', 'png', 'zip', 'txt', 'xls', 'doc', 'pdf', 'xlsx', 'docx');
-
-			if (in_array($fileExtension, $allowedfileExtensions))
-			{
-			  // directory in which the uploaded file will be moved
-			  $uploadFileDir = './useraddfile/';
-			  $dest_path = $uploadFileDir . $newFileName;
-
-			  if(move_uploaded_file($fileTmpPath, $dest_path)) 
-			  {
-				$message ='File is successfully uploaded.';
-				echo "<script>window.location.href='/database.php?yearsel=".date("Y")."'</script>";
-			  }
-			  else 
-			  {
-				$message = 'There was some error moving the file to upload directory. Please make sure the upload directory is writable by web server.';
-			  }
-			}
-			else
-			{
-			  $message = 'Upload failed. Allowed file types: ' . implode(',', $allowedfileExtensions);
-			}
-		  }
-		  else
-		  {
-			$message = 'There is some error in the file upload. Please check the following error.<br>';
-			$message .= 'Error:' . $_FILES['uploadedFile']['error'];
-		  }
-		}
-		$_SESSION['message'] = $message;
-		//-----------------end upload---------------- 
-
     
 
 
@@ -144,7 +58,6 @@
   type="text/javascript"
   src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"
 ></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <!-- <script type="text/javascript" >
 $('#collapseOne').collapse({
             toggle: false
@@ -225,7 +138,7 @@ $('#collapseOne').collapse({
           }else{ 
             $set_lebel = $set_lebel_array[0]; 
             }
-          
+
           $sql = $fetchdata->fetchdata($level_label,$set_lebel);
           while($row = mysqli_fetch_array($sql)) {
             $level_label = $row['level_label'] ;
@@ -233,15 +146,12 @@ $('#collapseOne').collapse({
             <div class="col" >
             <!-- <div class="item"><h2><?php echo "==================".$row['set_lebel']; ?></h2></div> -->
             <div class="item"><?php echo $row['sub_lebel']; ?> 
-                <?php if($_SESSION['user_type']!="USER") { ;?>
                 <div class="item-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" alt="แก้ไข" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                         <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"></path>
                         <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"></path>
                         </svg> | < ลบ >
-                </div>
-                
-                <?php } ?>
+                    </div>
                 </div>
 
                 <?php 
@@ -249,7 +159,7 @@ $('#collapseOne').collapse({
                 
                 if( $row['type'] == 'measure' ){
                     ?>
-                    <div class="item2">
+                    <div class="item2">+
                         <?php
                         echo "<p><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" class=\"bi bi-award-fill\" viewBox=\"0 0 16 16\">
                         <path d=\"m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864 8 0z\"></path>
@@ -268,7 +178,7 @@ $('#collapseOne').collapse({
                                     
                                     <div class="form-row">
                                         <div>
-                                        <div contentEditable='true' class='edit' id='point___<?php echo $row_score['score_id']; ?>' name='point___<?php echo $row_score['point']; ?>'></div> 
+                                        <div contentEditable='true' class='edit' id='point___<?php echo $row_score['score_id']; ?>' name='point___<?php echo $row_score['point']; ?>'><?php echo $row_score['point']; ?></div> 
                                         <input type="text" class="form-control" placeholder="scroe" value="<?php echo $row_score['point']; ?>">
                                         </div>
                                         <div>
@@ -313,52 +223,42 @@ $('#collapseOne').collapse({
                                             //  Admin จะเป็นกล่องสำหรับแก้ไขได้     ?>
                                             <div contentEditable='true' class='edit' id='list_label_<?php echo $row_list['list_id']; ?>' name='list_label_<?php echo $row_list['list_id']; ?>'><?php echo $row_list['list_label']; ?></div> 
                                             <?php }else{ ?>
-                                                <!-- <div  id='list_label_<?php // echo $row_list['list_id']; ?>' name='list_label_<?php // echo $row_list['list_id']; ?>'><?php //echo $row_list['list_label']; ?></div> -->
+                                                <!-- <div  id='list_label_<?php echo $row_list['list_id']; ?>' name='list_label_<?php echo $row_list['list_id']; ?>'><?php echo $row_list['list_label']; ?></div> -->
                                                 
 
-                                            <div id="accordion<?php echo $row_list['list_id'];?>">
+                                            <div id="accordion">
                                                 <div class="card">
                                                     <div class="card-header" id="headingOne">
-                                                    <p class="mb-0"> <?php echo $row_list['list_label']; ?>
+                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?>
                                                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
                                                         >>
                                                         </button>
                                                     </p>
                                                     </div>
 
-                                                    <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
+                                                    <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                                                     <div class="card-body">
-                                                        <form method="POST" enctype="multipart/form-data">
-                                                            <div class="form-group">
-                                                                <input type="text" id="transaction_<?php echo $row_list['list_id'];?>">
-                                                                <label for="File">File</label>
-                                                                <!-- Preview-->
-                                                                <div id='preview'></div>
-                                                                
-                                                                <input type="file" class="form-control-file" name="uploadedFile">
-                                                                <input type="submit" name="uploadBtn" value="บันทึกข้อมูล" />
-                                                                
-                                                            </div>
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <label for="File___<?php echo $row_list['list_id'];?>">File</label>
+                                                            <input type="file" class="form-control-file" id="File___<?php echo $row_list['list_id'];?>">
+                                                        </div>
                                                         </form>
                                                     </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                          
 
                                             <?php  };  
-                                    };  ?>
+                                    }; ?>
                             
 
                                 </div>
                         
-                        <?php  
-                      
-                      
-                      }; 
+                        <?php   }; 
                         if($_SESSION['user_type']=="USER"){
                             // admin ตั้งหัวข้อใหม่
-                              
+                                echo "admin ตั้งหัวข้อใหม่ ";
 
                             }elseif($_SESSION['user_type']=="USER"){ 
                             //  เฉพาะ USER  จส่งหลักฐาน และกำหนดหัวข้อเอง  ?>
@@ -368,56 +268,7 @@ $('#collapseOne').collapse({
                             <?php }; ?>
                     <?php   //--Close-------control : section    } 
                 };
-                
-                
-                if($_SESSION['user_type']=="USER"){ 
-                                          
-                  $fetchdata_user = new DB_con();
-                  $level_id = $row['level_id'];
-                  
-
-                  //fetch_useradd
-                  $sql_useradd = $fetchdata_user->fetch_useradd($level_id,$_SESSION['id']);
-                  if( mysqli_num_rows($sql_useradd) != 0 ){
-                    ?> <div class="item2" > <?php 
-                    while($row_useradd = mysqli_fetch_array($sql_useradd)) {
-                      ?>
-                      <div class="item3">
-                        <div> <?php echo $row_useradd['list_label'];?></div>
-                        <div> <?php echo $row_useradd['remark'];?></div>
-                        <div> <?php echo $row_useradd['save_filename'];?></div>
-                      </div>
-                      <?php
-                    }
-                    ?> </div> 
-                  <?php  
-                  }
-                  ?>
-                    <!-- <div> user add file </div> -->
-                    <div>
-                          upload
-                          <form method="post" enctype="multipart/form-data">
-                              <div class="form-group">
-                              <label for="subject"></label>
-                                &nbsp;<input name="subject" type="text" id="subject2" size="47"><font color="#CC0000">**</font>
-                                  
-                                  <label for="description"></label>
-                                  <div> <textarea name="description" id="description" cols="50" rows="5"style="overflow:hidden"></textarea> </div>
-                                                                      
-
-                                  <input type="hidden" id="level_id" name="level_id" value="<?php echo $row['level_id'] ; ?>" >
-                                  <input type="file" class="form-control-file" id="File">
-                                  <input type="submit" name="uploadBtn" value="บันทึกข้อมูล" class="btn btn-primary btn-sm col-2" />
-                                  <!-- <button type="button" class="btn btn-primary upload send" value="ส่งพิจารณา" id="Sup___<?php echo $row_list['list_id'];?>">ส่งพิจารณา</button> -->
-                                                
-                              </div>
-                          </form>
-                    </div>
-                <!-- <div> user add file </div> -->
-                <?php  };   
-                
-                
-                ?>
+                            ?>
 
             </div>
             
@@ -430,31 +281,15 @@ $('#collapseOne').collapse({
     // Admin กำหนด Level ใหม่
     if($_SESSION['user_type']=="ADMIN"){ ?>
       <div class="col" >
-            <form method="POST">
-            <div id="multiCollapseExample1">
+            <form method="post">
+            <div class="collapse multi-collapse mt-3" id="multiCollapseExample1">
                     <div class="item">
                     <input type="text" id="sub_lebel" name="sub_lebel" class="form-control form-control-sm" >
                         <div>
-                        <?php
-                            // radio button สำหรับ  Guidelines
-                            if($set_lebel=="Guidelines"){ ?>
-                            <div>
-
-                                <div class="form-check form-check-inline">
-                                  <input class="form-check-input" type="radio" name="level_label" id="inlineRadio1" value="control" required >
-                                  <label class="form-check-label" for="inlineRadio1">control</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                  <input class="form-check-input" type="radio" name="level_label" id="inlineRadio2" value="measure" required >
-                                  <label class="form-check-label" for="inlineRadio2">measure</label>
-                                </div>
-                            </div>
-                            <?php }; ?>
                             <input id="level_label" name="level_label" type="hidden" value="<?php echo $level_label; ?> ">
                             <input id="year_set" name="year_set" type="hidden" value="<?php echo $year_set; ?> ">
                             <input id="set_lebel" name="set_lebel" type="hidden" value="<?php echo $set_lebel; ?> ">
-                            <input type="hidden" name="level_type" id="" value="<?php echo $row['level_label']; ?>" >
-                            <button type="submit" name="submit" id="submit" value="add-level" class="badge bg-primary btn btn-success" >save</button>
+                            <button type="submit" name="submit" id="submit" class="badge bg-primary btn btn-success" >save</button>
                             </div>
                         </div> 
                     </div>
@@ -462,10 +297,13 @@ $('#collapseOne').collapse({
             </form>
 
         
-            <button class=" btn btn-success" >เพิ่ม</button>
+            <button class=" btn btn-success" data-mdb-toggle="collapse"
+            data-mdb-target="#multiCollapseExample1"
+            aria-expanded="false"
+            aria-controls="multiCollapseExample1">เพิ่ม</button>
       </div>
       <?php }; ?>
-<!-- <div id="accordion">
+<div id="accordion">
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0"> xxxx 
@@ -511,7 +349,7 @@ $('#collapseOne').collapse({
   </div>
 </div>
 
-<!-- <p>
+<p>
   <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Link with href
   </a>
@@ -523,8 +361,8 @@ $('#collapseOne').collapse({
   <div class="card card-body">
     Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
   </div>
-</div> -->
-      </div 1234> -->
+</div>
+      </div>
     
     <!-- <scripttype= type="text/javascript">
       $(document).ready(function(){
@@ -582,54 +420,6 @@ $(document).ready(function(){
   });
  
  });
-
-        $(".upload").click(function(){
-            $(this).addClass('uploadMode');
-            var id = this.id;
-            var split_id = id.split("___");
-            var field_name = split_id[0];
-            var upload_field_id = split_id[1];
-            //var split_id2 = id.split("_"+edit_id);
-            var file = $("#File___"+upload_field_id);
-            console.log(file);
-            var value = $(this).text();
-            console.log("split_id[0] :"  + split_id[0] + ":"+split_id[1] + " / value :"+value);
-        
-            // ฝฝ$('#btn_upload').click(function(){
-
-                var fd = new FormData();
-                //var files = $File___1[0].files[0];
-                
-                var files = $('#File___'+upload_field_id)[0].files[0];
-                console.log(files);
-                console.log(value);
-                fd.append('file',files);
-
-                // AJAX request
-                $.ajax({
-                url: 'ajaxfileupload.php',
-                type: 'post',
-                data: {"fd":fd, "field":field_name, "value":value, id:upload_field_id,user:<?php echo $_SESSION['id']; ?> },
-                contentType: false,
-                processData: false,
-                success: function(response){
-                    if(response != 0){
-                    // Show image preview
-                    alert(response);
-                    $('#preview').append("<img src='"+response+"' width='100' height='100' style='display: inline-block;'>");
-                    }else{
-                    //alert('file not uploaded');
-                    alert(response);
-                    }
-                }
-                });
-            // ฝฝ});
-        
-        
-        
-        });
-//     }
-//  );
 
 });
 </script>
