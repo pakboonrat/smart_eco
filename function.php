@@ -154,7 +154,7 @@
             return $selectfdescrip;
         }
 		
-		public function insert_transaction() {
+		public function insert_transaction($user_id, $list_id, $description, $ori_filename, $filename, $savedate) {
             $recordfilename = mysqli_query($this->dbcon, "INSERT INTO `transaction`(`user_id`, `list_id`, `remark`, `ori_filename`, `save_filename`, `status`, `save_date`) VALUES ('$user_id', '$list_id', '$description', '$ori_filename','$filename','save','$savedate')");
 			return $recordfilename;
         }
