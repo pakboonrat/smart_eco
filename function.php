@@ -81,14 +81,11 @@
             return $result;
         }
 
-        // เพิ่ม level แบบ set_lebel = basic
         public function insertlevel($level_label ,$year_set ,$set_lebel ,$sub_lebel) {
             $reg = mysqli_query($this->dbcon, "INSERT INTO level(level_label ,year_set ,set_lebel ,sub_lebel ) VALUES('$level_label' ,'$year_set' ,'$set_lebel' ,'$sub_lebel')");
             //echo "INSERT INTO user(username,password, email,user_type, firstname, surname , active ) VALUES('$username' ,'$password' ,'$email' ,'$user_type', '$firstname', '$surname', $active)" ;
             return $reg;
         }
-
-
         // เพิ่ม level แบบ set_lebel = Guidelines ต้องมี TYPE ด้วยในการ insert 
         public function insertlevel2($level_label ,$year_set ,$set_lebel ,$sub_lebel , $level_type) {
             $reg = mysqli_query($this->dbcon, "INSERT INTO level(level_label ,year_set ,set_lebel ,sub_lebel,type ) VALUES('$level_label' ,'$year_set' ,'$set_lebel' ,'$sub_lebel','$level_type')");
@@ -130,7 +127,6 @@
 
         public function user_uploadfile( $level_id, $user_id , $list_label, $remark, $ori_filename, $filename, $savedate) {
             // level_id	score_id	user_id	list_label	remark	status
-
             $recordfilename = mysqli_query($this->dbcon, "INSERT INTO `user_add`( `level_id`, `user_id`, `list_label`, `remark`, `ori_filename`, `save_filename`, `save_date`)  VALUES ('$level_id', '$user_id', '$list_label', '$remark', '$ori_filename','$filename','$savedate')");
 			//INSERT INTO `user_filedb`(`id`, `user`, `subject`, `description`, `ori_filename`, `save_filename`, `save_date`) VALUES ([value-1],[value-2],[value-3],[value-4],[value-5],[value-6],[value-7])
 			return $recordfilename;
@@ -140,8 +136,6 @@
             $result = mysqli_query($this->dbcon, "SELECT * FROM user_add WHERE level_id = '$level_id' and user_id = '$user_id'  ");
             return $result;
         }
-
-
 
 		
 		public function selectfiledb($userid, $yearselect) {
@@ -159,6 +153,36 @@
             $selectfdescrip = mysqli_query($this->dbcon, "SELECT `description` FROM `format` WHERE format_id = $formatid");
             return $selectfdescrip;
         }
+		
+		public function insert_transaction() {
+            $recordfilename = mysqli_query($this->dbcon, "INSERT INTO `transaction`(`user_id`, `list_id`, `remark`, `ori_filename`, `save_filename`, `status`, `save_date`) VALUES ('$user_id', '$list_id', '$description', '$ori_filename','$filename','save','$savedate')");
+			return $recordfilename;
+        }
+		
+		public function selecttransaction($user_id, $list_id) {
+            $transactionfile = mysqli_query($this->dbcon, "SELECT * FROM `transaction` WHERE user_id = '$user_id' AND list_id = '$list_id'");
+			//SELECT * FROM `transaction` WHERE user_id = 3 and list_id = 3
+            return $transactionfile;
+			
+        }
+		public function del_transaction($tran_id) {
+            $deletetransaction = mysqli_query($this->dbcon, "delete  FROM `transaction` where t_id = $tran_id");
+            return $deletetransaction;
+        }
+		
+		public function update_transaction($user_id) {
+            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `user_id` = $user_id");
+            return $up_tran_status;
+			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
+        }
+
+        public function fetch_transaction_By_USER() {
+            $fetch = mysqli_query($this->dbcon, "SELECT * FROM `user` , transaction WHERE TRIM(transaction.user_id) = trim(user.user_id)");
+            return $fetch;
+			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
+        }
+
+        
     }
 
 ?>

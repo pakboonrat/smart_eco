@@ -59,40 +59,20 @@ function validateForm() {
     <?php 
           $fetchdata = new DB_con();
           $sql = $fetchdata->fetch_transaction_By_USER();
-          while($row = mysqli_fetch_array($sql)) {
-          }
-    ?>
-    <tbody>
-    <tr>
-      <th scope="row">นิคมฯ อัญธานี</th>
-      <td><a href="approve.php">รายละเอียด</a></td>
-    </tr>
-
-  <tr bgcolor="#FFFFFF">
-    <td align="left">นิคมฯ อัญธานี </td>
-    
-    <td align="center"><a href="approve.php">รายละเอียด</a></td>
-    </tr>
+          if( mysqli_num_rows($sql) ){
+           
+          while($row = mysqli_fetch_array($sql)) { 
+      ?>
+      <tbody>
       <tr>
-    <td align="left" bgcolor="#CCCCCC">นิคมฯ ลาดกระบัง</td>
-    
-    <td align="center" bgcolor="#CCCCCC"><a href="approve.php">รายละเอียด</a></td>
-    </tr>
-      <tr bgcolor="#FFFFFF">
-    <td align="left">นิคมฯ พิจิตร</td>
-   
-    <td align="center"><a href="approve.php">รายละเอียด</a></td>
-    </tr>
-          <tr>
-    <td align="left" bgcolor="#CCCCCC">นิคมฯ แหลมฉบัง  </td>
-   
-    <td align="center" bgcolor="#CCCCCC"><a href="approve.php">รายละเอียด</a></td>
-    </tr>
-      <tr bgcolor="#FFFFFF">
-    <td align="left">นิคมฯ บางพลี  </td>
-   
-    <td align="center"><a href="approve.php">รายละเอียด</a></td>
-    </tr>
+        <th scope="row"><?php echo $row['firstname'];?></th>
+        <td><a href="approve.php?userid=<?php echo $row['firstname'];?>">รายละเอียด</a></td>
+      </tr>
+      </tbody>
+      <?php }
+    } else{  ?>
+    </tbody>
+    <?php   } ?>
 </table><br>
 <br>
 <br>
