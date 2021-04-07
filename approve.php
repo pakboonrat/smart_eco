@@ -68,7 +68,7 @@ function validateForm() {
 				<div class="collapse" id="collapseExample<?php echo $row['level_id'];?>">
 					<?php 
 					$fetchdata2 = new DB_con();
-					$sql2 = $fetchdata->fetch_transaction_list_level2($user_id);
+					$sql2 = $fetchdata->fetch_transaction_list_level2($user_id,$row['level_id'] );
 					if( mysqli_num_rows($sql2) != 0 ){
 					 
 					while($row_list = mysqli_fetch_array($sql2)) { 
@@ -76,8 +76,9 @@ function validateForm() {
 						<div class="item2">                                         
 							<div class="card">
 										<div class="card-header" id="headingOne">
-										<p class="mb-0"><?php echo $row['list_label'];?> <br>
+										<p class="mb-0"><?php echo $row_list['list_label'];?> <br>
 										</p>
+										<div class="item2">
 										<table width="95%" border="0" cellspacing="1" cellpadding="1">
 										<tr>
 											<td width="25%" height="15">รายละเอียด :</td>
@@ -100,9 +101,8 @@ function validateForm() {
 											<td><input type="submit" name="approve2" id="approve2" value="&nbsp;Reject&nbsp;"></td>
 										</tr>
 										</table>
-										<p class="mb-0"><br>
+										</div>
 										
-										</p>
 										</div>
 							</div>
 						</div>
