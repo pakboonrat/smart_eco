@@ -44,10 +44,55 @@ function validateForm() {
       <div class="breadcrumbs">
         <a href="audit.php">Home</a>
       </div>
-      <h1>ตรวจพิจารณา : </h1>
-       <nav class="nav-tabs" id="nav-tabs">
-       <a href="audit.php">ตรวจพิจารณา</a>&nbsp;>&nbsp;<a href="approve.php" >นิคมฯ อัญธานี</a></nav>
-    </header>
+      <h1>ตรวจพิจารณา : นิคมฯ อัญธานี </h1>
+       <!-- <nav class="nav-tabs" id="nav-tabs">
+       <a href="audit.php">ตรวจพิจารณา</a>&nbsp;>&nbsp;<a href="approve.php" >นิคมฯ อัญธานี</a></nav> -->
+	
+	   <nav class="nav-tabs" id="nav-tabs">
+      <?php 
+            // $level_id = $_GET['id'];
+            // $set_lebel = $_GET['set_lebel'];
+            $year_set = 2564;
+
+            if(!isset($_GET['level_label'])){
+                $level_array = array();   
+                $LVDB = new DB_con();
+                $sql = $LVDB->fetch_level_menu();
+                while($rowlm = mysqli_fetch_array($sql)) {
+                    if( $rowlm['level_label'] != null ){
+                        
+                array_push($level_array,$rowlm['level_label']);
+                    }
+                }
+                $_GET['level_label'] = $level_array[0];
+            }
+            $level_label = $_GET['level_label'];
+            $updatelevel = new DB_con();
+            $sql = $updatelevel->fetch_level_header($level_label);
+            $set_lebel_array = array();
+            $active_class = "class=\"active\" " ;
+            while($row = mysqli_fetch_array($sql)) {
+            array_push($set_lebel_array,$row['set_lebel']);
+            $i = 0;
+            
+        ?>
+        <a href="aprove.php?level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
+            if(!isset($_GET['set_lebel'])){ 
+                echo $active_class;
+            }elseif ($row['set_lebel'] == $_GET['set_lebel']) {
+                echo "class=\"active\" ";
+            }; ?>  >
+            <?php if ($row['set_lebel']== 'basic'){ echo "เงื่อนไขเบื้องต้น";}
+			else {
+				  echo "หลักเกณฑ์การขอรับรองการเป็นเมืองอุตสาหกรรมเชิงนิเวศ";
+				}
+			?>
+          
+        </a>
+        <?php $active_class=""; } ?>
+        
+      </nav>
+	</header>
   <div class="content-columns">
     <?php    if($_SESSION['user_type']=="AUDITOR"){ ?>     
 			<div class="col">
@@ -82,11 +127,11 @@ function validateForm() {
 										<table width="95%" border="0" cellspacing="1" cellpadding="1">
 										<tr>
 											<td width="25%" height="15">รายละเอียด :</td>
-											<td width="75%" height="15">รายละเอียดจาก user นิคม</td>
+											<td width="75%" height="15"><?php echo $row_list['remark'];?></td>
 										</tr>
 										<tr>
 											<td height="15">ไฟล์แนบ :</td>
-											<td height="15">aaaaaaaa.pdf</td>
+											<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>"><?php echo $row_list['save_filename'];?></a></td>
 										</tr>
 										<tr>
 											<td>ข้อคิดเห็น :</td>
