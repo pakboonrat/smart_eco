@@ -51,14 +51,14 @@ function validateForm() {
   <table class="table table-striped table-hover">
     <thead>
         <tr>
-          <th scope="col">ชื่อนิคม</th>
+          <th scope="col-lg-2 col-md-4 ">ชื่อนิคม</th>
         <!-- <th width="32%" align="center">ชื่อนิคม</th> -->
-        <th scope="col">รอตรวจประเมิน</th>
+        <th scope="col-lg-4 col-md-5">รอตรวจประเมิน</th>
         </tr>
     </thead>
     <?php 
           $fetchdata = new DB_con();
-          $sql = $fetchdata->fetch_transaction_By_USER();
+          $sql = $fetchdata->fetch_transaction_By_USER(" status = 'consider' ");
           if( mysqli_num_rows($sql) ){
            
           while($row = mysqli_fetch_array($sql)) { 
