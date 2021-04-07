@@ -66,7 +66,7 @@ function validateForm() {
       <tbody>
       <tr>
         <th scope="row"><?php echo $row['firstname'];?></th>
-        <td><a href="approve.php?userid=<?php echo $row['firstname'];?>">รายละเอียด</a></td>
+        <td><a href="approve.php?userid=<?php echo $row['user_id'];?>">รายละเอียด</a></td>
       </tr>
       </tbody>
       <?php }
