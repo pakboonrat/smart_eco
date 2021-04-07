@@ -6,6 +6,8 @@
     } elseif ($_SESSION['user_type'] == "AUDITOR") {
     include_once('function.php');
 
+	$user_id = $_GET["userid"] ;
+
 ?>
 <html lang="en" class="pc chrome88 js">
 <head>
@@ -48,46 +50,69 @@ function validateForm() {
     </header>
   <div class="content-columns">
     <?php    if($_SESSION['user_type']=="AUDITOR"){ ?>     
-			<div class="col">    
-				<div class="item"><B>1. มีการประกาศนโยบายการพัฒนานิคมอุตสาหกรรมตามแนวคิดหลักการ Eco โดยมุ่งเน้นสู่เป้าหมายอย่างชัดเจน 
-<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
-				</B></div>    
-					<div class="collapse" id="collapseExample">
-					<div class="item2">                                         
-						  <div class="card">
-									<div class="card-header" id="headingOne">
-									<p class="mb-0">1. นโยบายการพัฒนานิคมอุตสาหกรรม <br>
-									  </p>
-									<table width="95%" border="0" cellspacing="1" cellpadding="1">
-									  <tr>
-									    <td width="25%" height="15">รายละเอียด :</td>
-									    <td width="75%" height="15">รายละเอียดจาก user นิคม</td>
-								      </tr>
-									  <tr>
-									    <td height="15">ไฟล์แนบ :</td>
-									    <td height="15">aaaaaaaa.pdf</td>
-								      </tr>
-									  <tr>
-									    <td>ข้อคิดเห็น :</td>
-									    <td><textarea name="comment" id="comment" cols="40" rows="4" style="overflow:hidden"></textarea></td>
-								      </tr>
-                                      <tr>
-									    <td width="25%" height="10"></td>
-									    <td width="75%" height="10"></td>
-								      </tr>
-									  <tr>
-									    <td><input type="submit" name="approve" id="approve" value="ผ่านอนุมัติ"></td>
-									    <td><input type="submit" name="approve2" id="approve2" value="&nbsp;Reject&nbsp;"></td>
-								      </tr>
-									  </table>
-									<p class="mb-0"><br>
-									  
-									  </p>
-									</div>
-						  </div>
-					</div>
-					</div>
-					
+			<div class="col">
+			<?php 
+				$fetchdata = new DB_con();
+				$sql = $fetchdata->fetch_transaction_list_level($user_id);
+				if( mysqli_num_rows($sql) != 0 ){
+				 
+				while($row = mysqli_fetch_array($sql)) { 
+			   ?>   
+				<div class="item">
+					<B><?php echo $row['sub_lebel'];?> 
+						<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
+					</B>
+				</div>
+				
+				  
+				<div class="collapse" id="collapseExample<?php echo $row['level_id'];?>">
+					<?php 
+					$fetchdata2 = new DB_con();
+					$sql2 = $fetchdata->fetch_transaction_list_level2($user_id);
+					if( mysqli_num_rows($sql2) != 0 ){
+					 
+					while($row_list = mysqli_fetch_array($sql2)) { 
+				?>  
+						<div class="item2">                                         
+							<div class="card">
+										<div class="card-header" id="headingOne">
+										<p class="mb-0"><?php echo $row['list_label'];?> <br>
+										</p>
+										<table width="95%" border="0" cellspacing="1" cellpadding="1">
+										<tr>
+											<td width="25%" height="15">รายละเอียด :</td>
+											<td width="75%" height="15">รายละเอียดจาก user นิคม</td>
+										</tr>
+										<tr>
+											<td height="15">ไฟล์แนบ :</td>
+											<td height="15">aaaaaaaa.pdf</td>
+										</tr>
+										<tr>
+											<td>ข้อคิดเห็น :</td>
+											<td><textarea name="comment" id="comment" cols="40" rows="4" style="overflow:hidden"></textarea></td>
+										</tr>
+										<tr>
+											<td width="25%" height="10"></td>
+											<td width="75%" height="10"></td>
+										</tr>
+										<tr>
+											<td><input type="submit" name="approve" id="approve" value="ผ่านอนุมัติ"></td>
+											<td><input type="submit" name="approve2" id="approve2" value="&nbsp;Reject&nbsp;"></td>
+										</tr>
+										</table>
+										<p class="mb-0"><br>
+										
+										</p>
+										</div>
+							</div>
+						</div>
+						<?php 
+					}; } ?>
+				</div>
+
+			<?php 
+				
+			}; } ?>	
 				<div class="item"><B>2. นิคมอุตสาหกรรมรับแนวคิดหลักการ Eco มาประยุกต์ใช้ โดยมีการจัดตั้งคณะทำงาน Eco (Eco Team)...
 <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample2" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
 				</B></div>  

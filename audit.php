@@ -60,7 +60,7 @@ function validateForm() {
     <?php 
           $fetchdata = new DB_con();
           $sql = $fetchdata->fetch_transaction_By_USER(" status = 'consider' ");
-          if( mysqli_num_rows($sql) ){
+          if( mysqli_num_rows($sql) != 0 ){
            
           while($row = mysqli_fetch_array($sql)) { 
       ?>
