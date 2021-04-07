@@ -191,8 +191,8 @@
             return $up_tran_status;
         }
 
-        public function fetch_transaction_By_USER() {
-            $fetch = mysqli_query($this->dbcon, "SELECT * FROM `user` , transaction WHERE TRIM(transaction.user_id) = trim(user.user_id)");
+        public function fetch_transaction_By_USER($search_text) {
+            $fetch = mysqli_query($this->dbcon, "SELECT distinct user.user_id ,firstname,surname FROM `user` , transaction WHERE TRIM(transaction.user_id) = trim(user.user_id) AND $search_text ");
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
         }
