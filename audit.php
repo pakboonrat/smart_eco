@@ -53,6 +53,7 @@ function validateForm() {
         <tr>
           <th scope="col-lg-2 col-md-4 ">ชื่อนิคม</th>
         <!-- <th width="32%" align="center">ชื่อนิคม</th> -->
+        <th scope="col-lg-1 col-md-2"></th>
         <th scope="col-lg-4 col-md-5">รอตรวจประเมิน</th>
         </tr>
     </thead>
@@ -66,6 +67,7 @@ function validateForm() {
       <tbody>
       <tr>
         <th scope="row"><?php echo $row['firstname'];?></th>
+        <td><?php echo $row['surname'];?></td>
         <td><a href="approve.php?userid=<?php echo $row['user_id'];?>">รายละเอียด</a></td>
       </tr>
       </tbody>
