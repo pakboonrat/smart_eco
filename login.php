@@ -19,7 +19,7 @@
             //echo "<script>alert('Login Successful!');</script>";
             if( strtoupper($_SESSION['user_type']) == "ADMIN" ){
               echo "<script>window.location.href='eco_level.php'</script>";
-            }elseif (strtoupper($_SESSION['user_type']) == "AUDIT" ) {
+            }elseif (strtoupper($_SESSION['user_type']) == "AUDITOR" ) {
               echo "<script>window.location.href='audit.php'</script>";
             }elseif (strtoupper($_SESSION['user_type']) == "USER" ) {
               echo "<script>window.location.href='eco_level.php'</script>";
