@@ -93,6 +93,12 @@
             //echo "INSERT INTO user(username,password, email,user_type, firstname, surname , active ) VALUES('$username' ,'$password' ,'$email' ,'$user_type', '$firstname', '$surname', $active)" ;
             return $reg;
         }
+        // เพิ่ม level แบบ set_lebel = Guidelines ต้องมี TYPE ด้วยในการ insert 
+        public function insertlevel2($level_label ,$year_set ,$set_lebel ,$sub_lebel , $level_type) {
+            $reg = mysqli_query($this->dbcon, "INSERT INTO level(level_label ,year_set ,set_lebel ,sub_lebel,type ) VALUES('$level_label' ,'$year_set' ,'$set_lebel' ,'$sub_lebel','$level_type')");
+            //echo "INSERT INTO user(username,password, email,user_type, firstname, surname , active ) VALUES('$username' ,'$password' ,'$email' ,'$user_type', '$firstname', '$surname', $active)" ;
+            return $reg;
+        }
 
         public function insertscore($level_id ,$point ,$score_des ) {
             $reg = mysqli_query($this->dbcon, "INSERT INTO score(level_id ,point ,score_des  ) VALUES('$level_id' ,'$point' ,'$score_des' )");
@@ -184,6 +190,14 @@
             $up_tran_status = mysqli_query($this->dbcon, "UPDATE `user_add` SET `status`='consider' WHERE `user_id` = $user_id");
             return $up_tran_status;
         }
+
+        public function fetch_transaction_By_USER($search_text) {
+            $fetch = mysqli_query($this->dbcon, "SELECT distinct user.user_id ,firstname,surname FROM `user` , transaction WHERE TRIM(transaction.user_id) = trim(user.user_id) AND $search_text ");
+            return $fetch;
+			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
+        }
+
+        
     }
 
 ?>

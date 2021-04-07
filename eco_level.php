@@ -7,46 +7,22 @@
 
 
     include_once('function.php');
-      
-    if (isset($_POST['submit']) && ($_POST['submit']== "add-level")) {
-      
-        
+
+    if (isset($_POST['submit'])) {
+              
         $level_label = $_POST['level_label'];
         $year_set = $_POST['year_set'];
         $set_lebel = $_POST['set_lebel'];
         $sub_lebel = $_POST['sub_lebel'];
-        
-        if( isset($_POST['set_lebel']) and ( trim($_POST['set_lebel']) == "basic")  ) {
-          
-          $updatedata = new DB_con();
-          $sql = $updatedata->insertlevel($level_label, $year_set, $set_lebel, $sub_lebel);
-          print_r($sql);
-          if ($sql) {
-              echo "<script>alert('Updated Successfully!');</script>";
-              echo "<script>window.location.href='index.php'</script>";
-          } else {
-              echo "<script>alert('Something went wrong! Please try again!');</script>";
-              echo "<script>window.location.href='update.php'</script>";
-          }
-
-
-        }elseif( isset($_POST["set_lebel"]) && ( trim($_POST['set_lebel']) == "Guidelines") ) {
-
-          $level_type = $_POST['level_type'];
-
-          $updatedata = new DB_con();
-          $sql = $updatedata->insertlevel2($level_label, $year_set, $set_lebel, $sub_lebel ,$level_type );
-          print_r($sql);
-          if ($sql) {
-              echo "<script>alert('Updated Successfully!');</script>";
-              echo "<script>window.location.href='index.php'</script>";
-          } else {
-              echo "<script>alert('Something went wrong! Please try again!');</script>";
-              echo "<script>window.location.href='update.php'</script>";
-          }
-
-        }else{ echo json_encode( ( ($_POST['set_lebel'] == "basic")  )) ; }
-        
+        $updatedata = new DB_con();
+        $sql = $updatedata->insertlevel($level_label, $year_set, $set_lebel, $sub_lebel);
+        if ($sql) {
+            echo "<script>alert('Updated Successfully!');</script>";
+            echo "<script>window.location.href='index.php'</script>";
+        } else {
+            echo "<script>alert('Something went wrong! Please try again!');</script>";
+            echo "<script>window.location.href='update.php'</script>";
+        }
     }
 
     if (isset($_POST['score'])) {
@@ -65,8 +41,35 @@
             // echo "<script>window.location.href='update.php'</script>";
         }
     }
-
-    //------------start upload file--------------
+	//---------------delete file in transaction-------------
+		$edit_type = $_GET['edit'];
+		$transaction_id = $_GET['tran_id'];
+		if ($edit_type == "delete") {
+			include_once('function.php');
+			$deltransaction = new DB_con();
+			$sql = $deltransaction->del_transaction($transaction_id);
+			 echo "<script>alert('ลบมูลเรียบร้อย !');</script>";
+		};
+	//---------------delete file in user_add-------------
+		$edit_type = $_GET['edit'];
+		$transaction_id = $_GET['add_id'];
+		if ($edit_type == "del_useradd") {
+			include_once('function.php');
+			$deluseradd = new DB_con();
+			$sql = $deluseradd->del_useradd($transaction_id);
+			 echo "<script>alert('ลบมูลเรียบร้อย !');</script>";
+		};
+	//--------------send to approve-------------------------
+		$edit_type = $_GET['edit'];
+		if ($edit_type == "sendapprove") {
+			include_once('function.php');
+			$updatetran_status = new DB_con();
+			$sql = $updatetran_status->update_transaction($_SESSION['id']);
+			$updateuseradd_status = new DB_con();
+			$sql = $updateuseradd_status->update_useradd($_SESSION['id']);
+			 echo "<script>alert('ส่งพิจารณาเรียบร้อย !');</script>";
+		};
+    //------------start upload file-------------------------
 		$message = ''; 
 		if (isset($_POST['uploadBtn']) && $_POST['uploadBtn'] == 'บันทึกข้อมูล')
 		{
@@ -81,7 +84,8 @@
 			$fileExtension = strtolower(end($fileNameCmps));
 			$subject = 	$_POST['subject'];
 			$description = 	$_POST['description'];
-      $level_id = $_POST['level_id'];
+			$user_id = $_POST['user_id'];
+			$list_id = $_POST['list_id'];
 			$now  = new DateTime;
 			$savedate = $now->format( 'Y-m-d' );
 						
@@ -91,10 +95,9 @@
 			// insert into database
 			include_once('function.php'); 
 			$insert_filedb = new DB_con();
-                                  // $level_id, $user_id , $list_label, $remark, $ori_filename, $filename, $savedate
-			$inserttodb = $insert_filedb->user_uploadfile($level_id , $_SESSION['id'],$subject, $description , $fileName, $newFileName, $savedate);
+			// $level_id, $user_id , $list_label, $remark, $ori_filename, $filename, $savedate
+			$inserttodb = $insert_filedb->insert_transaction($user_id, $list_id, $description , $fileName, $newFileName, $savedate);
 			mysqli_fetch_array($inserttodb);
-
 
 			// check if file has one of the following extensions
 			$allowedfileExtensions = array('jpg', 'gif', 'png', 'zip', 'txt', 'xls', 'doc', 'pdf', 'xlsx', 'docx');
@@ -108,7 +111,10 @@
 			  if(move_uploaded_file($fileTmpPath, $dest_path)) 
 			  {
 				$message ='File is successfully uploaded.';
-				echo "<script>window.location.href='/database.php?yearsel=".date("Y")."'</script>";
+				echo "<script>alert('File is successfully uploaded.');</script>";
+				if ($_POST['typeof_rule']=="Guidelines") {
+				echo "<script>window.location.href='/eco_level.php?level_label=eco_champion&set_lebel=Guidelines'</script>";
+				} else {echo "<script>window.location.href='/eco_level.php?level_label=eco_champion'</script>";};
 			  }
 			  else 
 			  {
@@ -127,10 +133,77 @@
 		  }
 		}
 		$_SESSION['message'] = $message;
+		
 		//-----------------end upload---------------- 
+	
+		//------------start user manual add upload file-------------------------
+		$message = ''; 
+		if (isset($_POST['useradd']) && $_POST['useradd'] == 'เพิ่มข้อมูล')
+		{
+		  if (isset($_FILES['uploadedFile']) && $_FILES['uploadedFile']['error'] === UPLOAD_ERR_OK)
+		  {
+			
+			// get details of the uploaded file
+			$fileTmpPath = $_FILES['uploadedFile']['tmp_name'];
+			$fileName = $_FILES['uploadedFile']['name'];
+			$fileSize = $_FILES['uploadedFile']['size'];
+			$fileType = $_FILES['uploadedFile']['type'];
+			$fileNameCmps = explode(".", $fileName);
+			$fileExtension = strtolower(end($fileNameCmps));
+			$subject = 	$_POST['subject'];
+			$description = 	$_POST['description'];
+			$user_id = $_POST['user_id'];
+			$score_id = $_POST['score_id'];;
+			$level_id = $_POST['level_id'];
+			$now  = new DateTime;
+			$savedate = $now->format( 'Y-m-d' );
+						
+			// sanitize file-name
+			$newFileName = md5(time() . $fileName) . '.' . $fileExtension;
 
-    
+			// insert into database user_add
+			include_once('function.php'); 
+			$insert_filedb = new DB_con();
+			// `level_id`, `score_id`, `user_id`, `list_label`, `remark`, `status`, `ori_filename`, `save_filename`, `save_date`
+			$inserttodb = $insert_filedb->user_uploadfile($level_id, $score_id, $user_id,  $subject, $description , $fileName, $newFileName, $savedate);
+			mysqli_fetch_array($inserttodb);
 
+			// check if file has one of the following extensions
+			$allowedfileExtensions = array('jpg', 'gif', 'png', 'zip', 'txt', 'xls', 'doc', 'pdf', 'xlsx', 'docx');
+
+			if (in_array($fileExtension, $allowedfileExtensions))
+			{
+			  // directory in which the uploaded file will be moved
+			  $uploadFileDir = './useraddfile/';
+			  $dest_path = $uploadFileDir . $newFileName;
+
+			  if(move_uploaded_file($fileTmpPath, $dest_path)) 
+			  {
+				$message ='File is successfully uploaded.';
+				echo "<script>alert('File is successfully uploaded.');</script>";
+				if ($_POST['typeof_rule']=="Guidelines") {
+				echo "<script>window.location.href='/eco_level.php?level_label=eco_champion&set_lebel=Guidelines'</script>";
+				} else {echo "<script>window.location.href='/eco_level.php?level_label=eco_champion'</script>";};
+			  }
+			  else 
+			  {
+				$message = 'There was some error moving the file to upload directory. Please make sure the upload directory is writable by web server.';
+			  }
+			}
+			else
+			{
+			  $message = 'Upload failed. Allowed file types: ' . implode(',', $allowedfileExtensions);
+			}
+		  }
+		  else
+		  {
+			$message = 'There is some error in the file upload. Please check the following error.<br>';
+			$message .= 'Error:' . $_FILES['uploadedFile']['error'];
+		  }
+		}
+		$_SESSION['message'] = $message;
+		
+		//-----------------end upload---------------- 
 
 ?>
 <html lang="en" class="pc chrome88 js">
@@ -202,15 +275,10 @@ $('#collapseOne').collapse({
 			else {
 				  echo "หลักเกณฑ์การขอรับรองการเป็นเมืองอุตสาหกรรมเชิงนิเวศ";
 				}
-			
 			?>
           
         </a>
         <?php $active_class=""; } ?>
-        <a href="score_add.php" >
-          เพิ่มเกณฑ์
-          
-        </a>
       </nav>
       
     </header>
@@ -230,410 +298,460 @@ $('#collapseOne').collapse({
           while($row = mysqli_fetch_array($sql)) {
             $level_label = $row['level_label'] ;
       ?>
-            <div class="col" >
+            <div>
             <!-- <div class="item"><h2><?php echo "==================".$row['set_lebel']; ?></h2></div> -->
-            <div class="item"><?php echo $row['sub_lebel']; ?> 
+            <div class="item"><B><?php echo $row['sub_lebel']; ?></B> 
                 <?php if($_SESSION['user_type']!="USER") { ;?>
                 <div class="item-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" alt="แก้ไข" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                         <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"></path>
                         <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"></path>
-                        </svg> | < ลบ >
+                        </svg> 
                 </div>
                 
                 <?php } ?>
-                </div>
+                
 
                 <?php 
                 // ถ้าอิงคะแนน ต้องดึง จาก Table score ก่อน
-                
                 if( $row['type'] == 'measure' ){
                     ?>
                     <div class="item2">
                         <?php
-                        echo "<p><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" class=\"bi bi-award-fill\" viewBox=\"0 0 16 16\">
-                        <path d=\"m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864 8 0z\"></path>
-                        <path d=\"M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z\"></path>
-                        </svg>".$row['type']."</p>";
+						if ($row['type']=="control") {
+							$typeof_rule = "เกณฑ์บังคับ";
+						} else {$typeof_rule = "เกณฑ์คะแนน";};
+                        echo "<p>".$typeof_rule."</p>";
                         $fetchdata3 = new DB_con();
-                        
+                        //echo "level_ID :".$row['level_id'];
                         $sql3 = $fetchdata3->fetch_score($row['level_id']);
                         if( $sql3 !="" ){ 
                         ?>
-                            <div class="item2">
-                                <form>
-                                    <?php 
-                                    while($row_score = mysqli_fetch_array($sql3)) {
-                                    ?>
-                                    
-                                    <div class="form-row">
-                                        <div>
-                                        <div contentEditable='true' class='edit' id='point___<?php echo $row_score['score_id']; ?>' name='point___<?php echo $row_score['point']; ?>'></div> 
-                                        <input type="text" class="form-control" placeholder="scroe" value="<?php echo $row_score['point']; ?>">
-                                        </div>
-                                        <div>
-                                        <input type="text" class="form-control" placeholder="คำอธิบาย" value="<?php echo $row_score['score_des']; ?>">
-                                        </div>
-                                    </div>
-                                    <?php } ?>
-                                </form>
-                            </div>
+							<div class="card">
+								<?php //-----------------start write score_id on web-----------------
+								while($row_score = mysqli_fetch_array($sql3)) {
+								?>
+									<?php //echo $row['level_id']; ?><?php //echo $row_score['score_id']; ?>
+									<div class="card">
+										<div class="card-header" id="headingOne">
+											  <h5 class="mb-0">
+												<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>" aria-expanded="true" aria-controls="collapseOne">ส่งข้อมูลเกณฑ์คะแนน #<?php echo $row_score['score_des']; ?>
+												</button>
+											  </h5>
+										</div>
+										<div id="collapseOne<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>">  
+										  <div class="card-body">
+											<?php $fetchdata4 = new DB_con();
+											$sql4 = $fetchdata4->select_listby_score($row['level_id'],$row_score['score_id']);
+											while($row_oflist = mysqli_fetch_array($sql4)) {
+												
+											//echo $row_oflist['list_label'];?>
+											<?php 	include_once('function.php'); 
+													$transactiondata = new DB_con();
+													$result = $transactiondata->selecttransaction($_SESSION['id'], $row_oflist['list_id']);
+													$transactionfile = mysqli_fetch_array($result);
+													if ($transactionfile == 0) 
+													{?>
+													<div class="card">
+													
+														<div class="card-header" id="headingOne">
+														<?php echo $row_oflist['list_label'];
+														//----------------show evidence in each of score-----------?>
+														<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">>></button>
+														</div>
+														<div id="collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">
+															<div class="card-body">
+															  <form name="myForm" method="POST" action="eco_level.php" enctype="multipart/form-data">
+																	  <div class="item2">
+																		<table width="100%" border="0" cellspacing="1" cellpadding="1">
+																		  <tr>
+																			<td width="200" align="right" valign="top"><p style="font-size:14px;">รายละเอียด :&nbsp;&nbsp;</p></td>
+																			<td width="913"><label for="description"></label>
+																			&nbsp;<textarea name="description" id="description" cols="50" rows="5"style="overflow:hidden"></textarea></td>
+																		  </tr>
+																		  <tr>
+																			<td height="30" align="right"><span><font style="font-size:14px;">เลือกไฟล์&nbsp;:&nbsp;</font></span>&nbsp;</td>
+																			<td height="30">&nbsp;&nbsp;<input type="file" name="uploadedFile" /></td>
+																		  </tr>
+																		</table>
+																		<input name="user_id" type="hidden" id="user_id" value="<?php echo $_SESSION['id'];?>">
+																		<input name="list_id" type="hidden" id="list_id" value="<?php echo $row_oflist['list_id'];?>">
+																		<input name="typeof_rule" type="hidden" id="typeof_rule" value="<?php echo $_GET['set_lebel'];?>">
+																	  </div>&nbsp;&nbsp;&nbsp;<input type="submit" name="uploadBtn" value="บันทึกข้อมูล" />
+																</form>
+															</div>
+														</div>
+														
+													</div>
+													<?php } else {//-----------if found in transaction------------ ?>
+													
+													<div class="card">
+													
+														<div class="card-header" id="headingOne" style="background-color: lightblue">
+														<?php echo $row_oflist['list_label'];
+														//----------------show evidence in each of score-----------?>
+														<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">&nbsp;<font style="font-size:14px;color:#0A910D;">(สถานะ&nbsp;:&nbsp;
+													<?php if (($transactionfile['status'])=="save") {echo "บันทึก";} 
+													elseif (($transactionfile['status'])=="consider") {echo "รอพิจารณา";} 
+													else {echo "-";}?>&nbsp;เมื่อ :&nbsp;
+													<?php //echo $transactionfile['save_date'];
+													$str_date = date("j",strtotime($transactionfile['save_date']));
+													$str_Year = date("Y",strtotime($transactionfile['save_date']))+543;
+													$str_Month = date("n",strtotime($transactionfile['save_date']));
+													$strMonthCut = Array("","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.");
+													$strMonthThai=$strMonthCut[$str_Month];
+													echo $str_date."-".$strMonthThai."-".$str_Year;?>)</font>&nbsp;>></button>
+														</div>
+														<div id="collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">
+															<div class="card-body">
+																<table width="100%" border="0" cellspacing="1" cellpadding="1">
+																	  <tr>
+																		<td width="200" align="right" valign="top"><p style="font-size:14px;">รายละเอียด :&nbsp;&nbsp;</p></td>
+																		<td width="913"><p style="font-size:14px;">
+																			&nbsp;<?php echo $transactionfile['remark'];?></p></td>
+																	  </tr>
+																	  <tr>
+																		<td height="30" align="right"><span><font style="font-size:14px;">ไฟล์แนบ&nbsp;:&nbsp;</font></span>&nbsp;</td>
+																		<td height="30">&nbsp;&nbsp;<a href="useraddfile/<?php echo $transactionfile['save_filename']; ?>" target="_blank" style="text-decoration: none"><?php echo $transactionfile['ori_filename'];?></a>&nbsp;<a href="eco_level.php?level_label=eco_champion&edit=delete&tran_id=<?php echo $transactionfile['t_id'];?>&set_lebel=<?php echo $_GET['set_lebel'];?>" onClick="return confirm('คุณยืนยันที่จะลบข้อมูล?');"><img src="images/delete.gif" width="30" height="26"><font style="font-size:16px;">&nbsp;ลบข้อมูล</font></a></td>
+																	  </tr>
+																</table>
+															</div>
+														</div>
+														
+													</div>	
+														
+													<?php;}//-----------end check data in transaction----------------?>	
+												
+											<?php }?>
+										  </div> 
+										  <?php //------------------select from user manual add in each score-------?>
+										  <?php  //---------------------select from user manual add--------------- 
+												$fetchdata_user = new DB_con();
+												$level_id = $row['level_id'];
+												$score_id = $row_score['score_id'];
+												$sql_useradd = $fetchdata_user->fetch_useradd($level_id,$_SESSION['id'],$score_id);
+												
+												while($useradd_list = mysqli_fetch_array($sql_useradd)) {
+												
+											?><div class="item">
+											<div class="card-header" style="background-color: lightblue">
+												<table width="100%" border="0" cellspacing="1" cellpadding="1">
+														<tr>
+															<td width="100" align="right" valign="top"><p style="font-size:14px;">หัวข้อ :&nbsp;&nbsp;</p></td>
+															<td width="408"><p style="font-size:14px;">
+																&nbsp;<?php echo $useradd_list['list_label'];?></p></td>
+															<td width="620" align="right"><p style="font-size:14px;color:#0A910D;">&nbsp;(สถานะ&nbsp;:&nbsp;
+													<?php if (($useradd_list['status'])=="save") {echo "บันทึก";} 
+													elseif (($useradd_list['status'])=="consider") {echo "รอพิจารณา";} 
+													else {echo "-";}?>&nbsp;เมื่อ :&nbsp;
+													<?php //------------------change to Thaidate-----------------
+													$str_date = date("j",strtotime($useradd_list['save_date']));
+													$str_Year = date("Y",strtotime($useradd_list['save_date']))+543;
+													$str_Month = date("n",strtotime($useradd_list['save_date']));
+													$strMonthCut = Array("","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.");
+													$strMonthThai=$strMonthCut[$str_Month];
+													echo $str_date."-".$strMonthThai."-".$str_Year;?>)</p></td>
+														</tr>
+														<tr>
+															<td width="100" align="right" valign="top"><p style="font-size:14px;">รายละเอียด :&nbsp;&nbsp;</p></td>
+															<td colspan="2"><p style="font-size:14px;">
+																&nbsp;<?php echo $useradd_list['remark'];?></p></td>
+														</tr>
+														<tr>
+															<td height="30" align="right"><span><font style="font-size:14px;">ไฟล์แนบ&nbsp;:&nbsp;</font></span>&nbsp;</td>
+															<td height="30" colspan="2">&nbsp;&nbsp;<a href="useraddfile/<?php echo $useradd_list['save_filename'];?>" target="_blank" style="text-decoration: none"><?php echo $useradd_list['ori_filename'];?></a>&nbsp;<a href="eco_level.php?level_label=eco_champion&edit=del_useradd&add_id=<?php echo $useradd_list['add_id'];?>&set_lebel=<?php echo $_GET['set_lebel'];?>" onClick="return confirm('คุณยืนยันที่จะลบข้อมูล?');"><img src="images/delete.gif" width="30" height="26"><font style="font-size:16px;">&nbsp;ลบข้อมูล</font></a></td>
+														 </tr>
+												</table>
+                                            </div>
+											</div>
+                                              
+									<?php }; //---------------------end select from user manual add---------------  ?>
+										  
+										  
+										  <?php //-----------------end select from user manual score--------
+												//---------------add manual score evidence----------- 
+												if (strtoupper($_SESSION['user_type']) == "USER"){
+										?>
+										  
+												<button class="btn-info" data-toggle="collapse"
+													aria-expanded="false"
+													aria-controls="collapseExample"
+													data-target="#collapseExample<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">+เพิ่มหลักฐานอื่นๆ</button>
+												<form name="myForm" method="POST" action="eco_level.php" enctype="multipart/form-data">
+													<div class="collapse" id="collapseExample<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">                                
+													  <div class="item2">
+																<p class="mb-0">
+																  <table width="90%" border="0" cellspacing="1" cellpadding="1">
+																  <tr>
+																	<td width="23%" height="30" align="right" ><p style="font-size:16px;">เรื่อง :&nbsp;&nbsp;</p></td>
+																	<td width="77%" height="30"><label for="subject"></label>
+																	  &nbsp;<input name="subject" type="text" id="subject2" size="47"><font color="#CC0000">**</font></td>
+																  </tr>
+																  <tr>
+																	<td align="right" valign="top"><p style="font-size:16px;">รายละเอียด :&nbsp;&nbsp;</p></td>
+																	<td><label for="description"></label>
+																	  &nbsp;<textarea name="description" id="description" cols="50" rows="5"style="overflow:hidden"></textarea></td>
+																  </tr>
+																  <tr>
+																	<td height="30" align="right"><span><font style="font-size:16px;">เลือกไฟล์&nbsp;:&nbsp;</font></span>&nbsp;</td>
+																	<td height="30">&nbsp;&nbsp;<input type="file" name="uploadedFile" /></td>
+																  </tr>
+																<tr>
+																	<td height="10" colspan="2">
+																	<input id="level_id" name="level_id" type="hidden" value="<?php echo $row['level_id']; ?>">
+																	<input name="user_id" type="hidden" id="user_id" value="<?php echo $_SESSION['id'];?>">
+																	<input name="score_id" type="hidden" id="typeof_rule" value="<?php echo $row_score['score_id'];?>">
+																	<input name="typeof_rule" type="hidden" id="typeof_rule" value="<?php echo $_GET['set_lebel'];?>"></td>
+																	</tr>
+																	<tr>
+																	<td height="30" align="right"><span><font style="font-size:16px;">&nbsp;</font></span>&nbsp;</td>
+																	<td height="30"><input type="submit" name="useradd" value="เพิ่มข้อมูล" /></td>
+																  </tr>
+																</table>
+																  </p>
+													  </div>
+													</div>
+												</form>
+											
+											<?php };//---------------end add manual score evidence-----------?>
+										</div>
+									  </div>
+									
+								<?php } ?>
+							</div>
+							
                         <?php };?>
-                    
-                        <form method="post">
-                            <div class="form-row">
-                                <div >
-                                    <input name="point" id="point"  type="text" class="form-control" placeholder="scroe" >
-                                </div>
-                                <div >
-                                    <input name="score_des" id="score_des"  type="text" class="form-control" placeholder="คำอธิบาย" >
-                                </div>
-                                <input id="level_id" name="level_id" type="hidden" value="<?php echo $row['level_id']; ?> ">
-                                <button type="submit" name="score" id="score" class="badge bg-primary btn btn-success" >save</button>
-                            </div>
-                        </form>
                     </div>
                 
                 <?php 
                 }else{
-                    //-------control  
+                    //-------control---------------
                     if( $row['type'] == 'control' ){
-                        echo "<p>".$row['type']."</p>";
+                        echo "<div class='item2'><p>เกณฑ์บังคับ</p>";
                     }
-
                         $fetchdata2 = new DB_con();
                         $sql2 = $fetchdata2->fetch_list($row['level_id']);
                         if( $sql2 != '' ){
-                            ?> <div class="item2"> <?php 
+                            ?>  <?php 
                                     
-                                    while($row_list = mysqli_fetch_array($sql2)) {
-                                    ?>
+                                    while($row_list = mysqli_fetch_array($sql2)) {?>
                                         
                                             <?php if($_SESSION['user_type']=="ADMIN"){ 
                                             //  Admin จะเป็นกล่องสำหรับแก้ไขได้     ?>
                                             <div contentEditable='true' class='edit' id='list_label_<?php echo $row_list['list_id']; ?>' name='list_label_<?php echo $row_list['list_id']; ?>'><?php echo $row_list['list_label']; ?></div> 
                                             <?php }else{ ?>
-                                                <!-- <div  id='list_label_<?php // echo $row_list['list_id']; ?>' name='list_label_<?php // echo $row_list['list_id']; ?>'><?php //echo $row_list['list_label']; ?></div> -->
-                                                
-
+                                                                                              
+											
                                             <div id="accordion<?php echo $row_list['list_id'];?>">
+												<?php //---------------select transaction if found show file/delete/change color-----------
+												    include_once('function.php'); 
+    												$transactiondata = new DB_con();
+													$result = $transactiondata->selecttransaction($_SESSION['id'], $row_list['list_id']);
+													$transactionfile = mysqli_fetch_array($result);
+													 if ($transactionfile == 0) {
+												?>
+												
                                                 <div class="card">
                                                     <div class="card-header" id="headingOne">
-                                                    <p class="mb-0"> <?php echo $row_list['list_label']; ?>
+                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?>
+<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
+                  >></button>
+                                                    </p>
+                                                    </div>
+                                                    <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
+													<div class="card-body">
+                                       				  <form name="myForm" method="POST" action="eco_level.php" enctype="multipart/form-data">
+															  <div class="item2">
+																<table width="100%" border="0" cellspacing="1" cellpadding="1">
+																  <tr>
+																	<td width="200" align="right" valign="top"><p style="font-size:14px;">รายละเอียด :&nbsp;&nbsp;</p></td>
+																	<td width="913"><label for="description"></label>
+																    &nbsp;<textarea name="description" id="description" cols="50" rows="5"style="overflow:hidden"></textarea></td>
+																  </tr>
+																  <tr>
+																	<td height="30" align="right"><span><font style="font-size:14px;">เลือกไฟล์&nbsp;:&nbsp;</font></span>&nbsp;</td>
+																	<td height="30">&nbsp;&nbsp;<input type="file" name="uploadedFile" /></td>
+																  </tr>
+																</table>
+																<input name="user_id" type="hidden" id="user_id" value="<?php echo $_SESSION['id'];?>">
+																<input name="list_id" type="hidden" id="list_id" value="<?php echo $row_list['list_id'];?>">
+																<input name="typeof_rule" type="hidden" id="typeof_rule" value="<?php echo $_GET['set_lebel'];?>">
+															  </div>&nbsp;&nbsp;&nbsp;<input type="submit" name="uploadBtn" value="บันทึกข้อมูล" />
+														</form>
+                                                    </div>
+												
+                                                    </div>
+                                                </div>
+													 
+											<?php } else { //--------------found show file/delete/change color-----------?>
+												<div class="card">
+                                                    <div class="card-header" id="headingOne" style="background-color: lightblue">
+                                                    <p class="mb-0"> <?php echo $row_list['list_label']; ?>&nbsp;<font style="font-size:14px;color:#0A910D;">(สถานะ&nbsp;:&nbsp;
+													<?php if (($transactionfile['status'])=="save") {echo "บันทึก";} 
+													elseif (($transactionfile['status'])=="consider") {echo "รอพิจารณา";} 
+													else {echo "-";}?>&nbsp;เมื่อ :&nbsp;
+													<?php //echo $transactionfile['save_date'];
+													$str_date = date("j",strtotime($transactionfile['save_date']));
+													$str_Year = date("Y",strtotime($transactionfile['save_date']))+543;
+													$str_Month = date("n",strtotime($transactionfile['save_date']));
+													$strMonthCut = Array("","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.");
+													$strMonthThai=$strMonthCut[$str_Month];
+													echo $str_date."-".$strMonthThai."-".$str_Year;?>)</font>
                                                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
                                                         >>
                                                         </button>
                                                     </p>
                                                     </div>
-
                                                     <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
-                                                    <div class="card-body">
-                                                        <form method="POST" enctype="multipart/form-data">
-                                                            <div class="form-group">
-                                                                <input type="text" id="transaction_<?php echo $row_list['list_id'];?>">
-                                                                <label for="File">File</label>
-                                                                <!-- Preview-->
-                                                                <div id='preview'></div>
-                                                                
-                                                                <input type="file" class="form-control-file" name="uploadedFile">
-                                                                <input type="submit" name="uploadBtn" value="บันทึกข้อมูล" />
-                                                                
-                                                            </div>
-                                                        </form>
-                                                    </div>
+														<div class="card-body">
+														  <form name="myForm" method="POST" action="eco_level.php" enctype="multipart/form-data">
+																  <div class="item2">
+																	<table width="100%" border="0" cellspacing="1" cellpadding="1">
+																	  <tr>
+																		<td width="200" align="right" valign="top"><p style="font-size:14px;">รายละเอียด :&nbsp;&nbsp;</p></td>
+																		<td width="913"><p style="font-size:14px;">
+																			&nbsp;<?php echo $transactionfile['remark'];?></p></td>
+																	  </tr>
+																	  <tr>
+																		<td height="30" align="right"><span><font style="font-size:14px;">ไฟล์แนบ&nbsp;:&nbsp;</font></span>&nbsp;</td>
+																		<td height="30">&nbsp;&nbsp;<a href="useraddfile/<?php echo $transactionfile['save_filename']; ?>" target="_blank" style="text-decoration: none"><?php echo $transactionfile['ori_filename'];?></a>&nbsp;<a href="eco_level.php?level_label=eco_champion&edit=delete&tran_id=<?php echo $transactionfile['t_id'];?>&set_lebel=<?php echo $_GET['set_lebel'];?>" onClick="return confirm('คุณยืนยันที่จะลบข้อมูล?');"><img src="images/delete.gif" width="30" height="26"><font style="font-size:16px;">&nbsp;ลบข้อมูล</font></a></td>
+																	  </tr>
+																	</table>
+																  </div>&nbsp;&nbsp;&nbsp;<input type="submit" name="uploadBtn" value="บันทึกข้อมูล" />
+															</form>
+														</div>
                                                     </div>
                                                 </div>
+											<?php } ?>
+											
+											
                                             </div>
-                                          
+                                          	
 
-                                            <?php  };  
-                                    };  ?>
-                            
-
-                                </div>
-                        
-                        <?php  
+                                            <?php  };  ?>
+                                    <?php }; //-----------------end select list table-------------------- ?>
+									<?php  //---------------------select from user manual add--------------- 
+												$fetchdata_user = new DB_con();
+												$level_id = $row['level_id'];
+												$score_id = "0";
+												$sql_useradd = $fetchdata_user->fetch_useradd($level_id,$_SESSION['id'],$score_id);
+												
+												while($useradd_list = mysqli_fetch_array($sql_useradd)) {
+												
+											?>
+											<div class="card-header" style="background-color: lightblue">
+												<table width="100%" border="0" cellspacing="1" cellpadding="1">
+														<tr>
+															<td width="100" align="right" valign="top"><p style="font-size:14px;">หัวข้อ :&nbsp;&nbsp;</p></td>
+															<td width="408"><p style="font-size:14px;">
+																&nbsp;<?php echo $useradd_list['list_label'];?></p></td>
+															<td width="620" align="right"><p style="font-size:14px;color:#0A910D;">&nbsp;(สถานะ&nbsp;:&nbsp;
+													<?php if (($useradd_list['status'])=="save") {echo "บันทึก";} 
+													elseif (($useradd_list['status'])=="consider") {echo "รอพิจารณา";} 
+													else {echo "-";}?>&nbsp;เมื่อ :&nbsp;
+													<?php //------------------change to Thaidate-----------------
+													$str_date = date("j",strtotime($useradd_list['save_date']));
+													$str_Year = date("Y",strtotime($useradd_list['save_date']))+543;
+													$str_Month = date("n",strtotime($useradd_list['save_date']));
+													$strMonthCut = Array("","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.");
+													$strMonthThai=$strMonthCut[$str_Month];
+													echo $str_date."-".$strMonthThai."-".$str_Year;?>)</p></td>
+														</tr>
+														<tr>
+															<td width="100" align="right" valign="top"><p style="font-size:14px;">รายละเอียด :&nbsp;&nbsp;</p></td>
+															<td colspan="2"><p style="font-size:14px;">
+																&nbsp;<?php echo $useradd_list['remark'];?></p></td>
+														</tr>
+														<tr>
+															<td height="30" align="right"><span><font style="font-size:14px;">ไฟล์แนบ&nbsp;:&nbsp;</font></span>&nbsp;</td>
+															<td height="30" colspan="2">&nbsp;&nbsp;<a href="useraddfile/<?php echo $useradd_list['save_filename'];?>" target="_blank" style="text-decoration: none"><?php echo $useradd_list['ori_filename'];?></a>&nbsp;<a href="eco_level.php?level_label=eco_champion&edit=del_useradd&add_id=<?php echo $useradd_list['add_id'];?>&set_lebel=<?php echo $_GET['set_lebel'];?>" onClick="return confirm('คุณยืนยันที่จะลบข้อมูล?');"><img src="images/delete.gif" width="30" height="26"><font style="font-size:16px;">&nbsp;ลบข้อมูล</font></a></td>
+														 </tr>
+												</table>
+                                            </div>
+                                              
+									<?php }; //---------------------end select from user manual add---------------  ?>
+									<?php if (strtoupper($_SESSION['user_type']) == "USER"){?>
+									<br>
+									<button class="btn-info" data-toggle="collapse"
+										aria-expanded="false"
+										aria-controls="collapseExample"
+										data-target="#collapseExample<?php echo $row['level_id']; ?>">+เพิ่มหลักฐานอื่นๆ</button>
+									<form name="myForm" method="POST" action="eco_level.php" enctype="multipart/form-data">
+										<div class="collapse" id="collapseExample<?php echo $row['level_id']; ?>">                                
+										  <div class="item2">
+													
+													<p class="mb-0">
+													  <table width="90%" border="0" cellspacing="1" cellpadding="1">
+													  <tr>
+														<td width="23%" height="30" align="right" ><p style="font-size:16px;">เรื่อง :&nbsp;&nbsp;</p></td>
+														<td width="77%" height="30"><label for="subject"></label>
+														  &nbsp;<input name="subject" type="text" id="subject2" size="47"><font color="#CC0000">**</font></td>
+													  </tr>
+													  <tr>
+														<td align="right" valign="top"><p style="font-size:16px;">รายละเอียด :&nbsp;&nbsp;</p></td>
+														<td><label for="description"></label>
+														  &nbsp;<textarea name="description" id="description" cols="50" rows="5"style="overflow:hidden"></textarea></td>
+													  </tr>
+													  <tr>
+														<td height="30" align="right"><span><font style="font-size:16px;">เลือกไฟล์&nbsp;:&nbsp;</font></span>&nbsp;</td>
+														<td height="30">&nbsp;&nbsp;<input type="file" name="uploadedFile" /></td>
+													  </tr>
+													<tr>
+														<td height="10" colspan="2"><input id="level_id" name="level_id" type="hidden" value="<?php echo $row['level_id']; ?>"><input name="user_id" type="hidden" id="user_id" value="<?php echo $_SESSION['id'];?>">
+														<input name="score_id" type="hidden" id="typeof_rule" value="0">
+														<input name="typeof_rule" type="hidden" id="typeof_rule" value="<?php echo $_GET['set_lebel'];?>"></td>
+														</tr>
+														<tr>
+														<td height="30" align="right"><span><font style="font-size:16px;">&nbsp;</font></span>&nbsp;</td>
+														<td height="30"><input type="submit" name="useradd" value="เพิ่มข้อมูล" /></td>
+													  </tr>
+													</table>
+													  </p>
+													
+										  </div>
+									
+										</div>
+									</form>
+								
+                        <?php  };
                       
                       
                       }; 
-                        if($_SESSION['user_type']=="USER"){
-                            // admin ตั้งหัวข้อใหม่
-                              
-
-                            }elseif($_SESSION['user_type']=="USER"){ 
-                            //  เฉพาะ USER  จส่งหลักฐาน และกำหนดหัวข้อเอง  ?>
-                            >> user ส่งหลักฐาน และกำหนดหัวข้อเอง
-                            <div class="item2">...
-                            </div>
-                            <?php }; ?>
+                        ?></div>
                     <?php   //--Close-------control : section    } 
-                };
-                
-                
-                if($_SESSION['user_type']=="USER"){ 
-                                          
-                  $fetchdata_user = new DB_con();
-                  $level_id = $row['level_id'];
-                  
-
-                  //fetch_useradd
-                  $sql_useradd = $fetchdata_user->fetch_useradd($level_id,$_SESSION['id']);
-                  if( mysqli_num_rows($sql_useradd) != 0 ){
-                    ?> <div class="item2" > <?php 
-                    while($row_useradd = mysqli_fetch_array($sql_useradd)) {
-                      ?>
-                      <div class="item3">
-                        <div> <?php echo $row_useradd['list_label'];?></div>
-                        <div> <?php echo $row_useradd['remark'];?></div>
-                        <div> <?php echo $row_useradd['save_filename'];?></div>
-                      </div>
-                      <?php
-                    }
-                    ?> </div> 
-                  <?php  
-                  }
-                  ?>
-                    <!-- <div> user add file </div> -->
-                    <div>
-                          upload
-                          <form method="post" enctype="multipart/form-data">
-                              <div class="form-group">
-                              <label for="subject"></label>
-                                &nbsp;<input name="subject" type="text" id="subject2" size="47"><font color="#CC0000">**</font>
-                                  
-                                  <label for="description"></label>
-                                  <div> <textarea name="description" id="description" cols="50" rows="5"style="overflow:hidden"></textarea> </div>
-                                                                      
-
-                                  <input type="hidden" id="level_id" name="level_id" value="<?php echo $row['level_id'] ; ?>" >
-                                  <input type="file" class="form-control-file" id="File">
-                                  <input type="submit" name="uploadBtn" value="บันทึกข้อมูล" class="btn btn-primary btn-sm col-2" />
-                                  <!-- <button type="button" class="btn btn-primary upload send" value="ส่งพิจารณา" id="Sup___<?php echo $row_list['list_id'];?>">ส่งพิจารณา</button> -->
-                                                
-                              </div>
-                          </form>
-                    </div>
-                <!-- <div> user add file </div> -->
-                <?php  };   
-                
-                
-                ?>
-
+					
+                };?>
             </div>
             
             <?php } ?>
         
-        
-  
-      
     <?php
     // Admin กำหนด Level ใหม่
     if($_SESSION['user_type']=="ADMIN"){ ?>
       <div class="col" >
-            <form method="POST">
-            <div id="multiCollapseExample1">
+            <form method="post">
+            <div class="collapse multi-collapse mt-3" id="multiCollapseExample1">
                     <div class="item">
                     <input type="text" id="sub_lebel" name="sub_lebel" class="form-control form-control-sm" >
                         <div>
-                        <?php
-                            // radio button สำหรับ  Guidelines
-                            if($set_lebel=="Guidelines"){ ?>
-                            <div>
-
-                                <div class="form-check form-check-inline">
-                                  <input class="form-check-input" type="radio" name="level_label" id="inlineRadio1" value="control" required >
-                                  <label class="form-check-label" for="inlineRadio1">control</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                  <input class="form-check-input" type="radio" name="level_label" id="inlineRadio2" value="measure" required >
-                                  <label class="form-check-label" for="inlineRadio2">measure</label>
-                                </div>
-                            </div>
-                            <?php }; ?>
                             <input id="level_label" name="level_label" type="hidden" value="<?php echo $level_label; ?> ">
                             <input id="year_set" name="year_set" type="hidden" value="<?php echo $year_set; ?> ">
                             <input id="set_lebel" name="set_lebel" type="hidden" value="<?php echo $set_lebel; ?> ">
-                            <input type="hidden" name="level_type" id="" value="<?php echo $row['level_label']; ?>" >
-                            <button type="submit" name="submit" id="submit" value="add-level" class="badge bg-primary btn btn-success" >save</button>
-                            </div>
+                            <button type="submit" name="submit" id="submit" class="badge bg-primary btn btn-success" >save</button>
+                        
                         </div> 
                     </div>
             </div>
             </form>
 
         
-            <button class=" btn btn-success" >เพิ่ม</button>
+            
+		  </div> 
       </div>
       <?php }; ?>
-<!-- <div id="accordion">
-  <div class="card">
-    <div class="card-header" id="headingOne">
-      <h5 class="mb-0"> xxxx 
-        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          Collapsible Group Item #1
-        </button>
-      </h5>
-    </div>
-
-    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-      <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-header" id="headingTwo">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Collapsible Group Item #2
-        </button>
-      </h5>
-    </div>
-    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-      <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-header" id="headingThree">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          Collapsible Group Item #3
-        </button>
-      </h5>
-    </div>
-    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-      <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- <p>
-  <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Link with href
-  </a>
-  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-    Button with data-target
-  </button>
-</p>
-<div class="collapse" id="collapseExample">
-  <div class="card card-body">
-    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-  </div>
-</div> -->
-      </div 1234> -->
-    
-    <!-- <scripttype= type="text/javascript">
-      $(document).ready(function(){
-        $('[data-toogle="tooltip"]').tooltip();
-        
-        $(document).on("click",".edit",function(){
-          var input = $(this).parents("tr").find("input[type='text']");
-          input.each(function(){
-                $(this).removeAttr('disabled'); 
-          });
-          $(this).parents("tr").find(".add, .edit").toggle();
-        });
-      });
-    </scripttype=> -->
-      <script type="text/javascript">
-        const collapseElementList = [].slice.call(document.querySelectorAll('.collapse'))
-        const collapseList = collapseElementList.map((collapseEl) => {
-          return new mdb.Collapse(collapseEl, {
-            toggle: false,
-          });
-        });
-      </script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous"></script>
-<script type="text/javascript">
-$(document).ready(function(){
- 
- // Add Class
- $('.edit').click(function(){
-  $(this).addClass('editMode');
- });
-
- // Save data
- $(".edit").focusout(function(){
-  $(this).removeClass("editMode");
-  var id = this.id;
-  var split_id = id.split("_");
-  var field_name = split_id[0];
-  var edit_id = split_id[2];
-  var split_id2 = id.split("_"+edit_id);
-  var field_name2 = split_id2[0];
-  var value = $(this).text();
-  console.log("value :"+value);
-  $.ajax({
-   url: 'update.php',
-   type: 'post',
-   data: { field:field_name2, value:value, id:edit_id },
-   success:function(response){
-     if(response == 1){
-        console.log('Save successfully'); 
-     }else{
-        console.log(response);
-     }
-   }
-  });
- 
- });
-
-        $(".upload").click(function(){
-            $(this).addClass('uploadMode');
-            var id = this.id;
-            var split_id = id.split("___");
-            var field_name = split_id[0];
-            var upload_field_id = split_id[1];
-            //var split_id2 = id.split("_"+edit_id);
-            var file = $("#File___"+upload_field_id);
-            console.log(file);
-            var value = $(this).text();
-            console.log("split_id[0] :"  + split_id[0] + ":"+split_id[1] + " / value :"+value);
-        
-            // ฝฝ$('#btn_upload').click(function(){
-
-                var fd = new FormData();
-                //var files = $File___1[0].files[0];
-                
-                var files = $('#File___'+upload_field_id)[0].files[0];
-                console.log(files);
-                console.log(value);
-                fd.append('file',files);
-
-                // AJAX request
-                $.ajax({
-                url: 'ajaxfileupload.php',
-                type: 'post',
-                data: {"fd":fd, "field":field_name, "value":value, id:upload_field_id,user:<?php echo $_SESSION['id']; ?> },
-                contentType: false,
-                processData: false,
-                success: function(response){
-                    if(response != 0){
-                    // Show image preview
-                    alert(response);
-                    $('#preview').append("<img src='"+response+"' width='100' height='100' style='display: inline-block;'>");
-                    }else{
-                    //alert('file not uploaded');
-                    alert(response);
-                    }
-                }
-                });
-            // ฝฝ});
-        
-        
-        
-        });
-//     }
-//  );
-
-});
-</script>
-
+			<button class="btn btn-success" onclick="window.location.href='eco_level.php?level_label=eco_champion&edit=sendapprove';">ส่งพิจารณา</button>
+		  
+      
   </main>
 
 </div>
