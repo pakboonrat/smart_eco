@@ -71,8 +71,15 @@
 
         // fetch_score
         public function fetch_score($level_id) {
-            $result = mysqli_query($this->dbcon, "SELECT * FROM score WHERE level_id = '$level_id'  ");
-            
+            $result = mysqli_query($this->dbcon, "SELECT * FROM `score` where score_id in (SELECT score_id FROM `list` WHERE level_id = '$level_id' GROUP by `score_id`)");
+            //SELECT * FROM `score` where score_id in (SELECT score_id FROM `list` WHERE level_id = '5' GROUP by `score_id`)
+            return $result;
+        }
+		
+		// select_listby_score
+        public function select_listby_score($level_id, $score_id) {
+            $result = mysqli_query($this->dbcon, "SELECT * FROM `list` where level_id = '$level_id' and score_id = '$score_id' ");
+            //SELECT score_id FROM `list` where level_id = 5 GROUP by score_id
             return $result;
         }
 
@@ -118,6 +125,18 @@
 			//INSERT INTO `user_filedb`(`id`, `user`, `subject`, `description`, `ori_filename`, `save_filename`, `save_date`) VALUES ([value-1],[value-2],[value-3],[value-4],[value-5],[value-6],[value-7])
 			return $recordfilename;
         }
+
+        public function user_uploadfile($level_id, $score_id, $user_id, $list_label, $remark, $ori_filename, $filename, $savedate) {
+            $recordfilename = mysqli_query($this->dbcon, "INSERT INTO `user_add`( `level_id`, `score_id`, `user_id`, `list_label`, `remark`, `status`, `ori_filename`, `save_filename`, `save_date`)  VALUES ('$level_id', '$score_id', '$user_id', '$list_label', '$remark','save', '$ori_filename','$filename','$savedate')");
+			//INSERT INTO `user_filedb`(`id`, `user`, `subject`, `description`, `ori_filename`, `save_filename`, `save_date`) VALUES ([value-1],[value-2],[value-3],[value-4],[value-5],[value-6],[value-7]) `level_id`, `score_id`, `user_id`, `list_label`, `remark`, `status`, `ori_filename`, `save_filename`, `save_date`
+			return $recordfilename;
+        }
+
+        public function fetch_useradd($level_id,$user_id,$score_id) {
+            $result = mysqli_query($this->dbcon, "SELECT * FROM user_add WHERE level_id = '$level_id' and user_id = '$user_id' and score_id = '$score_id' ");
+            return $result;
+        }
+
 		
 		public function selectfiledb($userid, $yearselect) {
             $selectuserfile = mysqli_query($this->dbcon, "SELECT * FROM `user_filedb` where user = $userid and YEAR(save_date) = '$yearselect' " );
@@ -133,6 +152,37 @@
 		public function formatdescrip($formatid) {
             $selectfdescrip = mysqli_query($this->dbcon, "SELECT `description` FROM `format` WHERE format_id = $formatid");
             return $selectfdescrip;
+        }
+		
+		public function insert_transaction($user_id, $list_id, $description, $ori_filename, $filename, $savedate) {
+            $recordfilename = mysqli_query($this->dbcon, "INSERT INTO `transaction`(`user_id`, `list_id`, `remark`, `ori_filename`, `save_filename`, `status`, `save_date`) VALUES ('$user_id', '$list_id', '$description', '$ori_filename','$filename','save','$savedate')");
+			return $recordfilename;
+        }
+		
+		public function selecttransaction($user_id, $list_id) {
+            $transactionfile = mysqli_query($this->dbcon, "SELECT * FROM `transaction` WHERE user_id = '$user_id' AND list_id = '$list_id'");
+			//SELECT * FROM `transaction` WHERE user_id = 3 and list_id = 3
+            return $transactionfile;
+			
+        }
+		public function del_transaction($tran_id) {
+            $deletetransaction = mysqli_query($this->dbcon, "delete  FROM `transaction` where t_id = $tran_id");
+            return $deletetransaction;
+        }
+		
+		public function del_useradd($tran_id) {
+            $deletetransaction = mysqli_query($this->dbcon, "delete  FROM `user_add` where add_id = $tran_id");
+            return $deletetransaction;
+        }
+		
+		public function update_transaction($user_id) {
+            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `user_id` = $user_id");
+            return $up_tran_status;
+        }
+		
+		public function update_useradd($user_id) {
+            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `user_add` SET `status`='consider' WHERE `user_id` = $user_id");
+            return $up_tran_status;
         }
     }
 
