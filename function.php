@@ -53,14 +53,50 @@
             return $result;
         }
 
-        public function fetch_level_header($level_label) {
-            $result = mysqli_query($this->dbcon, "SELECT DISTINCT set_lebel FROM level WHERE  level_label = '$level_label' ");
+        public function fetch_level_header($level_label,$userid) {
+            $result = mysqli_query($this->dbcon, "SELECT DISTINCT set_lebel FROM level WHERE level_label = '$level_label' and level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '$userid')) ");
+			//SELECT DISTINCT set_lebel FROM level WHERE level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '3'))
+            return $result;
+        }
+		
+		public function level_headeradmin($level_label) {
+            $result = mysqli_query($this->dbcon, "SELECT DISTINCT set_lebel FROM level where level_label = '$level_label' ");
             return $result;
         }
 
-        public function fetchdata($level_label,$set_lebel) {
+        public function fetchdata($level_label,$set_lebel,$userid) {
+            $result = mysqli_query($this->dbcon, "SELECT * FROM level WHERE level_label = '$level_label' and set_lebel = '$set_lebel' and level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '$userid')) ");
+            //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
+            return $result;
+        }
+		
+		public function basic_report($userid) {
+            $result = mysqli_query($this->dbcon, "SELECT level_id,sub_lebel FROM `level` where set_lebel = 'basic' and level_id in (SELECT level_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid')");
+            //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
+            return $result;
+        }
+		
+		public function control_report($userid) {
+            $result = mysqli_query($this->dbcon, "SELECT level_id,sub_lebel FROM `level` where set_lebel = 'Guidelines' and type = 'control' and level_id in (SELECT level_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid')");
+            //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
+            return $result;
+        }
+		
+		public function measure_report($userid) {
+            $result = mysqli_query($this->dbcon, "SELECT level_id,sub_lebel FROM `level` where set_lebel = 'Guidelines' and type = 'measure' and level_id in (SELECT level_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid')");
+            //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
+            return $result;
+        }
+
+		public function basic_report_tran($level_id,$userid) {
+            $result = mysqli_query($this->dbcon, "SELECT status,list_label,level_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid' and level_id = '$level_id'");
+            //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
+            return $result;
+        }
+
+        public function fetchdata_admin($level_label,$set_lebel,$userid) {
             $result = mysqli_query($this->dbcon, "SELECT * FROM level WHERE level_label = '$level_label' and set_lebel = '$set_lebel' ");
-            
+            //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
             return $result;
         }
 
@@ -85,6 +121,11 @@
 
         public function fetch_level_menu() {
             $result = mysqli_query($this->dbcon, "SELECT DISTINCT level_label FROM level ORDER BY level_label ASC ");
+            return $result;
+        }
+		
+		public function fetch_level_menuuser($userid) {
+            $result = mysqli_query($this->dbcon, "SELECT DISTINCT level_label FROM level WHERE level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '$userid')) ORDER BY level_label ASC");
             return $result;
         }
 
@@ -183,6 +224,17 @@
 		
 		public function update_transaction($user_id) {
             $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `user_id` = $user_id");
+            return $up_tran_status;
+        }
+		
+		public function update_transactionID($level_id,$user_id) {
+            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `list_id` in (select list_id FROM list where level_id = '$level_id') and user_id = '$user_id'");
+            return $up_tran_status;
+        }
+		
+		public function update_useraddID($level_id,$user_id) {
+            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `user_add` SET `status`='consider' WHERE `level_id` = '$level_id' and user_id = '$user_id'");
+			//SELECT * FROM `user_add` where level_id = '2' and user_id = '3'
             return $up_tran_status;
         }
 		
