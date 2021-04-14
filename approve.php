@@ -8,11 +8,29 @@
 
 	$user_id = $_GET["userid"] ;
 
+	if (isset($_POST['score'])) {
+      
+        
+        $level_id = $_POST['level_id'];
+        $point = $_POST['point'];
+        $score_des = $_POST['score_des'];
+        $updatedata = new DB_con();
+        $sql = $updatedata->insertscore($level_id, $point, $score_des);
+        if ($sql) {
+            echo "<script>alert('Updated Successfully!".$sql."');</script>";
+            // echo "<script>window.location.reload()</script>";
+        } else {
+            echo "<script>alert('Something went wrong! Please try again!".$sql."');</script>";
+            // echo "<script>window.location.href='update.php'</script>";
+        }
+    }
+
 ?>
 <html lang="en" class="pc chrome88 js">
 <head>
 <meta charset="UTF-8">
 <title>Auditor Approve</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 function validateForm() {
   var x = document.forms["myForm"]["username"].value;
@@ -44,7 +62,7 @@ function validateForm() {
       <div class="breadcrumbs">
         <a href="audit.php">Home</a>
       </div>
-      <h1>ตรวจพิจารณา : นิคมฯ อัญธานี </h1>
+      <h1>ตรวจพิจารณา : นิคมฯ อัญธานี </h1><input type="hidden" id="audit" value="<?php echo $_SESSION['id']; ?>">
        <!-- <nav class="nav-tabs" id="nav-tabs">
        <a href="audit.php">ตรวจพิจารณา</a>&nbsp;>&nbsp;<a href="approve.php" >นิคมฯ อัญธานี</a></nav> -->
 	
@@ -135,15 +153,15 @@ function validateForm() {
 										</tr>
 										<tr>
 											<td>ข้อคิดเห็น :</td>
-											<td><textarea name="comment" id="comment" cols="40" rows="4" style="overflow:hidden"></textarea></td>
+											<td><textarea name="comment" id="comment_<?php echo $row_list['t_id'];?>" cols="40" rows="4" style="overflow:hidden"></textarea></td>
 										</tr>
 										<tr>
 											<td width="25%" height="10"></td>
 											<td width="75%" height="10"></td>
 										</tr>
 										<tr>
-											<td><input type="submit" name="approve" id="approve" value="ผ่านอนุมัติ"></td>
-											<td><input type="submit" name="approve2" id="approve2" value="&nbsp;Reject&nbsp;"></td>
+											<td><input type="submit" name="approve" id="approve_<?php echo $row_list['t_id'];?>" class="submit" value="ผ่านอนุมัติ"></td>
+											<td><input type="submit" name="approve2" id="approve_<?php echo $row_list['t_id'];?>" class="submit" value="Reject"></td>
 										</tr>
 										</table>
 										</div>
@@ -167,6 +185,57 @@ function validateForm() {
 
 
 </body>
+<script>
+$(document).ready(function() {
+	$('.submit').on('click', function() {
+
+		// $("#submit").attr("disabled", "disabled");
+		var id = this.id;
+  		var splitid = id.split('_');
+  		var index = splitid[1];
+		var approve_action = this.value;
+		
+		console.log(id);
+		console.log(index);
+		console.log(approve_action);
+
+		var comment = $('#comment_'+index).val();
+		console.log(comment);
+
+
+		var audit = $('#audit').val();
+		if(index!="" && approve_action!="" && audit!=""){
+			$.ajax({
+				url: "update.php",
+				type: "POST",
+				data: {
+					t_id: index,
+					comment: comment,
+					approve_action: approve_action,
+					audit: audit				
+				},
+				cache: false,
+				success: function(dataResult){
+					var dataResult = JSON.parse(dataResult);
+					if(dataResult.statusCode==200){
+						// $("#butsave").removeAttr("disabled");
+						// $('#fupForm').find('input:text').val('');
+						// $("#success").show();
+						// $('#success').html('Data added successfully !'); 						
+					}
+					else if(dataResult.statusCode==201){
+					   alert("Error occured !");
+					}
+					
+				}
+			});
+		}
+		else{
+			alert('error !');
+		}
+	});
+});
+</script>
 </html>
 
 <?php 

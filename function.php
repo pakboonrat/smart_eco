@@ -206,7 +206,7 @@
 
         public function fetch_transaction_list_level2($user_id , $level_id) {
            
-            $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT list.list_id as list_id , list.list_label as list_label  , list.list_label as list_label ,transaction.remark as remark,transaction.save_filename as save_filename  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id  AND list.level_id = $level_id ORDER by list.list_label  ");
+            $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT list.list_id as list_id , list.list_label as list_label  , list.list_label as list_label ,transaction.remark as remark,transaction.save_filename as save_filename , transaction.t_id as t_id  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id  AND list.level_id = $level_id ORDER by list.list_label  ");
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
         }
