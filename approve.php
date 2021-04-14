@@ -117,7 +117,9 @@ function validateForm() {
 			<?php 
 				$fetchdata = new DB_con();
 				$sql = $fetchdata->fetch_transaction_list_level($user_id);
-				if( mysqli_num_rows($sql) != 0 ){
+				
+				if(!empty($sql)  ){
+					
 				 
 				while($row = mysqli_fetch_array($sql)) { 
 			   ?>   
@@ -149,7 +151,7 @@ function validateForm() {
 										</tr>
 										<tr>
 											<td height="15">ไฟล์แนบ :</td>
-											<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>"><?php echo $row_list['save_filename'];?></a></td>
+											<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>" target="_blank"><?php echo $row_list['save_filename'];?></a></td>
 										</tr>
 										<tr>
 											<td>ข้อคิดเห็น :</td>
@@ -175,7 +177,7 @@ function validateForm() {
 
 			<?php 
 				
-			}; } ?>	
+			}; }else{ echo "ไม่มีรายการ"; } ?>	
 				
 
       <?php }; ?>
@@ -206,7 +208,7 @@ $(document).ready(function() {
 		var audit = $('#audit').val();
 		if(index!="" && approve_action!="" && audit!=""){
 			$.ajax({
-				url: "update.php",
+				url: "update2.php",
 				type: "POST",
 				data: {
 					t_id: index,
@@ -215,18 +217,41 @@ $(document).ready(function() {
 					audit: audit				
 				},
 				cache: false,
-				success: function(dataResult){
-					var dataResult = JSON.parse(dataResult);
-					if(dataResult.statusCode==200){
-						// $("#butsave").removeAttr("disabled");
-						// $('#fupForm').find('input:text').val('');
-						// $("#success").show();
-						// $('#success').html('Data added successfully !'); 						
-					}
-					else if(dataResult.statusCode==201){
-					   alert("Error occured !");
-					}
+
+				// success: function(dataResult){
+				// 	var dataResult = JSON.parse(dataResult);
+				// 	if(dataResult.statusCode==1){
+				// 		// alert("บันทึกเรียบร้อยแล้ว");
+				// 		// window.location.reload();
+				// 		// window.location.replace("approve.php");
+
+				// 		console.log('refresh');
+            	// 		location.reload();
+						
+				// 		// $("#butsave").removeAttr("disabled");
+				// 		// $('#fupForm').find('input:text').val('');
+				// 		// $("#success").show();
+				// 		// $('#success').html('Data added successfully !'); 						
+				// 	}
+				// 	else if(dataResult.statusCode==0){
+				// 	   alert("Error occured !");
+				// 	}
 					
+				// }
+
+				success: function (data) {
+					if (data === '1') {
+						alert("บันทึกสำเร็จ !");
+						window.history.back();
+						location.reload(); 
+					}
+					else {
+						alert(data +":  ไม่สามารถบันทึกข้อมูลได้ !");
+					}
+				},
+				error: function ()
+				{
+					alert("ไม่สามารถบันทึกข้อมูลได้ !");
 				}
 			});
 		}
