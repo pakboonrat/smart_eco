@@ -122,7 +122,7 @@ function validateForm() {
 			<div class="col">
 			<?php 
 				$fetchdata = new DB_con();
-				$sql = $fetchdata->fetch_transaction_list_level($user_id);
+				$sql = $fetchdata->fetch_transaction_list_level($user_id ,"");
 				
 				if(!empty($sql)  ){
 					
