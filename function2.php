@@ -31,9 +31,9 @@
                 echo "Failed to connect to MySQL: " . mysqli_connect_error();
             }
         }
-        // public function getCon() {
-        //     return $this->dbcon;
-        // }
+        public function getCon() {
+            return $this->dbcon;
+        }
 
         public function usernameavailable($uname) {
             $checkuser = mysqli_query($this->dbcon, "SELECT username FROM user WHERE username = '$uname'");
