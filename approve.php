@@ -100,7 +100,7 @@ function validateForm() {
             $i = 0;
             
         ?>
-        <a href="aprove.php?level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
+        <a href="approve.php?userid=<?php echo $user_id; ?>&level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
             if(!isset($_GET['set_lebel'])){ 
                 echo $active_class;
             }elseif ($row['set_lebel'] == $_GET['set_lebel']) {
@@ -119,23 +119,34 @@ function validateForm() {
 	</header>
   <div class="content-columns">
     <?php    if($_SESSION['user_type']=="AUDITOR"){ ?>     
-			<div class="col">
-			<?php 
+			<div class="col-10 col-md-9">
+			<?php
+				if(isset($_GET['set_lebel'])){
+					$set_lebel = $_GET['set_lebel'];
+				}else{
+					$set_lebel = "" ;
+				} 
 				$fetchdata = new DB_con();
-				$sql = $fetchdata->fetch_transaction_list_level($user_id ,"");
+				$sql = $fetchdata->fetch_transaction_list_level($user_id ,$set_lebel);
 				
 				if(!empty($sql)  ){
 					
-				 
+				$sub_lebel = "" ;
 				while($row = mysqli_fetch_array($sql)) { 
-			   ?>   
+					
+			   ?>
+			   <?php
+				if( ($sub_lebel != $row['sub_lebel']) AND ( $row['set_lebel'] == 'Guidelines' )  ){
+				?>
+
 				<div class="item">
 					<B><?php echo $row['sub_lebel'];?> 
 						<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
 					</B>
 				</div>
-				
-				  
+				<?php 
+				}
+				?>  
 				<div class="collapse" id="collapseExample<?php echo $row['level_id'];?>">
 					<?php 
 					$fetchdata2 = new DB_con();
@@ -182,8 +193,9 @@ function validateForm() {
 				</div>
 
 			<?php 
-				
-			}; }else{ echo "ไม่มีรายการ"; } ?>	
+			$sub_lebel = $row['sub_lebel'] ;
+			}; 
+			 }else{ echo "ไม่มีรายการ"; } ?>	
 				
 
       <?php }; ?>
@@ -247,12 +259,12 @@ $(document).ready(function() {
 
 				success: function (data) {
 					if (data === '1') {
-						alert("บันทึกสำเร็จ !");
+						alert(" // บันทึกสำเร็จ !  ");
 						window.history.back();
 						location.reload(); 
 					}
 					else {
-						alert(data +":  ไม่สามารถบันทึกข้อมูลได้ !");
+						alert("  ไม่สามารถบันทึกข้อมูลได้ !");
 					}
 				},
 				error: function ()
