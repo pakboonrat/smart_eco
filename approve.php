@@ -62,7 +62,13 @@ function validateForm() {
       <div class="breadcrumbs">
         <a href="audit.php">Home</a>
       </div>
-      <h1>ตรวจพิจารณา : นิคมฯ อัญธานี </h1><input type="hidden" id="audit" value="<?php echo $_SESSION['id']; ?>">
+      <h1>ตรวจพิจารณา : <?php
+	  		$user_con = new DB_con();
+            $sqluser = $user_con->selectuseredit($user_id);
+                while($rowuser = mysqli_fetch_array($sqluser)) {
+                    echo $rowuser['firstname'] ." ". $rowuser['surname'];
+				}
+			?> </h1><input type="hidden" id="audit" value="<?php echo $_SESSION['id']; ?>">
        <!-- <nav class="nav-tabs" id="nav-tabs">
        <a href="audit.php">ตรวจพิจารณา</a>&nbsp;>&nbsp;<a href="approve.php" >นิคมฯ อัญธานี</a></nav> -->
 	
@@ -151,7 +157,7 @@ function validateForm() {
 										</tr>
 										<tr>
 											<td height="15">ไฟล์แนบ :</td>
-											<td height="15"><a href="./useraddfile/<?php echo $row_list['ori_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
+											<td height="15"><a href="./uploads/<?php echo $row_list['ori_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
 										</tr>
 										<tr>
 											<td>ข้อคิดเห็น :</td>
