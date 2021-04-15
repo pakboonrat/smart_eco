@@ -200,9 +200,9 @@
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
         }
 
-        public function fetch_transaction_list_level($user_id) {
+        public function fetch_transaction_list_level($user_id,$set_lebel) {
             
-            $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT level.level_id as level_id , level.level_label as level_label , level.sub_lebel as sub_lebel ,level.type as type , level.set_lebel as set_lebel  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id and transaction.status=\"consider\" ORDER by level.level_label , level.set_lebel ");
+            $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT level.level_id as level_id , level.level_label as level_label , level.sub_lebel as sub_lebel ,level.type as type , level.set_lebel as set_lebel  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id and level.set_lebel=$set_lebel and transaction.status=\"consider\" ORDER by level.level_label , level.set_lebel ");
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
         }
