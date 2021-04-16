@@ -133,6 +133,11 @@
             return $result;
         }
 
+        public function fetch_level_menuuser($userid) {
+            $result = mysqli_query($this->dbcon, "SELECT DISTINCT level_label FROM level WHERE level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '$userid')) ORDER BY level_label ASC");
+            return $result;
+        }
+
         public function insertlevel($level_label ,$year_set ,$set_lebel ,$sub_lebel) {
             $reg = mysqli_query($this->dbcon, "INSERT INTO level(level_label ,year_set ,set_lebel ,sub_lebel ) VALUES('$level_label' ,'$year_set' ,'$set_lebel' ,'$sub_lebel')");
             //echo "INSERT INTO user(username,password, email,user_type, firstname, surname , active ) VALUES('$username' ,'$password' ,'$email' ,'$user_type', '$firstname', '$surname', $active)" ;
