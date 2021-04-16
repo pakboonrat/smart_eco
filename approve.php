@@ -93,7 +93,6 @@ function validateForm() {
             }
             $level_label = $_GET['level_label'];
             $updatelevel = new DB_con();
-			echo $user_id;
             $sql = $updatelevel->level_headeradmin($level_label);
             $set_lebel_array = array();
             $active_class = "class=\"active\" " ;
