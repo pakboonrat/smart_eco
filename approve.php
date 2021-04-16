@@ -1,5 +1,6 @@
 <?php 
     session_start();
+	ob_start();
 
     if ($_SESSION['id'] == "") {
         header("location: login.php");
@@ -103,10 +104,10 @@ function validateForm() {
         <a href="approve.php?userid=<?php echo $user_id; ?>&level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
             if(!isset($_GET['set_lebel'])){ 
                 echo $active_class;
-            }elseif ($row['set_lebel'] == $_GET['set_lebel']) {
+            }elseif (strtolower($row['set_lebel']) == strtolower($_GET['set_lebel'])) {
                 echo "class=\"active\" ";
             }; ?>  >
-            <?php if ($row['set_lebel']== 'basic'){ echo "เงื่อนไขเบื้องต้น";}
+            <?php if (strtolower($row['set_lebel'])== 'basic'){ echo "เงื่อนไขเบื้องต้น";}
 			else {
 				  echo "หลักเกณฑ์การขอรับรองการเป็นเมืองอุตสาหกรรมเชิงนิเวศ";
 				}
@@ -126,6 +127,8 @@ function validateForm() {
 				}else{
 					$set_lebel = "" ;
 				} 
+
+				
 				$fetchdata = new DB_con();
 				$sql = $fetchdata->fetch_transaction_list_level($user_id ,$set_lebel);
 				
@@ -133,20 +136,37 @@ function validateForm() {
 					
 				$sub_lebel = "" ;
 				while($row = mysqli_fetch_array($sql)) { 
-					
-			   ?>
-			   <?php
-				if( ($sub_lebel != $row['sub_lebel']) AND ( $row['set_lebel'] == 'Guidelines' )  ){
-				?>
+				
+				if( !isset($_GET['set_lebel'])){
 
-				<div class="item">
-					<B><?php echo $row['sub_lebel'];?> 
-						<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
-					</B>
-				</div>
-				<?php 
+				$actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+				header("Refresh:0; url=".$actual_link."&set_lebel=".$row['set_lebel']);
+				//echo $actual_link."&set_lebel=".$row['set_lebel'];
 				}
-				?>  
+
+			   ?>
+					<?php
+						if( ( strtolower($sub_lebel) != strtolower($row['sub_lebel'])) AND ( strtolower($row['set_lebel']) == 'guidelines' )  ){
+						?>
+
+						<div class="item">
+							<B><?php echo $row['sub_lebel'];?> 
+								<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
+							</B>
+						</div>
+						<?php 
+						}elseif( strtolower($row['set_lebel']) != 'guidelines' ){
+							?>
+							<div class="item">
+							<B><?php echo $row['sub_lebel'];?> 
+								<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
+							</B>
+							</div>
+							<?php
+
+
+						}
+						?>  
 				<div class="collapse" id="collapseExample<?php echo $row['level_id'];?>">
 					<?php 
 					$fetchdata2 = new DB_con();
@@ -283,4 +303,5 @@ $(document).ready(function() {
 
 <?php 
 } else { echo "<script>window.location.href='index.php'</script>";}
+ob_end_flush();
 ?>
