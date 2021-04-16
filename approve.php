@@ -100,8 +100,7 @@ function validateForm() {
             $i = 0;
             
         ?>
-        <a href="aprove.php?level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
-            if(!isset($_GET['set_lebel'])){ 
+<a href="approve.php?userid=<?php echo $user_id; ?>&level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php             if(!isset($_GET['set_lebel'])){ 
                 echo $active_class;
             }elseif ($row['set_lebel'] == $_GET['set_lebel']) {
                 echo "class=\"active\" ";
@@ -119,7 +118,7 @@ function validateForm() {
 	</header>
   <div class="content-columns">
     <?php    if($_SESSION['user_type']=="AUDITOR"){ ?>     
-			<div class="col">
+		<div class="col-10 col-md-9">
 			<?php 
 				$fetchdata = new DB_con();
 				$sql = $fetchdata->fetch_transaction_list_level($user_id);

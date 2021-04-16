@@ -22,41 +22,72 @@
     <ul>
       
       <li >
-      
-        <ul>
-        <?php 
+        
+        <?php if($_SESSION['user_type']=="USER"){
             $updatelevel = new DB_con();
+            $sql = $updatelevel->fetch_level_menuuser($_SESSION['id']);
+            while($row = mysqli_fetch_array($sql)) {
+              
+        ?>
+          <li <?php if (($_GET['level_label']=='eco_champion') and ($row['level_label']== 'eco_champion')) {echo "class='active'";}
+					elseif (($_GET['level_label']=='eco_excellence') and ($row['level_label']== 'eco_excellence')) {echo "class='active'";}
+					elseif (($_GET['level_label']=='eco_worldclass') and ($row['level_label']== 'eco_worldclass')) {echo "class='active'";}?>><a href="eco_level.php?level_label=<?php echo $row['level_label'];?>&set_lebel=<?php if ($row['level_label']== 'eco_champion') {echo "basic";} else {echo "Guidelines";}?>"><?php if ($row['level_label']== 'eco_champion')  { echo "ECO-CHAMPION";}
+					elseif ($row['level_label']== 'eco_excellence') {echo "ECO-EXCELLENCE";}
+					elseif ($row['level_label']== 'eco_worldclass') {echo "ECO-WORLD CLASS";};
+			  ?></a></li>
+          <?php } ?>
+         
+      </li>
+		<?php }
+            if($_SESSION['user_type']=="ADMIN"){
+
+        $updatelevel = new DB_con();
             $sql = $updatelevel->fetch_level_menu();
             while($row = mysqli_fetch_array($sql)) {
               
         ?>
-          <li class="active" ><a href="eco_level.php?level_label=<?php echo $row['level_label']; ?>"><?php if ($row['level_label']== 'eco_champion'){ echo "ECO_CHAMPION";} ?></a></li>
-          <?php } ?>
-          <li><a href="#">ECO-EXCELLENCE</a></li>
-          <li><a href="#">ECO-WORLD CLASS</a></li>
+			<li <?php if (($_GET['level_label']=='eco_champion') and ($row['level_label']== 'eco_champion')) {echo "class='active'";}
+					elseif (($_GET['level_label']=='eco_excellence') and ($row['level_label']== 'eco_excellence')) {echo "class='active'";}
+					elseif (($_GET['level_label']=='eco_worldclass') and ($row['level_label']== 'eco_worldclass')) {echo "class='active'";}?>><a href="eco_level.php?level_label=
+					<?php echo $row['level_label'];?>&set_lebel=<?php if ($row['level_label']== 'eco_champion') {echo "basic";} else {echo "Guidelines";}?>"><?php if ($row['level_label']== 'eco_champion')  { echo "ECO-CHAMPION";}
+					elseif ($row['level_label']== 'eco_excellence') {echo "ECO-EXCELLENCE";}
+					elseif ($row['level_label']== 'eco_worldclass') {echo "ECO-WORLD CLASS";};
+			  ?></a></li>
+          <?php } ?>          
         </ul>
       </li>
-      <?php 
-      
-            if($_SESSION['user_type']=="ADMIN"){
-
-        ?>
       <li><a href="nikom_all.php?usertype=USER">ผู้ใช้นิคม</a></li>
       <li><a href="nikom_all.php?usertype=AUDITOR">ผู้ตรวจประเมิน</a></li>
       <?php } ?>
-      <li><a href="#">รายงาน</a></li>
-	        <?php 
-      
-            if($_SESSION['user_type']=="USER"){
+   		<?php 
+            if($_SESSION['user_type']=="AUDITOR"){
 
         ?>
-      <li><a href="database.php?yearsel=<?php echo date("Y"); ?>">DATABASE</a></li>
+      <li><a href="audit.php">ตรวจพิจารณา</a></li>
+
+      <?php } ?> 
+	    <?php  if($_SESSION['user_type']=="USER"){
+        ?>
+	  <li <?php if (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='status_report') {echo "class='active'";}?>><a href="status_report.php">สถานะการส่งพิจารณา</a></li>
+	  <li <?php if (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='cer_download') {echo "class='active'";}?>><a href="#">ดาวน์โหลดใบรับรอง</a></li>
+      <li <?php if (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='database') {echo "class='active'";}?>><a href="database.php?yearsel=<?php echo date("Y"); ?>">DATABASE</a></li>
 	  <?php } ?>
       <li><a href="logout.php"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-unlock" viewBox="0 0 16 16">
   <path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2zM3 8a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1H3z"></path>
 </svg>  | Log out</a></li>
-      
-    </ul>
+    </ul><br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 
     <div class="note">
       <h3>© All Right Reserved</h3>
