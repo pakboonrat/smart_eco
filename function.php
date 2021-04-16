@@ -31,6 +31,7 @@
                 echo "Failed to connect to MySQL: " . mysqli_connect_error();
             }
         }
+
         public function getCon() {
             return $this->dbcon;
         }
@@ -132,8 +133,8 @@
             $result = mysqli_query($this->dbcon, "SELECT DISTINCT level_label FROM level ORDER BY level_label ASC ");
             return $result;
         }
-
-        public function fetch_level_menuuser($userid) {
+		
+		public function fetch_level_menuuser($userid) {
             $result = mysqli_query($this->dbcon, "SELECT DISTINCT level_label FROM level WHERE level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '$userid')) ORDER BY level_label ASC");
             return $result;
         }
@@ -233,6 +234,17 @@
 		
 		public function update_transaction($user_id) {
             $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `user_id` = $user_id");
+            return $up_tran_status;
+        }
+		
+		public function update_transactionID($level_id,$user_id) {
+            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `list_id` in (select list_id FROM list where level_id = '$level_id') and user_id = '$user_id'");
+            return $up_tran_status;
+        }
+		
+		public function update_useraddID($level_id,$user_id) {
+            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `user_add` SET `status`='consider' WHERE `level_id` = '$level_id' and user_id = '$user_id'");
+			//SELECT * FROM `user_add` where level_id = '2' and user_id = '3'
             return $up_tran_status;
         }
 		
