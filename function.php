@@ -99,7 +99,7 @@
         }
 		
 		public function select_scoredes($level_id,$userid) {
-            $result = mysqli_query($this->dbcon, "select score_des from score where score_id in (SELECT score_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid' and level_id = '$level_id') ");
+            $result = mysqli_query($this->dbcon, "select score_des,point from score where score_id in (SELECT score_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid' and level_id = '$level_id') ");
             //select score_des from score where score_id in (SELECT score_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '3' and level_id = '5')
             return $result;
         }
