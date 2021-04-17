@@ -158,9 +158,7 @@ function validateForm() {
 						?>
 
 						<div class="item">
-							<B><?php echo $row['sub_lebel'];?> 
-								<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
-							</B>
+							<B><?php echo $row['sub_lebel'];?></B>
 							
 						</div>
 	
