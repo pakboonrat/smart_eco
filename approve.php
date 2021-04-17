@@ -146,28 +146,51 @@ function validateForm() {
 
 			   ?>
 					<?php
+						
 						if( ( strtolower($sub_lebel) != strtolower($row['sub_lebel'])) AND ( strtolower($row['set_lebel']) == 'guidelines' )  ){
+						if( $row['type'] == "measure"){
+							$type_display = "เกณฑ์คะแนน";
+						}elseif( $row['type']== "control"){
+							$type_display = "เกณฑ์บังคับ]";
+						}else{
+							$type_display = $row['type'];
+						}
 						?>
 
 						<div class="item">
 							<B><?php echo $row['sub_lebel'];?> 
 								<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
 							</B>
+							
 						</div>
+	
+						<button class="badge badge-secondary" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
 						<?php 
 						}elseif( strtolower($row['set_lebel']) != 'guidelines' ){
 							?>
+							 
 							<div class="item">
 							<B><?php echo $row['sub_lebel'];?> 
 								<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
 							</B>
 							</div>
 							<?php
-
+						}elseif( $type_sub_lebel != $row['type'] . "_" . $row['level_id'] ){
+							if( $row['type'] == "measure"){
+								$type_display = "เกณฑ์คะแนน";
+							}elseif( $row['type']== "control"){
+								$type_display = "เกณฑ์บังคับ]";
+							}else{
+								$type_display = $row['type'];
+							}
+							?>
+							
+							<button class="badge badge-secondary" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
+							<?php
 
 						}
 						?>  
-				<div class="collapse" id="collapseExample<?php echo $row['level_id'];?>">
+				<div class="collapse" id="collapseExample<?php echo $row['level_id']."_".$row['type'];?>">
 					<?php 
 					$fetchdata2 = new DB_con();
 					$sql2 = $fetchdata->fetch_transaction_list_level2($user_id,$row['level_id'] );
@@ -214,6 +237,7 @@ function validateForm() {
 
 			<?php 
 			$sub_lebel = $row['sub_lebel'] ;
+			$type_sub_lebel = $row['type'] . "_" . $row['level_id'] ;
 			}; 
 			 }else{ echo "ไม่มีรายการ"; } ?>	
 				
@@ -279,7 +303,7 @@ $(document).ready(function() {
 
 				success: function (data) {
 					if (data === '1') {
-						alert(" // บันทึกสำเร็จ !  ");
+						alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
 						window.history.back();
 						location.reload(); 
 					}
