@@ -151,7 +151,7 @@ function validateForm() {
 						if( $row['type'] == "measure"){
 							$type_display = "เกณฑ์คะแนน";
 						}elseif( $row['type']== "control"){
-							$type_display = "เกณฑ์บังคับ]";
+							$type_display = "เกณฑ์บังคับ";
 						}else{
 							$type_display = $row['type'];
 						}
@@ -179,7 +179,7 @@ function validateForm() {
 							if( $row['type'] == "measure"){
 								$type_display = "เกณฑ์คะแนน";
 							}elseif( $row['type']== "control"){
-								$type_display = "เกณฑ์บังคับ]";
+								$type_display = "เกณฑ์บังคับ";
 							}else{
 								$type_display = $row['type'];
 							}
