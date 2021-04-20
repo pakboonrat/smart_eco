@@ -122,7 +122,7 @@ body, button, input, select, textarea {
     }
     .content-columns .col {
       min-height: 50px;
-      width: 600px;
+      width: 1000px;
       padding: 1rem;
       background: #ebecee;
       margin-right: 1rem;
@@ -241,6 +241,7 @@ body, button, input, select, textarea {
     .item2 {
       background: rgb(245, 244, 244);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	  width: 100%;
       min-height: 50px;
       border-radius: 5px;
       margin: 10px;
@@ -326,7 +327,7 @@ body, button, input, select, textarea {
       grid-template-columns: auto auto;
       grid-template-rows: 90px 90px 90px;
       grid-template-areas: "name name""number expiration""security security2";
-      max-width: 500px;
+      max-width: 700px;
       padding: 20px;
       color: #707070;
   }
@@ -336,11 +337,7 @@ body, button, input, select, textarea {
       font-size: 18px;
   }
   
-  input {
-      margin-top: 3px;
-      padding: 15px;
-      font-size: 16px;
-      width: 100%;
-      border-radius: 3px;
-      border: 1px solid #dcdcdc;
+
+    .input1 {
+      width: 70%;
   }
