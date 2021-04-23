@@ -230,7 +230,7 @@ function validateForm() {
 												</tr>
 												<tr>
 													<td height="15">ไฟล์แนบ :</td>
-													<td height="15"><a href="./uploads/<?php echo $row_list['ori_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
+													<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
 												</tr>
 												<tr>
 													<td>ข้อคิดเห็น :</td>
@@ -282,7 +282,7 @@ function validateForm() {
 											</tr>
 											<tr>
 												<td height="15">ไฟล์แนบ :</td>
-												<td height="15"><a href="./uploads/<?php echo $row_list3['ori_filename'];?>" target="_blank"><?php echo $row_list3['ori_filename'];?></a></td>
+												<td height="15"><a href="./useraddfile/<?php echo $row_list3['save_filename'];?>" target="_blank"><?php echo $row_list3['ori_filename'];?></a></td>
 											</tr>
 											<tr>
 												<td>ข้อคิดเห็น :</td>
