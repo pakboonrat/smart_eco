@@ -341,3 +341,74 @@ body, button, input, select, textarea {
     .input1 {
       width: 70%;
   }
+
+  .mail-contents{
+    padding: 30px;
+    }
+  .mail-contents-body{
+      padding: 5px 0 10px;
+      }
+
+  .mail-contents-subject{
+    display: flex;
+    align-items: center;
+    }
+
+  .mail-contents-title {
+     font-weight: 700;
+     font-size: 17px;
+     margin-left: 5px;
+    }
+   
+
+   .mail-choice {
+    display: none;
+   }
+   
+   .mail-choice-label{
+    content: "";
+    display: flex;
+    width: 35px;
+    height: 35px;
+    border: 2px solid blue;
+    margin-right: 15px;
+    border-radius: 50%;
+    transition: 0.3s;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23a1a4b9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+   }
+   
+    .mail-choice:checked + label:before {
+      border-color: green;
+      background-color: var(--button-color);
+      border-color: var(--button-color);
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e");
+     }
+     
+     .mail-choice:checked .msg {
+      background-color: red;
+     }
+     
+     
+.mail {
+  padding-left: 55px;
+  font-size: 14px;
+  color: #50aaee;
+}
+
+.list-mail {
+  background: white;
+  min-height: 50px;
+  margin: 0 0 0.5rem 0;
+  padding: 19px;
+}
+
+.mail-inside {
+  padding: 5px 0 5px;
+  margin: 0 0 0 50px;
+  border-bottom: 1px solid #707070;
+  /* color: var(--main-color); */
+  line-height: 1.8em;
+}
