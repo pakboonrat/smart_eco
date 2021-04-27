@@ -130,11 +130,10 @@ function validateForm() {
 					$set_lebel = "" ;
 				} 
 
-				echo "--------------".$_GET['set_lebel'];
+				
 				$fetchdata = new DB_con();
 				$sql = $fetchdata->fetch_approve_level($user_id ,$set_lebel);
 				// fetch_approve_level   ,   fetch_transaction_list_level
-				echo print_r($sql) ;
 				if(!empty($sql)){
 					
 				$sub_lebel = "" ;
@@ -163,7 +162,6 @@ function validateForm() {
 						}else{
 							$check_label = "-uncheck";
 						}
-						echo $row['status'] ;
 						?>
 						
 				
@@ -173,7 +171,10 @@ function validateForm() {
 								<label class="mail-choice-label<?php echo $check_label; ?>" for="mail20"></label>
 								<div class="mail-contents-title"><?php echo $row['sub_lebel'];?></div>
 							</div>
-							<B><?php echo $row['sub_lebel'];?></B>
+							<?php if( isset($row['status']) ){  ?>
+								<div class="mail">สถานะ : <?php  echo $row['status'] ; ?> </div> 
+							<?php } ?> 
+							<div class="mail" id="">__</div>
 						</div>
 	
 						<button class="badge badge-secondary" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
@@ -331,12 +332,20 @@ function validateForm() {
 						<div class="mail">
 							<div class="pl-0 pb-2">
 								<div class="col-10">ข้อคิดเห็น :</div>
+								<?php if( isset($row['status']) ){ $input_disable="disabled"; ?>
+								<div>สถานะ : <?php  echo $row['status'] ; ?> </div> 
+								<?php }else{ $input_disable=""; ?> 
 								<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
 								</div>
+								<?php } ?>	
 							</div>
 							<div class="pb-2">
-								<input type="submit" name="approve" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
-								<input type="submit" name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
+								<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
+								<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
+								<?php if( isset($row['status']) ){  ?>
+									<input type="submit" name="approve3" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
+								<?php } ?> 
+								
 							</div>	
 						</div>		
 				  </div> 
@@ -349,37 +358,30 @@ function validateForm() {
 							</svg>พิจารณา
 						</div>
 						<div class="mail">
-							<div class="pl-0 pb-2">
+						<div class="pl-0 pb-2">
 								<div class="col-10">ข้อคิดเห็น :</div>
-								<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10"  rows="4" style="overflow:hidden"></textarea>
+								<?php if( isset($row['status']) ){ $input_disable="disabled"; ?>
+								<div>สถานะ : <?php  echo $row['status'] ; ?> </div> 
+								<?php }else{ $input_disable=""; ?> 
+								<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
 								</div>
+								<?php } ?>	
 							</div>
 							<div class="pb-2">
-								<input type="submit" name="approve" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
-								<input type="submit" name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
+								<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
+								<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
+								<?php if( isset($row['status']) ){  ?>
+									<input type="submit" name="approve3" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
+								<?php } ?> 
+								
 							</div>	
 						</div>
-						<div class="fs-3 mb-3 mt-3 pl-5 ">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-								<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
-							</svg>พิจารณา
-						</div>
-						<div class="mail">
-							<div class="pl-0 pb-2">
-								<div class="col-10">ข้อคิดเห็น :</div>
-								<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10"  rows="4" style="overflow:hidden"></textarea>
-								</div>
-							</div>
-							<div class="pb-2">
-								<input type="submit" name="approve" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
-								<input type="submit" name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
-							</div>	
-						</div>
-						<div class="mail">
+						
+						<!-- <div class="mail">
 							<div class="mail-checklist">
 								<label class="mail-choice-label">Natalie completed this task.</label> 
 							</div>
-						</div>
+						</div> -->
 
 				  </div>
 				  <?php } ?>
