@@ -342,9 +342,17 @@ body, button, input, select, textarea {
       width: 70%;
   }
 
+  .mail {
+    padding-left: 55px;
+    font-size: 14px;
+    color: #50aaee;
+  }
+
   .mail-contents{
     padding: 30px;
+    display: block;
     }
+
   .mail-contents-body{
       padding: 5px 0 10px;
       }
@@ -369,12 +377,33 @@ body, button, input, select, textarea {
     content: "";
     display: flex;
     width: 35px;
+    min-width: 35px;
     height: 35px;
-    border: 2px solid blue;
+    border: 2px solid rgba(0, 110, 255, 0.938);
+    outline: none;
     margin-right: 15px;
     border-radius: 50%;
     transition: 0.3s;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23a1a4b9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e");
+    /* background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23a1a4b9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e"); */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-color: #4d76fd;
+    background-position: center;
+    cursor: pointer;
+   }
+
+   .mail-choice-label-uncheck{
+    content: "";
+    display: flex;
+    width: 35px;
+    min-width: 35px;
+    height: 35px;
+    border: 2px solid rgba(130, 131, 133, 0.938);
+    outline: none;
+    margin-right: 15px;
+    border-radius: 50%;
+    transition: 0.3s;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23a1a4b9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e"); 
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
@@ -382,8 +411,8 @@ body, button, input, select, textarea {
    
     .mail-choice:checked + label:before {
       border-color: green;
-      background-color: var(--button-color);
-      border-color: var(--button-color);
+      background-color: #4d76fd;
+      border-color: #4d76fd;
       background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e");
      }
      
@@ -392,11 +421,7 @@ body, button, input, select, textarea {
      }
      
      
-.mail {
-  padding-left: 55px;
-  font-size: 14px;
-  color: #50aaee;
-}
+
 
 .list-mail {
   background: white;
@@ -411,4 +436,11 @@ body, button, input, select, textarea {
   border-bottom: 1px solid #707070;
   /* color: var(--main-color); */
   line-height: 1.8em;
+}
+
+.mail-checklist {
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
 }
