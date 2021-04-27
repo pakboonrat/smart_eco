@@ -67,6 +67,11 @@
             $result = mysqli_query($this->dbcon, "SELECT DISTINCT set_lebel FROM level where level_label = '$level_label' ");
             return $result;
         }
+		
+		public function sel_score_status($level_id,$userid) {
+            $result = mysqli_query($this->dbcon, "SELECT point, status FROM `aprove_list_score` where level_id = '$level_id' and user_id = '$userid' ");
+            return $result;
+        }
 
         public function fetchdata($level_label,$set_lebel,$userid) {
             $result = mysqli_query($this->dbcon, "SELECT * FROM level WHERE level_label = '$level_label' and set_lebel = '$set_lebel' and level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '$userid')) ");
@@ -308,12 +313,16 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 $set_lebel_buff = " AND set_lebel = \"". $set_lebel ."\" " ;
             }
             $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT level.level_id as level_id , level.level_label as level_label , level.sub_lebel as sub_lebel ,level.type as type , level.set_lebel as set_lebel  
-            FROM list,level, transaction 
+            ,  score.score_des as score_des , score.point as point
+            FROM level, transaction ,list
+            lEFT JOIN score on list.score_id = score.score_id
             WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) 
             AND transaction.user_id = $user_id  $set_lebel_buff and LOWER(TRIM(transaction.status))=\"consider\" 
             UNION
             select DISTINCT level.level_id as level_id , level.level_label as level_label , level.sub_lebel as sub_lebel ,level.type as type , level.set_lebel as set_lebel
+            , score.score_des as score_des , score.point as point
             FROM level, user_add
+            lEFT JOIN score on user_add.score_id = score.score_id
             where 
             trim(level.level_id) = trim(user_add.level_id) AND user_add.user_id =  $user_id  $set_lebel_buff     and LOWER(TRIM(user_add.status))=\"consider\"
             ORDER by level_label , set_lebel,level_id ");
@@ -324,7 +333,8 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 
         public function fetch_transaction_list_level2($user_id , $level_id) {
            
-            $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT list.list_id as list_id , list.list_label as list_label  , list.list_label as list_label ,transaction.remark as remark,transaction.save_filename as save_filename , transaction.ori_filename as ori_filename , transaction.t_id as t_id  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id  AND list.level_id = $level_id  and LOWER(TRIM(transaction.status))=\"consider\"  ORDER by list.list_label  ");
+            $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT list.score_id as score_id , list.list_id as list_id , list.list_label as list_label  , list.list_label as list_label ,transaction.remark as remark,transaction.save_filename as save_filename , transaction.ori_filename as ori_filename , transaction.t_id as t_id  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id  AND list.level_id = $level_id  and LOWER(TRIM(transaction.status))=\"consider\"  ORDER by list.list_label  ");
+            
             //echo " SELECT  DISTINCT list.list_id as list_id , list.list_label as list_label  , list.list_label as list_label ,transaction.remark as remark,transaction.save_filename as save_filename , transaction.ori_filename as ori_filename , transaction.t_id as t_id  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id  AND list.level_id = $level_id  and LOWER(TRIM(transaction.status))=\"consider\"  ORDER by list.list_label  ";
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
@@ -332,7 +342,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 
         public function fetch_user_add_list_level2($user_id , $level_id) {
            
-            $fetch = mysqli_query($this->dbcon, "SELECT  DISTINCT user_add.list_label as list_label , user_add.remark as remark,user_add.save_filename as save_filename , user_add.ori_filename as ori_filename , user_add.add_id as add_id 
+            $fetch = mysqli_query($this->dbcon, "SELECT  DISTINCT level.level_id as level_id , user_add.score_id as score_id ,  user_add.list_label as list_label , user_add.remark as remark,user_add.save_filename as save_filename , user_add.ori_filename as ori_filename , user_add.add_id as add_id 
             , score.point as point , score.score_des as score_des 
             FROM level , user_add
             LEFT JOIN score 

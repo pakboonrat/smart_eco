@@ -349,8 +349,8 @@ function validateForm() {
 				  </div>
 				  <?php } ?>
 				</div>
-				<input type="hidden" id="scoredes_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['score_des']; ?>">
-				<input type="hidden" id="point_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['point']; ?>">
+				<input type="hidden" id="scoredes_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php if(isset($row['score_des'])){echo $row['score_des'];}else{ echo "" ;} ?>">
+				<input type="hidden" id="point_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php if(isset($row['point'])){echo $row['point'];}else{ echo "" ;} ?>">
 
 			<?php 
 			$sub_lebel = $row['sub_lebel'] ;
