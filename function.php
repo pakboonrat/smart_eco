@@ -356,8 +356,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 
         public function fetch_user_add_list_level2($user_id , $level_id) {
-           
-            $fetch = mysqli_query($this->dbcon, "SELECT  DISTINCT level.level_id as level_id , user_add.score_id as score_id ,  user_add.list_label as list_label , user_add.remark as remark,user_add.save_filename as save_filename , user_add.ori_filename as ori_filename , user_add.add_id as add_id 
+            $sql_txt = "SELECT  DISTINCT level.level_id as level_id , user_add.score_id as score_id ,  user_add.list_label as list_label , user_add.remark as remark,user_add.save_filename as save_filename , user_add.ori_filename as ori_filename , user_add.add_id as add_id 
             , score.point as point , score.score_des as score_des 
             FROM level , user_add
             LEFT JOIN score 
@@ -365,7 +364,11 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             WHERE 
             trim(user_add.level_id) = trim(level.level_id) AND user_add.user_id = $user_id  
             AND level.level_id = $level_id  
-            and LOWER(TRIM(user_add.status))=\"consider\"  ORDER by list_label");
+            and LOWER(TRIM(user_add.status)) in (\"consider\",\"pass\",\"reject\")  ORDER by list_label" ;
+           
+        //    echo $sql_txt ;
+
+            $fetch = mysqli_query($this->dbcon, $sql_txt );
             
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
@@ -398,43 +401,31 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             // ORDER by level_label , set_lebel,level_id 
             // ");
 
-            $fetch = mysqli_query($this->dbcon, " SELECT DISTINCT L.level_id as level_id , L.level_label as level_label , L.sub_lebel as sub_lebel ,L.type as type ,
+            $sql_txt = " SELECT DISTINCT L.level_id as level_id , L.level_label as level_label , L.sub_lebel as sub_lebel ,L.type as type ,
             L.set_lebel as set_lebel , score.score_des as score_des , score.point as point , aprove_list_score.status as status 
+            ,aprove_list_score.aprove_id AS app_id
+            ,aprove_list_score.aprove_date AS aprove_date
             FROM transaction T ,list
             LEFT JOIN score on list.score_id = score.score_id , level L 
             LEFT JOIN aprove_list_score on L.level_id = aprove_list_score.level_id 
             WHERE TRIM(T.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(L.level_id) 
             AND T.user_id = $user_id  $set_lebel_buff  and LOWER(TRIM(T.status)) in (\"consider\",\"pass\",\"reject\")
-
+            
             UNION
 
             select DISTINCT L.level_id as level_id , L.level_label as level_label , L.sub_lebel as sub_lebel ,L.type as type , L.set_lebel as set_lebel , score.score_des as score_des , score.point as point , aprove_list_score.status as status 
+            ,aprove_list_score.aprove_id AS app_id
+            ,aprove_list_score.aprove_date AS aprove_date
             FROM user_add 
             LEFT JOIN score on user_add.score_id = score.score_id , level L
             LEFT JOIN aprove_list_score on aprove_list_score.level_id = L.level_id
             where trim(L.level_id) = trim(user_add.level_id) AND user_add.user_id = $user_id  $set_lebel_buff  and LOWER(TRIM(user_add.status)) in (\"consider\",\"pass\",\"reject\") 
-            ORDER by level_label , set_lebel,level_id ");
+            
+            ORDER by level_label , set_lebel,level_id " ;
 
+            $fetch = mysqli_query($this->dbcon, $sql_txt);
 
-
-
-
-            // echo " SELECT DISTINCT L.level_id as level_id , L.level_label as level_label , L.sub_lebel as sub_lebel ,L.type as type ,
-            // L.set_lebel as set_lebel , score.score_des as score_des , score.point as point , aprove_list_score.status as status 
-            // FROM transaction T ,list
-            // LEFT JOIN score on list.score_id = score.score_id , level L 
-            // LEFT JOIN aprove_list_score on L.level_id = aprove_list_score.level_id 
-            // WHERE TRIM(T.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(L.level_id) 
-            // AND T.user_id = $user_id  $set_lebel_buff  and LOWER(TRIM(T.status)) in (\"consider\",\"pass\",\"reject\")
-
-            // UNION
-
-            // select DISTINCT L.level_id as level_id , L.level_label as level_label , L.sub_lebel as sub_lebel ,L.type as type , L.set_lebel as set_lebel , score.score_des as score_des , score.point as point , aprove_list_score.status as status 
-            // FROM user_add 
-            // LEFT JOIN score on user_add.score_id = score.score_id , level L
-            // LEFT JOIN aprove_list_score on aprove_list_score.level_id = L.level_id
-            // where trim(L.level_id) = trim(user_add.level_id) AND user_add.user_id = $user_id  $set_lebel_buff  and LOWER(TRIM(user_add.status)) in (\"consider\",\"pass\",\"reject\") 
-            // ORDER by level_label , set_lebel,level_id ";
+            // echo $sql_txt ;
 
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
