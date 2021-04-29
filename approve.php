@@ -149,36 +149,38 @@ function validateForm() {
 			   ?>
 					<?php
 						if( ( strtolower($sub_lebel) != strtolower($row['sub_lebel'])) AND ( strtolower($row['set_lebel']) == 'guidelines' )  ){
-						if( $row['type'] == "measure"){
-							$type_display = "เกณฑ์คะแนน";
-						}elseif( $row['type']== "control"){
-							$type_display = "เกณฑ์บังคับ";
-						}else{
-							$type_display = $row['type'];
-						}
+							if( $row['type'] == "measure"){
+								$type_display = "เกณฑ์คะแนน";
+							}elseif( $row['type']== "control"){
+								$type_display = "เกณฑ์บังคับ";
+							}else{
+								$type_display = $row['type'];
+							}
 
-						if( strtolower($row['status']) == "pass" ){
-							$check_label = "";
-						}else{
-							$check_label = "-uncheck";
-						}
-						?>
-						
-				
-						<div class="list-mail mt-3">
-							<div class="mail-contents-subject">
-								<input type="checkbox" name="msg" id="mail20" class="mail-choice" checked="">
-								<label class="mail-choice-label<?php echo $check_label; ?>" for="mail20"></label>
-								<div class="mail-contents-title"><?php echo $row['sub_lebel'];?></div>
+							if( strtolower($row['status']) == "pass" ){
+								$check_label = "";
+							}else{
+								$check_label = "-uncheck";
+							}
+							?>
+							
+					
+							<div class="list-mail mt-3">
+								<div class="mail-contents-subject">
+									<input type="checkbox" name="msg" id="mail20" class="mail-choice" checked="">
+									<label class="mail-choice-label<?php echo $check_label; ?>" for="mail20"></label>
+									<div class="mail-contents-title"><?php echo $row['sub_lebel'];?></div>
+								</div>
+								<?php if( isset($row['status']) ){  ?>
+									<div class="mail">สถานะ : <?php  echo $row['status'] ; ?> </div>
+									<div id="" class="mail">เกณฑ์คะแนน สถานะ : <?php  echo $row['status'] ; ?> </div>
+									<div id="" class="mail">เกณฑ์บังคับ สถานะ : <?php  echo $row['status'] ; ?> </div> 
+								<?php } ?> 
+								<div class="mail" id="">__</div>
 							</div>
-							<?php if( isset($row['status']) ){  ?>
-								<div class="mail">สถานะ : <?php  echo $row['status'] ; ?> </div> 
-							<?php } ?> 
-							<div class="mail" id="">__</div>
-						</div>
-	
-						<button class="badge badge-secondary" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
-						<?php 
+		
+							<button class="badge badge-secondary" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
+							<?php 	
 						}elseif( strtolower($row['set_lebel']) != 'guidelines' ){
 							?>
 							 
@@ -221,170 +223,226 @@ function validateForm() {
 					<div class="mail-contents">
 							<?php
 
-					}
-					$app_list_id = "0";
-					$app_score_id = "0";
+						}
+							$app_list_id = "0";
+							$app_score_id = "0";
 
-					$fetchdata2 = new DB_con();
-					$sql2 = $fetchdata->fetch_transaction_list_level2($user_id,$row['level_id'] );
-					if( mysqli_num_rows($sql2) != 0 ){
-					 
-					while($row_list = mysqli_fetch_array($sql2)) { 
-					?>  
-						<div class="mail-inside">                                         
-							<div class="mail-contents-body">
-										
-											<p class="mb-0"><?php echo $row_list['list_label'];?> <br>
-											</p>
-											<div class="item2">
-												<table width="95%" border="0" cellspacing="1" cellpadding="1">
-												<tr>
-													<td width="25%" height="15">รายละเอียด :</td>
-													<td width="75%" height="15"><?php echo $row_list['remark'];?></td>
-												</tr>
-												<tr>
-													<td height="15">ไฟล์แนบ :</td>
-													<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
-												</tr>
-												<tr>
-													<td>ข้อคิดเห็น :</td>
-													<td><textarea name="comment" id="comment_<?php echo $row_list['t_id'];?>" cols="40"  style="overflow:hidden"></textarea></td>
-												</tr>
-												<tr>
-													<td width="25%" height="10"></td>
-													<td width="75%" height="10"></td>
-												</tr>
-												<tr>
-													<td><input type="submit" name="approve" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="ผ่านอนุมัติ"></td>
-													<td><input type="submit" name="approve2" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="Reject"></td>
-												</tr>
-												</table>
-											</div>
-										
-										
-							</div>
-						</div>
-						<?php $app_list_id = $row_list['t_id'];
-							  $app_score_id = $row_list['score_id'];
-							  
-					  }; 
-					} ?>
-					<!-- </div> -->
-					<!-- fetch_user_add_list_level2 -->
-					<!-- <div class="collapse" id="collapseExample<?php echo $row['level_id']."_".$row['type'];?>"> -->
-					<?php 
-					$fetchdata3 = new DB_con();
-					$sql3 = $fetchdata3->fetch_user_add_list_level2($user_id,$row['level_id'] );
-					if( mysqli_num_rows($sql3) != 0 ){
-					 
-						while($row_list3 = mysqli_fetch_array($sql3)) { 
-						?>  
-							<div class="mail-contents">
-								<div class="pb-2">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-medical-fill" viewBox="0 0 16 16">
-  								<path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-3 2v.634l.549-.317a.5.5 0 1 1 .5.866L7 7l.549.317a.5.5 0 1 1-.5.866L6.5 7.866V8.5a.5.5 0 0 1-1 0v-.634l-.549.317a.5.5 0 1 1-.5-.866L5 7l-.549-.317a.5.5 0 0 1 .5-.866l.549.317V5.5a.5.5 0 1 1 1 0zm-2 4.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"></path>
-								</svg> หลักฐานเพิ่มเติม  </div>                                       
-								<div class="card">
-											<div class="card-header" id="headingOne">
-											<p class="mb-0"><?php echo $row_list3['list_label'];?> <br>
-											</p>
-											<div class="item2">
-											<table width="95%" border="0" cellspacing="1" cellpadding="1">
-											<tr>
-												<td width="25%" height="15">รายละเอียด :</td>
-												<td width="75%" height="15"><?php echo $row_list3['remark'];?></td>
-											</tr>
-											<tr>
-												<td height="15">ไฟล์แนบ :</td>
-												<td height="15"><a href="./useraddfile/<?php echo $row_list3['save_filename'];?>" target="_blank"><?php echo $row_list3['ori_filename'];?></a></td>
-											</tr>
-											<tr>
-												<td>ข้อคิดเห็น :</td>
-												<td><textarea name="comment" id="comment_<?php echo $row_list3['add_id'];?>" cols="40" rows="4" style="overflow:hidden"></textarea></td>
-											</tr>
-											<tr>
-												<td width="25%" height="10"></td>
-												<td width="75%" height="10"></td>
-											</tr>
-											<tr>
-												<td><input type="submit" name="approve" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="ผ่านอนุมัติ"></td>
-												<td><input type="submit" name="approve2" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="Reject"></td>
-											</tr>
-											</table>
-											</div>
-											
-											</div>
+							$fetchdata2 = new DB_con();
+							$sql2 = $fetchdata->fetch_transaction_list_level2($user_id,$row['level_id'] );
+							if( mysqli_num_rows($sql2) != 0 ){
+							
+							while($row_list = mysqli_fetch_array($sql2)) { 
+							?>  
+								<div class="mail-inside">                                         
+									<div class="mail-contents-body">
+												
+													<p class="mb-0"><?php echo $row_list['list_label'];?> <br>
+													</p>
+													<div class="item2">
+														<table width="95%" border="0" cellspacing="1" cellpadding="1">
+														<tr>
+															<td width="25%" height="15">รายละเอียด :</td>
+															<td width="75%" height="15"><?php echo $row_list['remark'];?></td>
+														</tr>
+														<tr>
+															<td height="15">ไฟล์แนบ :</td>
+															<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
+														</tr>
+														<tr>
+															<td>ข้อคิดเห็น :</td>
+															<td><textarea name="comment" id="comment_<?php echo $row_list['t_id'];?>" cols="40"  style="overflow:hidden"></textarea></td>
+														</tr>
+														<tr>
+															<td width="25%" height="10"></td>
+															<td width="75%" height="10"></td>
+														</tr>
+														<tr>
+															<td><input type="submit" name="approve" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="ผ่านอนุมัติ"></td>
+															<td><input type="submit" name="approve2" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="Reject"></td>
+														</tr>
+														</table>
+													</div>
+												
+												
+									</div>
 								</div>
-							</div>
-							<?php 	
-									$app_score_id = $row_list3['score_id'];
+								<?php $app_list_id = $row_list['t_id'];
+									$app_score_id = $row_list['score_id'];
 									
-						}; 
-					} 
-					if( !is_null($row['score_des']) ){
-						
-						?>
-						<div class="fs-3 mb-3 mt-3 pl-5 ">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-							<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
-							</svg>พิจารณา
-						</div>
-						<div class="mail">
-							<div class="pl-0 pb-2">
-								<div class="col-10">ข้อคิดเห็น :</div>
-								<?php if( isset($row['status']) ){ $input_disable="disabled"; ?>
-								<div>สถานะ : <?php  echo $row['status'] ; ?> </div> 
-								<?php }else{ $input_disable=""; ?> 
-								<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
-								</div>
-								<?php } ?>	
-							</div>
-							<div class="pb-2">
-								<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
-								<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
-								<?php if( isset($row['status']) ){  ?>
-									<input type="submit" name="approve3" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
-								<?php } ?> 
-								
-							</div>	
-						</div>		
-				  </div> 
-						<?php
-					}else{ ?>
+							}; 
+							} ?>
+							<!-- </div> -->
+							<!-- fetch_user_add_list_level2 -->
+							<!-- <div class="collapse" id="collapseExample<?php echo $row['level_id']."_".$row['type'];?>"> -->
+							<?php 
+							$fetchdata3 = new DB_con();
+							$sql3 = $fetchdata3->fetch_user_add_list_level2($user_id,$row['level_id'] );
+							if( mysqli_num_rows($sql3) != 0 ){
+							
+								while($row_list3 = mysqli_fetch_array($sql3)) { 
+								?>  
+									<div class="mail-contents">
+										<div class="pb-2">
+										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-medical-fill" viewBox="0 0 16 16">
+										<path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-3 2v.634l.549-.317a.5.5 0 1 1 .5.866L7 7l.549.317a.5.5 0 1 1-.5.866L6.5 7.866V8.5a.5.5 0 0 1-1 0v-.634l-.549.317a.5.5 0 1 1-.5-.866L5 7l-.549-.317a.5.5 0 0 1 .5-.866l.549.317V5.5a.5.5 0 1 1 1 0zm-2 4.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"></path>
+										</svg> หลักฐานเพิ่มเติม  </div>                                       
+										<div class="card">
+													<div class="card-header" id="headingOne">
+													<p class="mb-0"><?php echo $row_list3['list_label'];?> <br>
+													</p>
+													<div class="item2">
+													<table width="95%" border="0" cellspacing="1" cellpadding="1">
+													<tr>
+														<td width="25%" height="15">รายละเอียด :</td>
+														<td width="75%" height="15"><?php echo $row_list3['remark'];?></td>
+													</tr>
+													<tr>
+														<td height="15">ไฟล์แนบ :</td>
+														<td height="15"><a href="./useraddfile/<?php echo $row_list3['save_filename'];?>" target="_blank"><?php echo $row_list3['ori_filename'];?></a></td>
+													</tr>
+													<tr>
+														<td>ข้อคิดเห็น :</td>
+														<td><textarea name="comment" id="comment_<?php echo $row_list3['add_id'];?>" cols="40" rows="4" style="overflow:hidden"></textarea></td>
+													</tr>
+													<tr>
+														<td width="25%" height="10"></td>
+														<td width="75%" height="10"></td>
+													</tr>
+													<tr>
+														<td><input type="submit" name="approve" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="ผ่านอนุมัติ"></td>
+														<td><input type="submit" name="approve2" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="Reject"></td>
+													</tr>
+													</table>
+													</div>
+													
+													</div>
+										</div>
+									</div>
+									<?php 	
+											$app_score_id = $row_list3['score_id'];
+											
+								}; 
+							} ?>
 
-						<div class="fs-3 mb-3 mt-3 pl-5 ">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-								<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
-							</svg>พิจารณา
-						</div>
-						<div class="mail">
-						<div class="pl-0 pb-2">
-								<div class="col-10">ข้อคิดเห็น :</div>
-								<?php if( isset($row['status']) ){ $input_disable="disabled"; ?>
-								<div>สถานะ : <?php  echo $row['status'] ; ?> </div> 
-								<?php }else{ $input_disable=""; ?> 
-								<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
+								<div class="fs-3 mb-3 mt-3 pl-5 ">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+										<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
+									</svg>พิจารณา
 								</div>
-								<?php } ?>	
-							</div>
-							<div class="pb-2">
-								<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
-								<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
-								<?php if( isset($row['status']) ){  ?>
-									<input type="submit" name="approve3" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
-								<?php } ?> 
+								<div class="mail">
+									<div class="pl-0 pb-2">
+										<div class="col-10">ข้อคิดเห็น :</div>
+										<?php if( isset($row['status']) ){ 
+											if($row['status'] != "cancle"){  
+												$input_disable="disabled"; ?>
+													<div>สถานะ : <?php  echo $row['status'] ; ?> </div> 
+										<?php }else{ 
+												$input_disable=""; ?>
+												
+												
+												<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
+												</div>
+												
+
+										<?php } }else{ $input_disable=""; ?> 
+										<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
+										</div>
+										<?php } ?>	
+									</div>
+									<div class="pb-2">
+										<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
+										<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
+										<?php if( isset($row['status']) ){  
+												if($row['status'] != "cancle"){  ?>
+													<input type="submit" name="cancle_<?php echo $row['app_id'];?>" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
+													<input type="hidden" id="cancle_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['app_id'];?>">
+											<?php }
+											}
+											
+											
+											?> 
+										
+									</div>	
+								</div>	
+				  	</div> 
+
+
+							<!-- <?php
+							if( !is_null($row['score_des']) ){
 								
-							</div>	
-						</div>
+								?>
+								<div class="fs-3 mb-3 mt-3 pl-5 ">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+									<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
+									</svg>พิจารณา
+								</div>
+								<div class="mail">
+									<div class="pl-0 pb-2">
+										<div class="col-10">ข้อคิดเห็น :</div>
+										<?php if( isset($row['status']) ){ 
+											if($row['status'] != "cancle"){  
+												$input_disable="disabled"; ?>
+													<div>สถานะ : <?php  echo $row['status'] ; ?> </div> 
+										<?php }else{ 
+												$input_disable=""; } 
+										}else{ $input_disable=""; ?> 
+										<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
+										</div>
+										<?php } ?>	
+									</div>
+									<div class="pb-2">
+										<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
+										<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
+										<?php if( isset($row['status']) ){  
+												if($row['status'] != "cancle"){  ?>
+													<input type="submit" name="cancle_<?php echo $row['app_id'];?>" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
+													<input type="hidden" id="cancle_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['app_id'];?>">
+											<?php }
+											}
+											
+											
+											?> 
+										
+									</div>	
+								</div>		
+				  	</div> 
+						<?php
+
+							}else{ ?>
+
+								<div class="fs-3 mb-3 mt-3 pl-5 ">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+										<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
+									</svg>พิจารณา
+								</div>
+								<div class="mail">
+									<div class="pl-0 pb-2">
+										<div class="col-10">ข้อคิดเห็น :</div>
+										<?php if( isset($row['status']) ){ $input_disable="disabled"; ?>
+										<div>สถานะ : <?php  echo $row['status'] ; ?> </div> 
+										<?php }else{ $input_disable=""; ?> 
+										<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
+										</div>
+										<?php } ?>	
+									</div>
+									<div class="pb-2">
+										<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
+										<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
+										<?php if( isset($row['status']) ){  ?>
+											<input type="submit" name="cancle_<?php echo $row['app_id'];?>" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก" >
+											<input type="hidden" id="cancle_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['app_id'];?>">
 						
-						<!-- <div class="mail">
-							<div class="mail-checklist">
-								<label class="mail-choice-label">Natalie completed this task.</label> 
-							</div>
-						</div> -->
+										<?php } ?> 
+										
+									</div>	
+								</div>
+						
+									
 
 				  </div>
-				  <?php } ?>
+				  <?php } 
+				  
+				  ?> -->
 				</div>
 				<input type="hidden" id="scoredes_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php if(isset($row['score_des'])){echo $row['score_des'];}else{ echo "" ;} ?>">
 				<input type="hidden" id="point_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php if(isset($row['point'])){echo $row['point'];}else{ echo "" ;} ?>">
@@ -488,6 +546,16 @@ $(document).ready(function() {
 			var score_id = splitid[3];
 			var approve_action = this.value;
 
+			//var cancle_id = this.attr('name');
+			var cancle_app_id = 0;
+		
+			if( this.value === "ยกเลิก"){
+				//console.log("C:"+cancle_id); 
+				cancle_app_id = $('#cancle_'+input_type+'_'+level_id+'_'+score_id).val();
+				console.log("C2:"+cancle_app_id);
+				input_type = "cancle"; 
+			}
+
 			console.log(input_type);
 			console.log(level_id);
 			console.log(score_id);
@@ -500,7 +568,7 @@ $(document).ready(function() {
 			console.log(point);
 			
 			var score_des = $('#scoredes_'+input_type+'_'+level_id+'_'+score_id).val();
-			console.log(score_des);
+			console.log("score:"+score_des);
 
 			var audit = $('#audit').val();
 			var user_id = $('#user').val();
@@ -517,7 +585,8 @@ $(document).ready(function() {
 						user_id: user_id,
 						input_type: input_type,
 						point : point,
-						score_des : score_des				
+						score_des : score_des,
+						cancle_app_id : cancle_app_id 				
 					},
 					cache: false,
 
@@ -543,6 +612,7 @@ $(document).ready(function() {
 					// }
 
 					success: function (data) {
+						
 						if (data === '1') {
 							alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
 							window.history.back();
@@ -554,7 +624,7 @@ $(document).ready(function() {
 					},
 					error: function ()
 					{
-						alert("2 ไม่สามารถบันทึกข้อมูลได้ !");
+						alert("ไม่สามารถบันทึกข้อมูลได้ !");
 					}
 				});
 			}
