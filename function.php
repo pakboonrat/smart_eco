@@ -67,6 +67,11 @@
             $result = mysqli_query($this->dbcon, "SELECT DISTINCT set_lebel FROM level where level_label = '$level_label' ");
             return $result;
         }
+		
+		public function sel_score_status($level_id,$userid) {
+            $result = mysqli_query($this->dbcon, "SELECT point, status FROM `aprove_list_score` where level_id = '$level_id' and user_id = '$userid' ");
+            return $result;
+        }
 
         public function fetchdata($level_label,$set_lebel,$userid) {
             $result = mysqli_query($this->dbcon, "SELECT * FROM level WHERE level_label = '$level_label' and set_lebel = '$set_lebel' and level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '$userid')) ");
