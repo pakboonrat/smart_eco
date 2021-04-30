@@ -345,7 +345,7 @@ body, button, input, select, textarea {
   .mail {
     padding-left: 55px;
     font-size: 14px;
-    color: #50aaee;
+    color: #38393a;
   }
 
   .mail-contents{
@@ -386,11 +386,31 @@ body, button, input, select, textarea {
     transition: 0.3s;
     /* background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23a1a4b9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e"); */
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e");
+    
     background-repeat: no-repeat;
     background-color: #4d76fd;
     background-position: center;
     cursor: pointer;
    }
+ 
+.mail-choice-label-reject{
+  content: "";
+  display: flex;
+  width: 35px;
+  min-width: 35px;
+  height: 35px;
+  border: 5px solid rgba(130, 131, 133, 0.938);
+  outline: none;
+  margin-right: 15px;
+  border-radius: 50%;
+  transition: 0.3s;
+ background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z'/%3e%3c/svg%3e");
+
+  background-repeat: no-repeat;
+  background-color:rgba(130, 131, 133, 0.938);;
+  background-position: center;
+  cursor: pointer;
+ }
 
    .mail-choice-label-uncheck{
     content: "";
@@ -444,3 +464,108 @@ body, button, input, select, textarea {
   align-items: center;
   border-bottom: 1px solid var(--border-color);
 }
+
+.mail-checklist label {
+  display: flex;
+  align-items: center;
+  color: var(--button-color);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.mail-doc {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  flex-shrink: 0;
+  justify-content: space-between;
+}
+
+
+.mail {
+  padding-left: 55px;
+  font-size: 14px;
+  color: var(--main-light-color);
+}
+
+.mail-time {
+   font-weight: 600;
+   display: flex;
+   align-items: center;
+   font-size: 13px;
+}
+
+   .mail-time svg {
+    width: 12px;
+    margin-right: 8px;
+   }
+  
+
+  .mail-inside {
+   padding: 20px 0 30px;
+   border-bottom: 1px solid var(--border-color);
+   color: var(--main-color);
+   line-height: 1.8em;
+  }
+
+ .mail-checklist {
+   padding: 20px 0;
+   display: flex;
+   align-items: center;
+   border-bottom: 1px solid #e5e4e9;
+ }
+
+  .mail-checklist-label{
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-right: 12px;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='18' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M20 6L9 17l-5-5'/%3e%3c/svg%3e");
+   }
+
+   
+
+   .label {
+    display: flex;
+    align-items: center;
+    color: var(--button-color);
+    font-weight: 600;
+    font-size: 13px;
+   }
+   .label-date {
+    margin-left: 16px;
+    font-size: 13px;
+   }
+
+ 
+ 
+
+
+  .mail-doc-name {
+   color: var(--body-color);
+   font-weight: 600;
+   font-size: 15px;
+   margin-bottom: 3px;
+  }
+  .mail-doc-date {
+   font-size: 13px;
+  }
+  .mail-doc-wrapper {
+   display: flex;
+   align-items: center;
+  }
+  .mail-doc-wrapper svg {
+    margin-right: 15px;
+    background-color: #d4d5d6;
+    color: #4d76fd;
+    width: 50px;
+    padding: 9px;
+    border-radius: 4px;
+   }
+  
+   .mail-doc-icons svg{
+   
+    margin-right: 8px;
+   
+  }
+ 
