@@ -148,6 +148,14 @@ function validateForm() {
 
 			   ?>
 					<?php
+						if( strtolower($row['status']) == "pass" ){
+							$check_label = "";
+						}elseif( strtolower($row['status']) == "reject" ){
+							$check_label = "-reject";
+						}else{
+							$check_label = "-uncheck";
+						}
+
 						if( ( strtolower($sub_lebel) != strtolower($row['sub_lebel'])) AND ( strtolower($row['set_lebel']) == 'guidelines' )  ){
 							if( $row['type'] == "measure"){
 								$type_display = "เกณฑ์คะแนน";
@@ -157,11 +165,7 @@ function validateForm() {
 								$type_display = $row['type'];
 							}
 
-							if( strtolower($row['status']) == "pass" ){
-								$check_label = "";
-							}else{
-								$check_label = "-uncheck";
-							}
+							
 							?>
 							
 					
@@ -172,9 +176,9 @@ function validateForm() {
 									<div class="mail-contents-title"><?php echo $row['sub_lebel'];?></div>
 								</div>
 								<?php if( isset($row['status']) ){  ?>
-									<div class="mail">สถานะ : <?php  echo $row['status'] ; ?> </div>
-									<div id="" class="mail">เกณฑ์คะแนน สถานะ : <?php  echo $row['status'] ; ?> </div>
-									<div id="" class="mail">เกณฑ์บังคับ สถานะ : <?php  echo $row['status'] ; ?> </div> 
+									<div id="status_<?php echo $row['level_id']; ?>" class="mail">สถานะ : <?php  echo $row['status'] ; ?> </div>
+									<div id="status_M_<?php echo $row['level_id']; ?>" class="mail">เกณฑ์คะแนน สถานะ : <?php  echo $row['status'] ; ?> </div>
+									<div id="status_C_<?php echo $row['level_id']; ?>" class="mail">เกณฑ์บังคับ สถานะ : <?php  echo $row['status'] ; ?> </div> 
 								<?php } ?> 
 								<div class="mail" id="">__</div>
 							</div>
@@ -184,10 +188,25 @@ function validateForm() {
 						}elseif( strtolower($row['set_lebel']) != 'guidelines' ){
 							?>
 							 
-							<div class="list-mail">
+							<!-- <div class="list-mail">
 							<B><?php echo $row['sub_lebel'];?> 
 								<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id']."_".$row['type'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none"><b>+</b></button>
 							</B>
+							</div> -->
+							<div class="list-mail mt-3">
+								<div class="mail-contents-subject">
+									<input type="checkbox" name="msg" id="mail20" class="mail-choice" checked="">
+									<label class="mail-choice-label<?php echo $check_label; ?>" for="mail20"></label>
+									<div class="mail-contents-title"><?php echo $row['sub_lebel'];?></div>
+									
+								</div>
+								<?php if( isset($row['status']) ){  ?>
+									<div id="status_<?php echo $row['level_id']; ?>" class="mail">สถานะ : <?php  echo $row['status'] ; ?> </div>
+								<?php } ?> 
+								<div class="mail" id="">__</div>
+								<div class="mail" id="">
+									<div class="mail-contents-title"><button class="badge badge-secondary" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id']."_".$row['type'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none">รายละเอียด</button></div>
+								</div>
 							</div>
 							<?php
 						}elseif( $type_sub_lebel != $row['type'] . "_" . $row['level_id'] ){
