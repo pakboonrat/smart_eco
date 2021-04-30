@@ -68,7 +68,8 @@ if( isset($_POST['input_type']) && isset($_POST['level_id']) && isset($_POST['au
 }elseif($_POST['input_type'] == 'cancle' && isset($_POST['cancle_app_id']) ){
     if($_POST['cancle_app_id'] != "0"){
      $cancle_app_id = mysqli_real_escape_string($con,$_POST['cancle_app_id']);
-     $query = "UPDATE `aprove_list_score` SET `status` = 'cancle' WHERE `aprove_list_score`.`aprove_id` = $cancle_app_id";
+    //  $query = "UPDATE `aprove_list_score` SET `status` = 'cancle' WHERE `aprove_list_score`.`aprove_id` = $cancle_app_id";
+     $query = "DELETE FROM `aprove_list_score` WHERE `aprove_list_score`.`aprove_id` = $cancle_app_id " ;
 
     }else{
      echo "--" .$query ;
