@@ -374,7 +374,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             AND level.level_id = $level_id  
             and LOWER(TRIM(user_add.status)) in (\"consider\",\"pass\",\"reject\")  ORDER by list_label" ;
            
-            echo $sql_txt ;
+            // echo $sql_txt ;
 
             $fetch = mysqli_query($this->dbcon, $sql_txt );
             
