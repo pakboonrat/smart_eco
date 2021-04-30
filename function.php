@@ -354,7 +354,13 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 
         public function fetch_transaction_list_level2($user_id , $level_id) {
            
-            $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT list.score_id as score_id , list.list_id as list_id , list.list_label as list_label  , list.list_label as list_label ,transaction.remark as remark,transaction.save_filename as save_filename , transaction.ori_filename as ori_filename , transaction.t_id as t_id  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id  AND list.level_id = $level_id  and LOWER(TRIM(transaction.status))=\"consider\"  ORDER by list.list_label  ");
+            $fetch = mysqli_query($this->dbcon, " SELECT  DISTINCT list.score_id as score_id , list.list_id as list_id , list.list_label as list_label  , list.list_label as list_label 
+                , transaction.remark as remark,transaction.save_filename as save_filename 
+                , transaction.ori_filename as ori_filename , transaction.t_id as t_id  , transaction.status as status
+            FROM list,level, transaction 
+            WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) 
+                AND transaction.user_id = $user_id  AND list.level_id = $level_id  
+                and LOWER(TRIM(transaction.status)) in (\"consider\",\"pass\",\"reject\")   ORDER by list.list_label  ");
             
             //echo " SELECT  DISTINCT list.list_id as list_id , list.list_label as list_label  , list.list_label as list_label ,transaction.remark as remark,transaction.save_filename as save_filename , transaction.ori_filename as ori_filename , transaction.t_id as t_id  FROM list,level, transaction WHERE TRIM(transaction.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(level.level_id) AND transaction.user_id = $user_id  AND list.level_id = $level_id  and LOWER(TRIM(transaction.status))=\"consider\"  ORDER by list.list_label  ";
             return $fetch;
@@ -362,8 +368,10 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 
         public function fetch_user_add_list_level2($user_id , $level_id) {
-            $sql_txt = "SELECT  DISTINCT level.level_id as level_id , user_add.score_id as score_id ,  user_add.list_label as list_label , user_add.remark as remark,user_add.save_filename as save_filename , user_add.ori_filename as ori_filename , user_add.add_id as add_id 
-            , score.point as point , score.score_des as score_des 
+            $sql_txt = "SELECT  DISTINCT level.level_id as level_id , user_add.score_id as score_id 
+            ,  user_add.list_label as list_label , user_add.remark as remark,user_add.save_filename as save_filename 
+            , user_add.ori_filename as ori_filename , user_add.add_id as add_id 
+            , score.point as point , score.score_des as score_des , user_add.status as status , user_add.save_date as date
             FROM level , user_add
             LEFT JOIN score 
             ON user_add.score_id = score.score_id 
@@ -372,7 +380,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             AND level.level_id = $level_id  
             and LOWER(TRIM(user_add.status)) in (\"consider\",\"pass\",\"reject\")  ORDER by list_label" ;
            
-        //    echo $sql_txt ;
+            // echo $sql_txt ;
 
             $fetch = mysqli_query($this->dbcon, $sql_txt );
             
@@ -411,6 +419,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             L.set_lebel as set_lebel , score.score_des as score_des , score.point as point , aprove_list_score.status as status 
             ,aprove_list_score.aprove_id AS app_id
             ,aprove_list_score.aprove_date AS aprove_date
+            ,aprove_list_score.remark AS remark
             FROM transaction T ,list
             LEFT JOIN score on list.score_id = score.score_id , level L 
             LEFT JOIN aprove_list_score on L.level_id = aprove_list_score.level_id 
@@ -422,6 +431,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             select DISTINCT L.level_id as level_id , L.level_label as level_label , L.sub_lebel as sub_lebel ,L.type as type , L.set_lebel as set_lebel , score.score_des as score_des , score.point as point , aprove_list_score.status as status 
             ,aprove_list_score.aprove_id AS app_id
             ,aprove_list_score.aprove_date AS aprove_date
+            ,aprove_list_score.remark AS remark
             FROM user_add 
             LEFT JOIN score on user_add.score_id = score.score_id , level L
             LEFT JOIN aprove_list_score on aprove_list_score.level_id = L.level_id

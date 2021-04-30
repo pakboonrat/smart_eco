@@ -150,10 +150,13 @@ function validateForm() {
 					<?php
 						if( strtolower($row['status']) == "pass" ){
 							$check_label = "";
+							$badge_color = "-info";
 						}elseif( strtolower($row['status']) == "reject" ){
 							$check_label = "-reject";
+							$badge_color = "-dark";
 						}else{
 							$check_label = "-uncheck";
+							$badge_color = "-secondary";
 						}
 
 						if( ( strtolower($sub_lebel) != strtolower($row['sub_lebel'])) AND ( strtolower($row['set_lebel']) == 'guidelines' )  ){
@@ -183,7 +186,7 @@ function validateForm() {
 								<div class="mail" id="">__</div>
 							</div>
 		
-							<button class="badge badge-secondary" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
+							<button class="badge badge<?php echo $badge_color; ?>" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
 							<?php 	
 						}elseif( strtolower($row['set_lebel']) != 'guidelines' ){
 							?>
@@ -219,7 +222,7 @@ function validateForm() {
 							}
 							?>
 							
-							<button class="badge badge-secondary" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
+							<button class="badge badge<?php echo $badge_color; ?>" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
 							<?php
 
 						}
@@ -245,46 +248,70 @@ function validateForm() {
 						}
 							$app_list_id = "0";
 							$app_score_id = "0";
+							$txt_ = "";
+							$txt_user_add = "";
 
 							$fetchdata2 = new DB_con();
 							$sql2 = $fetchdata->fetch_transaction_list_level2($user_id,$row['level_id'] );
 							if( mysqli_num_rows($sql2) != 0 ){
 							
 							while($row_list = mysqli_fetch_array($sql2)) { 
-							?>  
-								<div class="mail-inside">                                         
-									<div class="mail-contents-body">
-												
-													<p class="mb-0"><?php echo $row_list['list_label'];?> <br>
-													</p>
-													<div class="item2">
-														<table width="95%" border="0" cellspacing="1" cellpadding="1">
-														<tr>
-															<td width="25%" height="15">รายละเอียด :</td>
-															<td width="75%" height="15"><?php echo $row_list['remark'];?></td>
-														</tr>
-														<tr>
-															<td height="15">ไฟล์แนบ :</td>
-															<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
-														</tr>
-														<tr>
-															<td>ข้อคิดเห็น :</td>
-															<td><textarea name="comment" id="comment_<?php echo $row_list['t_id'];?>" cols="40"  style="overflow:hidden"></textarea></td>
-														</tr>
-														<tr>
-															<td width="25%" height="10"></td>
-															<td width="75%" height="10"></td>
-														</tr>
-														<tr>
-															<td><input type="submit" name="approve" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="ผ่านอนุมัติ"></td>
-															<td><input type="submit" name="approve2" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="Reject"></td>
-														</tr>
-														</table>
-													</div>
-												
-												
+								if( $row_list['status'] == "consider" ){
+									?>
+
+										<div class="mail-inside">                                         
+											<div class="mail-contents-body">
+														
+															<p class="mb-0"><?php echo $row_list['list_label'];?> <br>
+															</p>
+															<div class="item2">
+																<table width="95%" border="0" cellspacing="1" cellpadding="1">
+																<tr>
+																	<td width="25%" height="15">รายละเอียด : <?php echo $row_list['status'];?></td>
+																	<td width="75%" height="15"><?php echo $row_list['remark'];?></td>
+																</tr>
+																<tr>
+																	<td height="15">ไฟล์แนบ :</td>
+																	<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
+																</tr>
+																<tr>
+																	<td>ข้อคิดเห็น :</td>
+																	<td><textarea name="comment" id="comment_<?php echo $row_list['t_id'];?>" cols="40"  style="overflow:hidden"></textarea></td>
+																</tr>
+																<tr>
+																	<td width="25%" height="10"></td>
+																	<td width="75%" height="10"></td>
+																</tr>
+																<tr>
+																	<td><input type="submit" name="approve" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="ผ่านอนุมัติ"></td>
+																	<td><input type="submit" name="approve2" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="Reject"></td>
+																</tr>
+																</table>
+															</div>
+														
+														
+											</div>
+										</div>
+
+
+								<?php
+								}else{
+									$txt_ = $txt_ ."
+
+									<div class='mail-contents-body'>
+										<div class='assignee'>
+											<strong>".$row_list['list_label']."</strong> 
+											</div>
+										<div class='assignee'>
+											<span class='assign-date'> " .$row_list['remark']."</span>
+										</div> 
+										<div><button type='submit' class='cancle_app' id='cancle_t_".$row_list['t_id']."'  >ยกเลิกการพิจารณา</button></div>
 									</div>
-								</div>
+									";
+
+								}
+							?>  
+								
 								<?php $app_list_id = $row_list['t_id'];
 									$app_score_id = $row_list['score_id'];
 									
@@ -299,8 +326,11 @@ function validateForm() {
 							if( mysqli_num_rows($sql3) != 0 ){
 							
 								while($row_list3 = mysqli_fetch_array($sql3)) { 
-								?>  
-									<div class="mail-contents">
+
+									if( $row_list3['status'] == "consider" ){
+										?>
+
+										<div class="mail-contents">
 										<div class="pb-2">
 										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-medical-fill" viewBox="0 0 16 16">
 										<path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-3 2v.634l.549-.317a.5.5 0 1 1 .5.866L7 7l.549.317a.5.5 0 1 1-.5.866L6.5 7.866V8.5a.5.5 0 0 1-1 0v-.634l-.549.317a.5.5 0 1 1-.5-.866L5 7l-.549-.317a.5.5 0 0 1 .5-.866l.549.317V5.5a.5.5 0 1 1 1 0zm-2 4.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"></path>
@@ -312,7 +342,7 @@ function validateForm() {
 													<div class="item2">
 													<table width="95%" border="0" cellspacing="1" cellpadding="1">
 													<tr>
-														<td width="25%" height="15">รายละเอียด :</td>
+														<td width="25%" height="15">รายละเอียด :<?php echo $row_list3['status'];?></td>
 														<td width="75%" height="15"><?php echo $row_list3['remark'];?></td>
 													</tr>
 													<tr>
@@ -336,12 +366,98 @@ function validateForm() {
 													
 													</div>
 										</div>
+									</div> <?php
+
+									}else{
+
+									$txt_user_add = $txt_user_add ."
+									<div class='mail-contents-body'>
+
+										<div class='assignee'>
+												<strong>".$row_list3['list_label']."</strong> 
+											</div>
+											<div class='assignee'>
+												<span class='assign-date'> " .$row_list3['remark']."</span>
+											</div>
+
+										<div class='mail-doc'>
+											 
+
+											<div class='mail-doc-wrapper'>
+												<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' class='feather feather-file-text'>
+												<path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'></path>
+												<path d='M14 2v6h6M16 13H8M16 17H8M10 9H8'></path></svg>
+												<div class='mail-doc-detail'>
+												<div class='mail-doc-name'><a href='./useraddfile/". $row_list3['save_filename']."' target='_blank'>File name : ". $row_list3['ori_filename']."</a></div>
+												<div class='mail-doc-date'>". $row_list3['date']."</div>
+												</div>
+											</div>
+											<div class='mail-doc-icons'>
+										
+								
+												<div><button type='submit' class='cancle_app' id='cancle_u_".$row_list3['add_id']."'  >ยกเลิกการพิจารณา</button></div>
+												
+											</div>
+											
+										</div>
 									</div>
+									";
+
+
+									}
+								?>  
+									
 									<?php 	
 											$app_score_id = $row_list3['score_id'];
 											
 								}; 
 							} ?>
+								<div class="mail">
+									
+
+									<?php echo $txt_ ; ?>
+
+									<!-- <div class="mail-assign">
+										<div class="assignee">
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-check" viewBox="0 0 16 16">
+												<path d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+												<path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+											</svg><strong>1. ประกาศคำสั่งการจัดตั้งคณะทำงาน Eco Team ประกาศคำสั่งคณะทำงานเครือข่าย Eco Committee</strong> assigned to Natalie Smith.
+												<span class="assign-date">25 Nov, 2019</span>
+										</div>
+										<div class="assignee">
+											<strong>Okla Nowak</strong> added to Marketing.
+											<span class="assign-date">18 Feb, 2019</span>
+										</div>
+										<div class="assignee">
+											<strong>Okla Nowak </strong> created task.
+											<span class="assign-date">18 Feb, 2019</span>
+										</div>
+									</div> -->
+
+									<?php echo $txt_user_add ; ?>
+
+									<!-- <div class="mail-doc">
+
+										<div class="mail-doc-wrapper">
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+											<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+											<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"></path></svg>
+											<div class="mail-doc-detail">
+											<div class="mail-doc-name">File name : Article.docx</div>
+											<div class="mail-doc-date">added 17 May, 2020</div>
+											</div>
+										</div>
+										<div class="mail-doc-icons">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+											<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"></path></svg>
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download-cloud">
+											<path d="M8 17l4 4 4-4M12 12v9"></path>
+											<path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"></path></svg>
+										</div>
+									</div> -->
+
+								</div>
 
 								<div class="fs-3 mb-3 mt-3 pl-5 ">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
@@ -350,11 +466,11 @@ function validateForm() {
 								</div>
 								<div class="mail">
 									<div class="pl-0 pb-2">
-										<div class="col-10">ข้อคิดเห็น :</div>
+										<div class="col-10">ข้อคิดเห็น : <?php  echo $row['remark'] ; ?>  </div>
 										<?php if( isset($row['status']) ){ 
 											if($row['status'] != "cancle"){  
 												$input_disable="disabled"; ?>
-													<div>สถานะ : <?php  echo $row['status'] ; ?> </div> 
+													<div class="col-10">สถานะ : <?php  echo $row['status'] ; ?> </div> 
 										<?php }else{ 
 												$input_disable=""; ?>
 												
@@ -644,6 +760,49 @@ $(document).ready(function() {
 					error: function ()
 					{
 						alert("ไม่สามารถบันทึกข้อมูลได้ !");
+					}
+				});
+			}
+			else{
+				alert('error !');
+			}
+	});
+
+	$('.cancle_app').on('click', function() {
+
+			// $("#submit").attr("disabled", "disabled");
+			var id = this.id;
+			var splitid = id.split('_');
+			var input_type = splitid[1]; // comment_measure ดูค่าหลัง _ ที่ 1 ว่าเป็น transaction หรือ user_add_file ( T = ลบในตาราง aprove , u = ลบในตาราง aprove_user_add)
+			var app_id = splitid[2];
+
+			console.log(input_type);
+			console.log(app_id);
+
+
+			var audit = $('#audit').val();
+			var user_id = $('#user').val();
+			if(input_type!="" && app_id!="" ){
+				$.ajax({
+					url: "update4.php",
+					type: "POST",
+					data: {
+						app_id: app_id,
+						input_type: input_type
+					},
+					cache: false,
+
+					success: function (data) {
+						
+						
+							alert(data);
+							window.history.back();
+							location.reload(); 
+						
+					},
+					error: function ()
+					{
+						alert("ระบบขัดข้อง !");
 					}
 				});
 			}
