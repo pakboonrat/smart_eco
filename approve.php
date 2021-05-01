@@ -223,7 +223,7 @@ function validateForm() {
 									</div>
 								<?php } ?> 
 								
-								<div class="mail" id="">
+								<div class="mail pt-3" id="">
 									<div class="mail-contents-title  col-xl-10 pl-0"><button class="badge badge-secondary" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id']."_".$row['type'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none">รายละเอียด</button></div>
 								</div>
 							</div>
