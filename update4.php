@@ -58,7 +58,7 @@ if( isset($_POST['input_type']) && isset($_POST['app_id'])  ){
 
     if (mysqli_query($con,$query2)){
 
-        $result2 = " การยกเลิกการพิจารณาเรียบร้อย : ".$query2 ;
+        $result2 = " การยกเลิกการพิจารณาเรียบร้อย : " ;
     }else{
         $result2 = " ไม่สามารถ ยกเลิกการพิจารณา : ";
         }
