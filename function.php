@@ -105,7 +105,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 		
 		public function count_basic_report_tran($level_id,$userid) {
-            $result = mysqli_query($this->dbcon, "select count(*) as tran_total_count from (SELECT status FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid' and level_id = '$level_id' UNION all SELECT status as count FROM user_add WHERE '$userid' and level_id = '$level_id' ) AS tem GROUP BY status ");
+            $result = mysqli_query($this->dbcon, "select sum(count) as tran_total_count from (SELECT count(*) as count FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid' and level_id = '$level_id' UNION all SELECT count(*) as count FROM user_add WHERE user_id = '$userid' and level_id = '$level_id' ) as temp ");
             //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
             return $result;
         }

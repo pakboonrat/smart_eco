@@ -98,7 +98,6 @@
 													if ($row['type']=='measure' and $num4['score_des']!= "" ) {
 													echo "<font style='color:28B463;'> #".$num4['score_des']."</font><br>";}
 													else {echo "<font style='color:28B463;'> #".$num2['score_des']."</font><br>";} }
-													
 													?>
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 											<tbody>  
@@ -107,7 +106,11 @@
 													$sql2 = $fetchdata2->basic_report_tran($row['level_id'],$_SESSION['id']);
 													$sql12 = $fetchdata12->count_basic_report_tran($row['level_id'],$_SESSION['id']);
 													$row12 = mysqli_fetch_array($sql12);
+													$total_count = 0;
 													$total_count = $row12['tran_total_count'];
+													//while ($row12 = mysqli_fetch_array($sql12)){
+													//	$total_count = $total_count+ $row12['tran_total_count'];
+													//};
 													//echo "total_tran_count =".$total_count;
 													while($row2 = mysqli_fetch_array($sql2)) { 
 													$i++;
@@ -121,14 +124,13 @@
 													elseif ($row2['status']=="pass") {echo "<span class='alert-success'>ผ่านพิจารณา</span>";}
 													elseif ($row2['status']=="reject") {echo "<span class='alert-danger'>&nbsp;&nbsp;&nbsp;ไม่อนุมัติ&nbsp;&nbsp;&nbsp;</span>";}
 													else {echo "-";}
-													?></a></td>
+													//echo $i;?></a></td>
 												</tr>
 											<?php }//------------select control user manual add------------------?>
 											<?php 	//echo "row_sublebel=".$row['sub_lebel']."<br>";
 													//echo "sub_lebel_before=".$sub_lebel_before."<br>";
 													//echo "row_type=".$row['type']."<br>";
 													//echo "row_type_before=".$type_before."<br>";
-													
 												  if (($row['sub_lebel']==$sub_lebel_before) || ( ($row['sub_lebel']!=$sub_lebel_before) and ( $row['type'] != $type_before ) ) || ( ($row['sub_lebel']!=$sub_lebel_before) and ( $row['type'] == $type_before ) ) ) {
 											?></tbody>
 											</table>											
@@ -151,8 +153,12 @@
 													$sql2 = $fetchdata2->basic_report_tran($row['level_id'],$_SESSION['id']);
 													$sql12 = $fetchdata12->count_basic_report_tran($row['level_id'],$_SESSION['id']);
 													$row12 = mysqli_fetch_array($sql12);
+													$total_count = 0;
 													$total_count = $row12['tran_total_count'];
-													
+													//while ($row12 = mysqli_fetch_array($sql12)){
+													//	$total_count = $total_count+ $row12['tran_total_count'];
+													//};
+													//echo "total_tran_count =".$total_count;
 													while($row2 = mysqli_fetch_array($sql2)) { 
 													$i++;
 													
@@ -164,7 +170,7 @@
 													elseif ($row2['status']=="pass") {echo "<span class='alert-success'>ผ่านพิจารณา</span>";}
 													elseif ($row2['status']=="reject") {echo "<span class='alert-danger'>&nbsp;&nbsp;&nbsp;ไม่อนุมัติ&nbsp;&nbsp;&nbsp;</span>";}
 													else {echo "-";}
-													?></a></td>
+													//echo $i;?></a></td>
 												</tr>
 											<?php }//------------select measure user manul add-------------------?>
 													
