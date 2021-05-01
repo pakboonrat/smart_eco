@@ -135,8 +135,10 @@ function validateForm() {
 				$sql = $fetchdata->fetch_approve_level($user_id ,$set_lebel);
 				// fetch_approve_level   ,   fetch_transaction_list_level
 				if(!empty($sql)){
-					
+				$label_var = "";	
 				$sub_lebel = "" ;
+				$label_class = "";
+				$status_var = "";
 				while($row = mysqli_fetch_array($sql)) { 
 				$app_level_id = $row['level_id'];
 				if( !isset($_GET['set_lebel'])){
@@ -151,13 +153,18 @@ function validateForm() {
 						if( strtolower($row['status']) == "pass" ){
 							$check_label = "";
 							$badge_color = "-info";
+							$status_display = "ผ่านการพิจารณา";
 						}elseif( strtolower($row['status']) == "reject" ){
 							$check_label = "-reject";
 							$badge_color = "-dark";
+							$status_display = "ไม่ผ่านการพิจารณา";
 						}else{
 							$check_label = "-uncheck";
 							$badge_color = "-secondary";
+							$status_display = " - ";
 						}
+
+						
 
 						if( ( strtolower($sub_lebel) != strtolower($row['sub_lebel'])) AND ( strtolower($row['set_lebel']) == 'guidelines' )  ){
 							if( $row['type'] == "measure"){
@@ -168,22 +175,27 @@ function validateForm() {
 								$type_display = $row['type'];
 							}
 
-							
+							$label_var = $row['level_id'].$row['type'];
+							$status_var = "status_".$row['level_id'].$row['type'];
 							?>
+							
 							
 					
 							<div class="list-mail mt-3">
 								<div class="mail-contents-subject">
+
 									<input type="checkbox" name="msg" id="mail20" class="mail-choice" checked="">
-									<label class="mail-choice-label<?php echo $check_label; ?>" for="mail20"></label>
-									<div class="mail-contents-title"><?php echo $row['sub_lebel'];?></div>
+									<label id="<?php echo $row['level_id'].$row['type'];?>" class="mail-choice-label<?php echo $check_label; ?>" for="mail20"></label>
+							
+									<div class="mail-contents-title  col-xl-10 pl-0"><?php echo $row['sub_lebel'];?></div>
 								</div>
 								<?php if( isset($row['status']) ){  ?>
-									<div id="status_<?php echo $row['level_id']; ?>" class="mail">สถานะ : <?php  echo $row['status'] ; ?> </div>
-									<div id="status_M_<?php echo $row['level_id']; ?>" class="mail">เกณฑ์คะแนน สถานะ : <?php  echo $row['status'] ; ?> </div>
-									<div id="status_C_<?php echo $row['level_id']; ?>" class="mail">เกณฑ์บังคับ สถานะ : <?php  echo $row['status'] ; ?> </div> 
-								<?php } ?> 
-								<div class="mail" id="">__</div>
+									
+									<div id="status_<?php echo $row['level_id'].$row['type']; ?>" class="mail"><?php echo $type_display;?> <strong> สถานะ : </strong>  <?php  echo $status_display ; ?> </div>
+									
+								<?php }else{  ?> 
+									<div id="status_<?php echo $row['level_id'].$row['type']; ?>" class="mail"></div>
+								<?php } ?>
 							</div>
 		
 							<button class="badge badge<?php echo $badge_color; ?>" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
@@ -200,15 +212,19 @@ function validateForm() {
 								<div class="mail-contents-subject">
 									<input type="checkbox" name="msg" id="mail20" class="mail-choice" checked="">
 									<label class="mail-choice-label<?php echo $check_label; ?>" for="mail20"></label>
-									<div class="mail-contents-title"><?php echo $row['sub_lebel'];?></div>
+									<div class="mail-contents-title  col-xl-10 pl-0"><?php echo $row['sub_lebel'];?></div>
 									
 								</div>
 								<?php if( isset($row['status']) ){  ?>
-									<div id="status_<?php echo $row['level_id']; ?>" class="mail">สถานะ : <?php  echo $row['status'] ; ?> </div>
+									<div class="mail">
+										<div class='assignee pt-3'>
+												<strong>สถานะ : </strong> <?php  echo $status_display ; ?>
+										</div>
+									</div>
 								<?php } ?> 
-								<div class="mail" id="">__</div>
+								
 								<div class="mail" id="">
-									<div class="mail-contents-title"><button class="badge badge-secondary" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id']."_".$row['type'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none">รายละเอียด</button></div>
+									<div class="mail-contents-title  col-xl-10 pl-0"><button class="badge badge-secondary" type="button" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id']."_".$row['type'];?>" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none">รายละเอียด</button></div>
 								</div>
 							</div>
 							<?php
@@ -221,7 +237,14 @@ function validateForm() {
 								$type_display = $row['type'];
 							}
 							?>
-							
+							<?php 
+							echo " 
+							<script type='text/JavaScript'>
+							document.getElementById('$label_var').insertAdjacentHTML('afterend',
+                			'<label id=\"". $row['level_id'].$row['type']."\" class=\"mail-choice-label".$check_label."\" for=\"mail20\"></label>');
+							document.getElementById('$status_var').insertAdjacentHTML('afterend',
+							'<div id=\"status_".$row['level_id'].$row['type']."\" class=\"mail\">". $type_display." <strong> สถานะ : </strong>  ". $status_display ." </div> ');
+							</script> " ; ?>
 							<button class="badge badge<?php echo $badge_color; ?>" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
 							<?php
 
@@ -229,13 +252,19 @@ function validateForm() {
 						?>  
 				<div class="collapse" id="collapseExample<?php echo $row['level_id']."_".$row['type'];?>">
 					<?php
-					if( !is_null($row['score_des']) ){
+					if( strtolower($row['set_lebel']) == 'guidelines' ){
+						$txt_type = " " ;
+					
+						if( !is_null($row['score_des']) ){
+							$txt_type = " : ".$row['score_des'];
+
+						}
 					?>
 					<div class="mail-contents">
 						<div class="mail-contents-subject">
 							<input type="checkbox" name="msg" id="mail20" class="mail-choice" checked>
-							<label class="mail-choice-label"></label>
-							<div class="mail-contents-title"><?php echo $type_display;?> : <?php echo $row['score_des'] ; ?></div>
+							<label class="mail-choice-label<?php echo $check_label; ?>"></label>
+							<div class="mail-contents-title col-xl-8 pl-0"><?php echo $type_display . $txt_type ; ?></div>
 						</div>
 						
 
@@ -260,18 +289,18 @@ function validateForm() {
 									?>
 
 										<div class="mail-inside">                                         
-											<div class="mail-contents-body">
+											<div class="mail-contents-body pl-0 col-8">
 														
 															<p class="mb-0"><?php echo $row_list['list_label'];?> <br>
 															</p>
 															<div class="item2">
-																<table width="95%" border="0" cellspacing="1" cellpadding="1">
+																<table class="table" border="0" cellspacing="1" cellpadding="1">
 																<tr>
-																	<td width="25%" height="15">รายละเอียด : <?php echo $row_list['status'];?></td>
-																	<td width="75%" height="15"><?php echo $row_list['remark'];?></td>
+																	<td scope="col" height="15">รายละเอียด : </td>
+																	<td  height="15"><?php echo $row_list['remark'];?></td>
 																</tr>
 																<tr>
-																	<td height="15">ไฟล์แนบ :</td>
+																	<td >ไฟล์แนบ :</td>
 																	<td height="15"><a href="./useraddfile/<?php echo $row_list['save_filename'];?>" target="_blank"><?php echo $row_list['ori_filename'];?></a></td>
 																</tr>
 																<tr>
@@ -279,8 +308,8 @@ function validateForm() {
 																	<td><textarea name="comment" id="comment_<?php echo $row_list['t_id'];?>" cols="40"  style="overflow:hidden"></textarea></td>
 																</tr>
 																<tr>
-																	<td width="25%" height="10"></td>
-																	<td width="75%" height="10"></td>
+																	<td  height="10"></td>
+																	<td  height="10"></td>
 																</tr>
 																<tr>
 																	<td><input type="submit" name="approve" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="ผ่านอนุมัติ"></td>
@@ -296,16 +325,48 @@ function validateForm() {
 
 								<?php
 								}else{
-									$txt_ = $txt_ ."
+									
+									if( strtolower($row_list['status']) == "pass" ){
+										$app_status2 = "ผ่านการอนุมัติ";
+										
+									}elseif( strtolower($row_list['status']) == "reject" ){
+										$app_status2 = "ไม่ผ่านการอนุมัติ";
+									}
 
-									<div class='mail-contents-body'>
-										<div class='assignee'>
-											<strong>".$row_list['list_label']."</strong> 
-											</div>
-										<div class='assignee'>
-											<span class='assign-date'> " .$row_list['remark']."</span>
-										</div> 
-										<div><button type='submit' class='cancle_app' id='cancle_t_".$row_list['t_id']."'  >ยกเลิกการพิจารณา</button></div>
+									$txt_ = $txt_ ."
+									<div class='mail-checklist'>
+										<div class='mail-contents-body  col-8'>
+											<div class='assignee'>
+												<strong>".$row_list['list_label']."</strong> 
+												</div>
+											<div class='assignee'>
+												<span class='assign-date'> " .$row_list['remark']."</span>
+											</div> 
+
+												<div class='mail-doc'>
+													
+
+													<div class='mail-doc-wrapper'>
+														<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' class='feather feather-file-text'>
+														<path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'></path>
+														<path d='M14 2v6h6M16 13H8M16 17H8M10 9H8'></path></svg>
+														<div class='mail-doc-detail'>
+														<div class='mail-doc-name'><a href='./useraddfile/". $row_list['save_filename']."' target='_blank'>File name : ". $row_list['ori_filename']."</a></div>
+														<div class='mail-doc-date'>". $row_list['date']."</div>
+														</div>
+													</div>
+													
+												</div>
+												<div><strong>ข้อคิดเห็น :</strong> ". $row_list['app_remark']." </div>
+												<div class='assignee'>
+													<strong>สถานะการพิจารณา : </strong> ". $app_status2 ."
+													<span class='assign-date ml-4'>". $row_list['app_date']." </span>
+												</div>	
+
+											<div><button type='submit' class='cancle_app' id='cancle_t_".$row_list['t_id']."'  >ยกเลิกการพิจารณา</button></div>
+
+
+										</div>
 									</div>
 									";
 
@@ -326,27 +387,34 @@ function validateForm() {
 							if( mysqli_num_rows($sql3) != 0 ){
 							
 								while($row_list3 = mysqli_fetch_array($sql3)) { 
+									
+									if( strtolower($row_list3['status']) == "pass" ){
+										$app_status = "ผ่านการอนุมัติ";
+										
+									}elseif( strtolower($row_list3['status']) == "reject" ){
+										$app_status = "ไม่ผ่านการอนุมัติ";
+									}
 
 									if( $row_list3['status'] == "consider" ){
 										?>
 
-										<div class="mail-contents">
+										<div class="mail-inside">
 										<div class="pb-2">
 										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-medical-fill" viewBox="0 0 16 16">
 										<path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-3 2v.634l.549-.317a.5.5 0 1 1 .5.866L7 7l.549.317a.5.5 0 1 1-.5.866L6.5 7.866V8.5a.5.5 0 0 1-1 0v-.634l-.549.317a.5.5 0 1 1-.5-.866L5 7l-.549-.317a.5.5 0 0 1 .5-.866l.549.317V5.5a.5.5 0 1 1 1 0zm-2 4.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"></path>
 										</svg> หลักฐานเพิ่มเติม  </div>                                       
-										<div class="card">
+										<div class="card pl-0 pr-0 col-md-10 col-xl-8">
 													<div class="card-header" id="headingOne">
 													<p class="mb-0"><?php echo $row_list3['list_label'];?> <br>
 													</p>
-													<div class="item2">
-													<table width="95%" border="0" cellspacing="1" cellpadding="1">
+													<div class="col-sm-3 col-lg-12 col-md-9">
+													<table class="table table-borderless" border="0" cellspacing="1" cellpadding="1">
 													<tr>
-														<td width="25%" height="15">รายละเอียด :<?php echo $row_list3['status'];?></td>
-														<td width="75%" height="15"><?php echo $row_list3['remark'];?></td>
+														<td scope="col" height="15">รายละเอียด : </td>
+														<td height="15"><?php echo $row_list3['remark'];?></td>
 													</tr>
 													<tr>
-														<td height="15">ไฟล์แนบ :</td>
+														<td >ไฟล์แนบ :</td>
 														<td height="15"><a href="./useraddfile/<?php echo $row_list3['save_filename'];?>" target="_blank"><?php echo $row_list3['ori_filename'];?></a></td>
 													</tr>
 													<tr>
@@ -354,8 +422,8 @@ function validateForm() {
 														<td><textarea name="comment" id="comment_<?php echo $row_list3['add_id'];?>" cols="40" rows="4" style="overflow:hidden"></textarea></td>
 													</tr>
 													<tr>
-														<td width="25%" height="10"></td>
-														<td width="75%" height="10"></td>
+														<td  height="10"></td>
+														<td  height="10"></td>
 													</tr>
 													<tr>
 														<td><input type="submit" name="approve" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="ผ่านอนุมัติ"></td>
@@ -371,34 +439,37 @@ function validateForm() {
 									}else{
 
 									$txt_user_add = $txt_user_add ."
-									<div class='mail-contents-body'>
+									<div class='mail-checklist'>
+										<div class='mail-contents-body  col-8'>
 
-										<div class='assignee'>
-												<strong>".$row_list3['list_label']."</strong> 
-											</div>
 											<div class='assignee'>
-												<span class='assign-date'> " .$row_list3['remark']."</span>
-											</div>
-
-										<div class='mail-doc'>
-											 
-
-											<div class='mail-doc-wrapper'>
-												<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' class='feather feather-file-text'>
-												<path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'></path>
-												<path d='M14 2v6h6M16 13H8M16 17H8M10 9H8'></path></svg>
-												<div class='mail-doc-detail'>
-												<div class='mail-doc-name'><a href='./useraddfile/". $row_list3['save_filename']."' target='_blank'>File name : ". $row_list3['ori_filename']."</a></div>
-												<div class='mail-doc-date'>". $row_list3['date']."</div>
+													<strong>".$row_list3['list_label']."</strong> 
 												</div>
-											</div>
-											<div class='mail-doc-icons'>
-										
-								
-												<div><button type='submit' class='cancle_app' id='cancle_u_".$row_list3['add_id']."'  >ยกเลิกการพิจารณา</button></div>
+												<div class='assignee'>
+													<span class='assign-date'> " .$row_list3['remark']."</span>
+												</div>
+
+											<div class='mail-doc'>
+												<div class='mail-doc-wrapper'>
+													<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' class='feather feather-file-text'>
+													<path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'></path>
+													<path d='M14 2v6h6M16 13H8M16 17H8M10 9H8'></path></svg>
+													<div class='mail-doc-detail'>
+													<div class='mail-doc-name'><a href='./useraddfile/". $row_list3['save_filename']."' target='_blank'>File name : ". $row_list3['ori_filename']."</a></div>
+													<div class='mail-doc-date'>". $row_list3['date']."</div>
+													</div>
+												</div>
+			
 												
 											</div>
-											
+											<div class='assignee'>
+												<div><strong>ข้อคิดเห็น :</strong> ". $row_list3['app_remark']. "</div>
+												<div class='assignee'>
+													<strong>สถานะการพิจารณา : </strong> ". $app_status ."
+													<span class='assign-date  ml-4'> ". $row_list3['app_date']. "</span>
+												</div>
+											</div>
+											<div><button type='submit' class='cancle_app' id='cancle_u_".$row_list3['add_id']."'  >ยกเลิกการพิจารณา</button></div>
 										</div>
 									</div>
 									";
@@ -466,11 +537,11 @@ function validateForm() {
 								</div>
 								<div class="mail">
 									<div class="pl-0 pb-2">
-										<div class="col-10">ข้อคิดเห็น : <?php  echo $row['remark'] ; ?>  </div>
+										<div class="col-10 pb-2">ข้อคิดเห็น : <?php  echo $row['remark'] ; ?>  </div>
 										<?php if( isset($row['status']) ){ 
 											if($row['status'] != "cancle"){  
 												$input_disable="disabled"; ?>
-													<div class="col-10">สถานะ : <?php  echo $row['status'] ; ?> </div> 
+													<div class="col-10">สถานะ : <?php  echo $status_display ; ?> </div> 
 										<?php }else{ 
 												$input_disable=""; ?>
 												
