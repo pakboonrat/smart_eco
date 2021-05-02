@@ -428,7 +428,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             ,aprove_list_score.remark AS remark
             FROM transaction T ,list
             LEFT JOIN score on list.score_id = score.score_id , level L 
-            LEFT JOIN aprove_list_score on L.level_id = aprove_list_score.level_id 
+            LEFT JOIN aprove_list_score on L.level_id = aprove_list_score.level_id and aprove_list_score.user_id = $user_id
             WHERE TRIM(T.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(L.level_id) 
             AND T.user_id = $user_id  $set_lebel_buff  and LOWER(TRIM(T.status)) in (\"consider\",\"pass\",\"reject\")
             
@@ -440,14 +440,14 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             ,aprove_list_score.remark AS remark
             FROM user_add 
             LEFT JOIN score on user_add.score_id = score.score_id , level L
-            LEFT JOIN aprove_list_score on aprove_list_score.level_id = L.level_id
+            LEFT JOIN aprove_list_score on aprove_list_score.level_id = L.level_id and aprove_list_score.user_id = $user_id
             where trim(L.level_id) = trim(user_add.level_id) AND user_add.user_id = $user_id  $set_lebel_buff  and LOWER(TRIM(user_add.status)) in (\"consider\",\"pass\",\"reject\") 
             
             ORDER by level_label , set_lebel,level_id " ;
 
             $fetch = mysqli_query($this->dbcon, $sql_txt);
 
-            // echo $sql_txt ;
+            echo $sql_txt ;
 
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
