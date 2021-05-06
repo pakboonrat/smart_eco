@@ -323,6 +323,63 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
         }
 
+
+        public function fetch_AUDIT_By_USER($search_text) {
+
+
+                $sql="SELECT U1.user_id as USER , U1.firstname as firstname, 
+                GROUP_CONCAT(T1.firstname ) AS AUDIT
+                FROM user U1
+                LEFT JOIN 
+                (   SELECT DISTINCT T3.user_id as user_id ,
+                        CASE  
+                            WHEN  T3.status='consider' THEN 1 
+                            WHEN  A3.firstname is not null THEN 1 
+                            WHEN  T3.status in ('consider','pass','reject') AND A3.firstname is null THEN 1 
+                        
+                        ELSE 0 END AS status , A3.firstname as firstname 
+					FROM transaction  T3 
+					LEFT JOIN 
+					( 	select DISTINCT aprove.t_id,user.firstname 
+  						FROM aprove,user 
+  						where aprove.audit_id=user.user_id 
+					) A3 ON T3.t_id=A3.t_id 
+					, list
+					LEFT JOIN aprove_list_score ON aprove_list_score.level_id = list.level_id
+                 	WHERE T3.list_id = list.list_id
+                 	
+                 
+                    UNION
+                    SELECT DISTINCT UADD3.user_id as user_id ,
+                    CASE  
+                            WHEN  UADD3.status='consider' THEN 1 
+                            WHEN  UA3.firstname is not null THEN 1 
+                            WHEN  UADD3.status in ('consider','pass','reject') AND UA3.firstname is null THEN 1 
+                        
+                        ELSE 0 END AS status ,  UA3.firstname as firstname 
+					FROM user_add  UADD3 
+					LEFT JOIN 
+					( 	select DISTINCT aprove_user_add.add_id,user.firstname 
+  						FROM aprove_user_add,user 
+  						where aprove_user_add.audit_id=user.user_id 
+					) UA3 ON UADD3.add_id=UA3.add_id 
+					, list
+					LEFT JOIN aprove_list_score ON aprove_list_score.level_id = list.level_id 
+                 			AND aprove_list_score.score_id = list.score_id
+					WHERE UADD3.level_id = list.level_id 
+                 			AND UADD3.score_id = list.score_id
+                 
+                ) T1 ON U1.user_id=T1.user_id
+                WHERE T1.status != 0
+                GROUP BY USER";
+
+            $fetch = mysqli_query($this->dbcon,$sql);
+            return $fetch;
+
+
+        }
+
+
         public function fetch_transaction_list_level($user_id,$set_lebel) {
 
             if($set_lebel==""){
