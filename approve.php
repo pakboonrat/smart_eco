@@ -139,7 +139,10 @@ function validateForm() {
 				$sub_lebel = "" ;
 				$label_class = "";
 				$status_var = "";
+				$passT_array = array();
+				$passU_array = array();
 				while($row = mysqli_fetch_array($sql)) { 
+				$BBL_reject_input_disable = true; // ปุ่ม ไม่ผ่านพิจารณา (ใหญ่) ถ้าเป็น false จะ กดไม่ได้
 				$app_level_id = $row['level_id'];
 				if( !isset($_GET['set_lebel'])){
 
@@ -156,8 +159,8 @@ function validateForm() {
 							$status_display = "ผ่านการพิจารณา";
 						}elseif( strtolower($row['status']) == "reject" ){
 							$check_label = "-reject";
-							$badge_color = "-dark";
-							$status_display = "ไม่ผ่านการพิจารณา";
+							$badge_color = "-danger";
+							$status_display = "<span class='red-reject'> *** ไม่ผ่านการพิจารณา </span>";
 						}else{
 							$check_label = "-uncheck";
 							$badge_color = "-secondary";
@@ -243,7 +246,7 @@ function validateForm() {
 							document.getElementById('$label_var').insertAdjacentHTML('afterend',
                 			'<label id=\"". $row['level_id'].$row['type']."\" class=\"mail-choice-label".$check_label."\" for=\"mail20\"></label>');
 							document.getElementById('$status_var').insertAdjacentHTML('afterend',
-							'<div id=\"status_".$row['level_id'].$row['type']."\" class=\"mail\">". $type_display." <strong> สถานะ : </strong>  ". $status_display ." </div> ');
+							'<div id=\"status_".$row['level_id'].$row['type']."\" class=\"mail\">". $type_display." <strong> สถานะ : </strong>  ". str_replace("'","\"",$status_display) ." </div> ');
 							</script> " ; ?>
 							<button class="badge badge<?php echo $badge_color; ?>" data-toggle="collapse" data-target="#collapseExample<?php echo $row['level_id'] ."_".$row['type'];?>" ><?php echo $type_display;?></button>
 							<?php
@@ -280,11 +283,19 @@ function validateForm() {
 							$txt_ = "";
 							$txt_user_add = "";
 
+							unset($passT_array);
+							unset($passU_array);
+							$passT_array = array();
+							$passU_array = array();
+							
+							$BBL_reject_input_disable = true;
+
 							$fetchdata2 = new DB_con();
 							$sql2 = $fetchdata->fetch_transaction_list_level2($user_id,$row['level_id'] );
 							if( mysqli_num_rows($sql2) != 0 ){
 							
 							while($row_list = mysqli_fetch_array($sql2)) { 
+								
 								if( $row_list['status'] == "consider" ){
 									?>
 
@@ -324,13 +335,16 @@ function validateForm() {
 
 
 								<?php
+								array_push($passT_array,$row_list['t_id']);
 								}else{
 									
 									if( strtolower($row_list['status']) == "pass" ){
 										$app_status2 = "ผ่านการอนุมัติ";
+										$BBL_reject_input_disable = $BBL_reject_input_disable && true;
 										
 									}elseif( strtolower($row_list['status']) == "reject" ){
-										$app_status2 = "ไม่ผ่านการอนุมัติ";
+										$app_status2 = "<span class='red-reject'> ***  ไม่ผ่านการอนุมัติ </span>";
+										$BBL_reject_input_disable = $BBL_reject_input_disable && false;
 									}
 
 									$txt_ = $txt_ ."
@@ -390,10 +404,14 @@ function validateForm() {
 									
 									if( strtolower($row_list3['status']) == "pass" ){
 										$app_status = "ผ่านการอนุมัติ";
-										
+										$BBL_reject_input_disable = $BBL_reject_input_disable && true;
 									}elseif( strtolower($row_list3['status']) == "reject" ){
-										$app_status = "ไม่ผ่านการอนุมัติ";
+										$app_status = "<span class='red-reject'> *** ไม่ผ่านการอนุมัติ </span>";
+										$BBL_reject_input_disable = $BBL_reject_input_disable && false;
+										//$BBL_reject_input_disable = false;
+										
 									}
+
 
 									if( $row_list3['status'] == "consider" ){
 										?>
@@ -435,8 +453,11 @@ function validateForm() {
 													</div>
 										</div>
 									</div> <?php
+									array_push($passU_array,$row_list3['add_id']);
 
 									}else{
+										
+										
 
 									$txt_user_add = $txt_user_add ."
 									<div class='mail-checklist'>
@@ -482,7 +503,9 @@ function validateForm() {
 											$app_score_id = $row_list3['score_id'];
 											
 								}; 
-							} ?>
+							} 
+
+							?>
 								<div class="mail">
 									
 
@@ -539,25 +562,37 @@ function validateForm() {
 									<div class="pl-0 pb-2">
 										<div class="col-10 pb-2">ข้อคิดเห็น : <?php  echo $row['remark'] ; ?>  </div>
 										<?php if( isset($row['status']) ){ 
-											if($row['status'] != "cancle"){  
-												$input_disable="disabled"; ?>
-													<div class="col-10">สถานะ : <?php  echo $status_display ; ?> </div> 
-										<?php }else{ 
-												$input_disable=""; ?>
-												
-												
-												<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
-												</div>
+													if($row['status'] != "cancle"){  
+														$input_disable="disabled"; ?>
+															<div class="col-10">สถานะ : <?php  echo $status_display ; ?> </div> 
+												<?php }else{ 
+														$input_disable=""; 
+														
+														?>
+														
+														
+														
+														<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
+														</div>
 												
 
 										<?php } }else{ $input_disable=""; ?> 
 										<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
 										</div>
-										<?php } ?>	
+										<?php } 
+										
+										if( $BBL_reject_input_disable ){
+											$input_disable=$input_disable;
+										}else{
+											$input_disable="disabled"; 
+										}
+
+										?>	
 									</div>
 									<div class="pb-2">
+										
 										<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
-										<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="Reject">
+										<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ไม่ผ่านการพิจารณา">
 										<?php if( isset($row['status']) ){  
 												if($row['status'] != "cancle"){  ?>
 													<input type="submit" name="cancle_<?php echo $row['app_id'];?>" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
@@ -565,8 +600,10 @@ function validateForm() {
 											<?php }
 											}
 											
-											
+
 											?> 
+											<input type="hidden" id="passT_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo implode(",",$passT_array);?>">
+											<input type="hidden" id="passU_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo implode(",",$passU_array);?>">
 										
 									</div>	
 								</div>	
@@ -685,60 +722,67 @@ $(document).ready(function() {
 		var comment = $('#comment_'+index).val();
 		console.log(comment);
 
+		
+		if(comment.trim() ==="" ){
+				alert("  ไม่สามารถบันทึกข้อมูลได้ ! \n : เนื่องจากยังไม่ได้ กรอกข้อคิดเห็น   \n : กรุณากรอกข้อคิดเห็น  " );
 
-		var audit = $('#audit').val();
-		if(index!="" && approve_action!="" && audit!=""){
-			$.ajax({
-				url: "update2.php",
-				type: "POST",
-				data: {
-					t_id: index,
-					comment: comment,
-					approve_action: approve_action,
-					audit: audit,
-					input_type: input_type				
-				},
-				cache: false,
 
-				// success: function(dataResult){
-				// 	var dataResult = JSON.parse(dataResult);
-				// 	if(dataResult.statusCode==1){
-				// 		// alert("บันทึกเรียบร้อยแล้ว");
-				// 		// window.location.reload();
-				// 		// window.location.replace("approve.php");
+		}else{
 
-				// 		console.log('refresh');
-            	// 		location.reload();
-						
-				// 		// $("#butsave").removeAttr("disabled");
-				// 		// $('#fupForm').find('input:text').val('');
-				// 		// $("#success").show();
-				// 		// $('#success').html('Data added successfully !'); 						
-				// 	}
-				// 	else if(dataResult.statusCode==0){
-				// 	   alert("Error occured !");
-				// 	}
-					
-				// }
+				var audit = $('#audit').val();
+				if(index!="" && approve_action!="" && audit!=""){
+					$.ajax({
+						url: "update2.php",
+						type: "POST",
+						data: {
+							t_id: index,
+							comment: comment,
+							approve_action: approve_action,
+							audit: audit,
+							input_type: input_type				
+						},
+						cache: false,
 
-				success: function (data) {
-					if (data === '1') {
-						alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
-						window.history.back();
-						location.reload(); 
-					}
-					else {
-						alert("  ไม่สามารถบันทึกข้อมูลได้ !");
-					}
-				},
-				error: function ()
-				{
-					alert("ไม่สามารถบันทึกข้อมูลได้ !");
+						// success: function(dataResult){
+						// 	var dataResult = JSON.parse(dataResult);
+						// 	if(dataResult.statusCode==1){
+						// 		// alert("บันทึกเรียบร้อยแล้ว");
+						// 		// window.location.reload();
+						// 		// window.location.replace("approve.php");
+
+						// 		console.log('refresh');
+						// 		location.reload();
+								
+						// 		// $("#butsave").removeAttr("disabled");
+						// 		// $('#fupForm').find('input:text').val('');
+						// 		// $("#success").show();
+						// 		// $('#success').html('Data added successfully !'); 						
+						// 	}
+						// 	else if(dataResult.statusCode==0){
+						// 	   alert("Error occured !");
+						// 	}
+							
+						// }
+
+						success: function (data) {
+							if (data === '1') {
+								alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
+								window.history.back();
+								location.reload(); 
+							}
+							else {
+								alert("  ไม่สามารถบันทึกข้อมูลได้ !");
+							}
+						},
+						error: function ()
+						{
+							alert("ไม่สามารถบันทึกข้อมูลได้ !");
+						}
+					});
 				}
-			});
-		}
-		else{
-			alert('error !');
+				else{
+					alert('error !');
+				}
 		}
 	});
 
@@ -754,13 +798,35 @@ $(document).ready(function() {
 
 			//var cancle_id = this.attr('name');
 			var cancle_app_id = 0;
+
+			console.log("approve_action:"+ approve_action);
 		
 			if( this.value === "ยกเลิก"){
 				//console.log("C:"+cancle_id); 
 				cancle_app_id = $('#cancle_'+input_type+'_'+level_id+'_'+score_id).val();
 				console.log("C2:"+cancle_app_id);
 				input_type = "cancle"; 
+			}else if( this.value === "ผ่านอนุมัติ"){
+				console.log("this.value:"+ this.value );
+				passT = $('#passT_'+input_type+'_'+level_id+'_'+score_id).val();
+				passU = $('#passU_'+input_type+'_'+level_id+'_'+score_id).val();
+
+				if( typeof(passT) === 'undefined' ){
+					passT = " ";
+				}
+
+				if( typeof(passU) === 'undefined' ){
+					passU = " ";
+				}
+
+
+				cancle_app_id = passT+"::"+passU;
+				console.log("cancle_app_id:"+ cancle_app_id);
+				// var comment = $('#approve_'+input_type+'_'+level_id+'_'+score_id).val();
+
 			}
+
+			
 
 			console.log(input_type);
 			console.log(level_id);
@@ -769,74 +835,96 @@ $(document).ready(function() {
 
 			var comment = $('#comment_'+input_type+'_'+level_id+'_'+score_id).val();
 			console.log(comment);
+			console.log( typeof(comment) );
+			if( typeof(comment) === 'undefined' ){
+				comment = "";
+			}
 
-			var point = $('#point_'+input_type+'_'+level_id+'_'+score_id).val();
-			console.log(point);
-			
-			var score_des = $('#scoredes_'+input_type+'_'+level_id+'_'+score_id).val();
-			console.log("score:"+score_des);
 
-			var audit = $('#audit').val();
-			var user_id = $('#user').val();
-			if(input_type!="" && approve_action!="" && audit!="" && user_id!=""){
-				$.ajax({
-					url: "update3.php",
-					type: "POST",
-					data: {
-						level_id: level_id,
-						score_id: score_id,
-						comment: comment,
-						approve_action: approve_action,
-						audit: audit,
-						user_id: user_id,
-						input_type: input_type,
-						point : point,
-						score_des : score_des,
-						cancle_app_id : cancle_app_id 				
-					},
-					cache: false,
 
-					// success: function(dataResult){
-					// 	var dataResult = JSON.parse(dataResult);
-					// 	if(dataResult.statusCode==1){
-					// 		// alert("บันทึกเรียบร้อยแล้ว");
-					// 		// window.location.reload();
-					// 		// window.location.replace("approve.php");
 
-					// 		console.log('refresh');
-					// 		location.reload();
-							
-					// 		// $("#butsave").removeAttr("disabled");
-					// 		// $('#fupForm').find('input:text').val('');
-					// 		// $("#success").show();
-					// 		// $('#success').html('Data added successfully !'); 						
-					// 	}
-					// 	else if(dataResult.statusCode==0){
-					// 	   alert("Error occured !");
-					// 	}
-						
-					// }
+			if(comment.trim() ==="" && input_type !== "cancle" ){
+				alert("  ไม่สามารถบันทึกข้อมูลได้ ! \n : เนื่องจากยังไม่ได้ กรอกข้อคิดเห็น   \n : กรุณากรอกข้อคิดเห็น  " );
 
-					success: function (data) {
-						
-						if (data === '1') {
-							alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
-							window.history.back();
-							location.reload(); 
-						}
-						else {
-							alert("  ไม่สามารถบันทึกข้อมูลได้ ! " );
-						}
-					},
-					error: function ()
-					{
-						alert("ไม่สามารถบันทึกข้อมูลได้ !");
+
+			}else{
+				
+				var point = $('#point_'+input_type+'_'+level_id+'_'+score_id).val();
+					console.log(point);
+					
+					var score_des = $('#scoredes_'+input_type+'_'+level_id+'_'+score_id).val();
+					console.log("score:"+score_des);
+
+					var audit = $('#audit').val();
+					var user_id = $('#user').val();
+					if(input_type!="" && approve_action!="" && audit!="" && user_id!=""){
+						$.ajax({
+							url: "update3.php",
+							type: "POST",
+							data: {
+								level_id: level_id,
+								score_id: score_id,
+								comment: comment,
+								approve_action: approve_action,
+								audit: audit,
+								user_id: user_id,
+								input_type: input_type,
+								point : point,
+								score_des : score_des,
+								cancle_app_id : cancle_app_id 				
+							},
+							cache: false,
+
+							// success: function(dataResult){
+							// 	var dataResult = JSON.parse(dataResult);
+							// 	if(dataResult.statusCode==1){
+							// 		// alert("บันทึกเรียบร้อยแล้ว");
+							// 		// window.location.reload();
+							// 		// window.location.replace("approve.php");
+
+							// 		console.log('refresh');
+							// 		location.reload();
+									
+							// 		// $("#butsave").removeAttr("disabled");
+							// 		// $('#fupForm').find('input:text').val('');
+							// 		// $("#success").show();
+							// 		// $('#success').html('Data added successfully !'); 						
+							// 	}
+							// 	else if(dataResult.statusCode==0){
+							// 	   alert("Error occured !");
+							// 	}
+								
+							// }
+
+							success: function (data) {
+								
+								if (data === '1') {
+									alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
+									window.history.back();
+									location.reload(); 
+								}
+								else {
+									//alert("  ไม่สามารถบันทึกข้อมูลได้ ! " );
+									console.log(data);
+									alert(data );
+									
+								}
+							},
+							error: function ()
+							{
+								alert("ไม่สามารถบันทึกข้อมูลได้ !");
+							}
+						});
 					}
-				});
+					else{
+						alert('error !');
+					}
+
 			}
-			else{
-				alert('error !');
-			}
+
+
+
+					
 	});
 
 	$('.cancle_app').on('click', function() {
