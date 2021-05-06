@@ -324,8 +324,23 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 
 
-        public function fetch_AUDIT_By_USER($search_text) {
+        public function fetch_AUDIT_By_USER($user, $status ) {
+            // $user : ALL , user_id     >> all คือทั้งหมด , user_id
+            if( $user == 'ALL'){
+                $user_txt = " TRUE ";
+            }else{
+                $user_txt = " U1.user_id = '".$user."' " ;
+            }
 
+            if( $status == 'ALL'){
+                $search_txt = " TRUE ";
+            }elseif( $status == 'consider'){
+                $search_txt = "T1.status != 0 ";
+            }elseif( $status == 'pass'){
+                $search_txt = "T1.status = 1 ";
+            }else{
+                $search_txt = " TRUE ";
+            }
 
                 $sql="SELECT U1.user_id as USER , U1.firstname as firstname, 
                 GROUP_CONCAT(T1.firstname ) AS AUDIT
@@ -370,14 +385,19 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                  			AND UADD3.score_id = list.score_id
                  
                 ) T1 ON U1.user_id=T1.user_id
-                WHERE T1.status != 0
+                WHERE U1.user_type = 'USER'
+                 AND $search_txt
+                 AND $user_txt
                 GROUP BY USER";
+                //echo $sql;
 
             $fetch = mysqli_query($this->dbcon,$sql);
             return $fetch;
 
 
         }
+
+
 
 
         public function fetch_transaction_list_level($user_id,$set_lebel) {

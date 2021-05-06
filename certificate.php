@@ -43,7 +43,7 @@ function validateForm() {
       <div class="breadcrumbs">
         <a href="index.php">Home</a>
       </div>
-      <h1>รายงานกรตรวจประเมิน : </h1>
+      <h1>รายงานการตรวจประเมิน : </h1>
       <nav class="nav-tabs" id="nav-tabs">
       </nav>
     </header>
@@ -55,13 +55,15 @@ function validateForm() {
     <tr>
 		
 		<td width="15%" align="left">ชื่อนิคม</td>
-		<td width="15%" align="left">&nbsp;</td>
+		<td width="15%" align="left">ผู้ตรวจประเมิน</td>
 		<td width="12%" align="center">รายงานการตรวจประเมิน</td>
     </tr><?php	
 						include_once('function.php');
 						$fetchdata1 = new DB_con();
 						$user_type = 'USER';
-						$sql1 = $fetchdata1->selectuser($user_type);
+						$sql1 = $fetchdata1->fetch_AUDIT_By_USER("ALL","ALL");
+            //$sql1 = $fetchdata1->selectuser($user_type);
+
 
 							$irow_count = 1;
 							while($row_user = mysqli_fetch_array($sql1)) {
@@ -70,7 +72,7 @@ function validateForm() {
     <tr>
      			
 				<td><?php echo $row_user['firstname']; ?></td>
-				<td>&nbsp;</td>
+				<td><?php echo $row_user['AUDIT']; ?></td>
 				<td align="center"><a href="wordreport.php" target="_blank">ดาวน์โหลดรายงาน</a></td>
     </tr> <?php  }; ?>
   </tbody>
