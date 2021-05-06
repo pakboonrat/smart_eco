@@ -806,7 +806,7 @@ $(document).ready(function() {
 				cancle_app_id = $('#cancle_'+input_type+'_'+level_id+'_'+score_id).val();
 				console.log("C2:"+cancle_app_id);
 				input_type = "cancle"; 
-			}else if( this.value === "ผ่านอนุมัติ"){
+			}else if( this.value === "ผ่านอนุมัติ" ){
 				console.log("this.value:"+ this.value );
 				passT = $('#passT_'+input_type+'_'+level_id+'_'+score_id).val();
 				passU = $('#passU_'+input_type+'_'+level_id+'_'+score_id).val();

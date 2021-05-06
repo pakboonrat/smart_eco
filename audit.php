@@ -59,7 +59,8 @@ function validateForm() {
     </thead>
     <?php 
           $fetchdata = new DB_con();
-          $sql = $fetchdata->fetch_transaction_By_USER(" status = 'consider' ");
+          //$sql = $fetchdata->fetch_transaction_By_USER(" status = 'consider' "); //fetch_AUDIT_By_USER
+          $sql = $fetchdata->fetch_AUDIT_By_USER(" status = 'consider' ");
           if( mysqli_num_rows($sql) != 0 ){
            
           while($row = mysqli_fetch_array($sql)) { 
@@ -67,8 +68,8 @@ function validateForm() {
       <tbody>
       <tr>
         <th scope="row"><?php echo $row['firstname'];?></th>
-        <td><?php echo $row['surname'];?></td>
-        <td><a href="approve.php?userid=<?php echo $row['user_id'];?>">รายละเอียด</a></td>
+        <td><?php echo $row['AUDIT'];?></td>
+        <td><a href="approve.php?userid=<?php echo $row['USER'];?>">รายละเอียด</a></td>
       </tr>
       </tbody>
       <?php }

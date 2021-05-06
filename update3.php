@@ -55,7 +55,7 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
             }else{
 
                 $sql_pass = " ";
-                $query_passT = " ";
+                $query_passT = "";
             };
 
             
@@ -103,16 +103,20 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
         $result_sql = true;
         $result_sql1 = true;
 
-       if( trim($query_passT) != ""){
-            if(mysqli_query($con,$query_passT)){
-                $result_sql1 = true;
+        if($_POST['approve_action'] == "ผ่านอนุมัติ" ){
+            if( trim($query_passT) != ""){
+                if(mysqli_query($con,$query_passT)){
+                    $result_sql1 = true;
+                }
             }
-       }
-       if( trim($query_passU) != ""){
-        if(mysqli_query($con,$query_passU)){
-            $result_sql1 = $result_sql1 AND true;
+            if( trim($query_passU) != ""){
+                if(mysqli_query($con,$query_passU)){
+                    $result_sql1 = $result_sql1 AND true;
+                }
+            }
         }
-       }
+
+       
 
        $result_sql = $result_sql AND $result_sql1;
 
