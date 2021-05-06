@@ -338,6 +338,8 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 $search_txt = "T1.status != 0 ";
             }elseif( $status == 'pass'){
                 $search_txt = "T1.status = 1 ";
+            }elseif( $status == 'not pass'){
+                $search_txt = "T1.status = 2 ";
             }else{
                 $search_txt = " TRUE ";
             }
@@ -350,7 +352,8 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                         CASE  
                             WHEN  T3.status='consider' THEN 1 
                             WHEN  A3.firstname is not null THEN 1 
-                            WHEN  T3.status in ('consider','pass','reject') AND A3.firstname is null THEN 1 
+                            WHEN  T3.status in ('consider','pass','reject') AND A3.firstname is null THEN 1
+                            WHEN  T3.status in ('consider','pass','reject') AND aprove_list_score.status != 'pass' THEN 2  
                         
                         ELSE 0 END AS status , A3.firstname as firstname 
 					FROM transaction  T3 
@@ -369,7 +372,9 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                     CASE  
                             WHEN  UADD3.status='consider' THEN 1 
                             WHEN  UA3.firstname is not null THEN 1 
-                            WHEN  UADD3.status in ('consider','pass','reject') AND UA3.firstname is null THEN 1 
+                            WHEN  UADD3.status in ('consider','pass','reject') AND UA3.firstname is null THEN 1
+                            WHEN  UADD3.status in ('consider','pass','reject') AND aprove_list_score.status != 'pass' THEN 2  
+                         
                         
                         ELSE 0 END AS status ,  UA3.firstname as firstname 
 					FROM user_add  UADD3 
@@ -389,7 +394,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                  AND $search_txt
                  AND $user_txt
                 GROUP BY USER";
-                //echo $sql;
+                echo "<p>". $sql ."</p>";
 
             $fetch = mysqli_query($this->dbcon,$sql);
             return $fetch;
