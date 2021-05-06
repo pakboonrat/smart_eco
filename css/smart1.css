@@ -399,7 +399,7 @@ display: flex;
 width: 35px;
 min-width: 35px;
 height: 35px;
-border: 5px solid rgba(130, 131, 133, 0.938);
+border: 5px solid rgb(247 0 0);
 outline: none;
 margin-right: 15px;
 border-radius: 50%;
@@ -407,7 +407,7 @@ transition: 0.3s;
 background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' class='feather feather-check'%3e%3cpath d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z'/%3e%3c/svg%3e");
 
 background-repeat: no-repeat;
-background-color:rgba(130, 131, 133, 0.938);;
+background-color:rgba(245, 8, 8, 0.938);
 background-position: center;
 cursor: pointer;
 }
@@ -440,7 +440,12 @@ cursor: pointer;
   background-color: red;
  }
  
- 
+ .red-reject{
+  background-color: red;
+  color: cornsilk;
+  padding-right: 20px;
+  padding-left: 5px;
+ }
 
 
 .list-mail {

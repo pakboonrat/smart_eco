@@ -459,7 +459,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 
             $fetch = mysqli_query($this->dbcon, $sql_txt);
 
-            //echo $sql_txt ;
+            // echo $sql_txt ;
 
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3

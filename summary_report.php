@@ -10,7 +10,7 @@
 <html lang="en" class="pc chrome88 js">
 <head>
 <meta charset="UTF-8">
-<title>Status Report</title>
+<title>Summary Status Report</title>
 
 <?php include('style-header.php'); ?>
 </head>
@@ -23,7 +23,7 @@
       <div class="breadcrumbs">
         <a href="audit.php">Home</a>
       </div>
-      <h1>รายงานสรุปผล : </h1>
+      <h1>รายงานสรุปผล : &nbsp;<?php echo $_SESSION['fname']; ?></h1>
 
     </header>
 		<div class="content-columns">
@@ -64,13 +64,13 @@
 												<?php }?>
 												<tr>
 												<td height="25"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;เกณฑ์บังคับ</font></td>
-												 <td width="13%" align="center"><?php  	$fetch_score_status = new DB_con();
+												 <td width="14%" align="center"><?php  	$fetch_score_status = new DB_con();
 																						$sql2 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 																						$num2 = mysqli_fetch_array($sql2);
 																						if ($num2['status']== "pass"){
-																						echo "<span class='alert-success'>ผ่านพิจารณา</span>";}
-																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;&nbsp;&nbsp;ไม่อนุมัติ&nbsp;&nbsp;&nbsp;</span>";}
-																						elseif ($num2['status']== "") {echo "รอพิจารณา";}
+																						echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
+																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;ไม่&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;&nbsp;</span>";}
+																						elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
 												 ?></td>
@@ -83,13 +83,14 @@
 												<?php }?>
 												<tr>
 												<td height="25"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;เกณฑ์คะแนน</font></td>
-												 <td width="13%" align="center"><?php  	$fetch_score_status = new DB_con();
+												 <td width="14%" align="center"><?php  	$fetch_score_status = new DB_con();
 																						$sql2 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 																						$num2 = mysqli_fetch_array($sql2);
-																						if ($num2['point']!= ""){
+																						if (($num2['point']!= "") and ($num2['status']!= "reject")){
 																						echo "<span class='alert-success'>&nbsp;&nbsp;&nbsp;".$num2['point']."&nbsp;คะแนน&nbsp;&nbsp;&nbsp;</span>";
 																						$point_count = $point_count + $num2['point']; }
-																						else {echo "รอพิจารณา";}
+																						elseif (($num2['point']!= "") and ($num2['status']== "reject")) {echo "<span class='alert-danger'>&nbsp;ไม่&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;&nbsp;</span>";}
+																						else {echo "-";}
 																						
 																						 
 												 ?></td>
@@ -100,13 +101,13 @@
 												</tr>
 												<tr>
 												<td height="25"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;เกณฑ์บังคับ</font></td>
-												 <td width="13%" align="center"><?php  	$fetch_score_status = new DB_con();
+												 <td width="14%" align="center"><?php  	$fetch_score_status = new DB_con();
 																						$sql2 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 																						$num2 = mysqli_fetch_array($sql2);
 																						if ($num2['status']== "pass"){
-																						echo "<span class='alert-success'>ผ่านพิจารณา</span>";}
-																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;&nbsp;&nbsp;ไม่อนุมัติ&nbsp;&nbsp;&nbsp;</span>";}
-																						elseif ($num2['status']== "") {echo "รอพิจารณา";}
+																						echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
+																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;ไม่&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;&nbsp;</span>";}
+																						elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
 												 ?></td>
@@ -114,14 +115,14 @@
 											<?php } ?>
 										<?php if (($row['type']!="control") and ($row['type']!="measure")) {?>
 									<tr>
-									  <td width="87%" height="30"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo substr($row['sub_lebel'],0,2);?></font></td>
-									  <td width="13%" align="center"><?php  	$fetch_score_status = new DB_con();
+									  <td width="86%" height="30"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo iconv_substr($row['sub_lebel'], 0, 90, 'utf-8');?>...</font></td>
+									  <td width="14%" align="center"><?php  	$fetch_score_status = new DB_con();
 																				$sql2 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 																				$num2 = mysqli_fetch_array($sql2);
 																				if ($num2['status']== "pass"){
-																				echo "<span class='alert-success'>ผ่านพิจารณา</span>";}
-																				elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;&nbsp;&nbsp;ไม่อนุมัติ&nbsp;&nbsp;&nbsp;</span>";}
-																				elseif ($num2['status']== "") {echo "รอพิจารณา";}
+																				echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
+																				elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;ไม่&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;&nbsp;</span>";}
+																				elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
 												 ?></td>
