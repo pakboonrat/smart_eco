@@ -51,6 +51,11 @@
             $signinquery = mysqli_query($this->dbcon, "SELECT user_id, firstname , user_type FROM user WHERE username = '$uname' AND password = '$password'");
             return $signinquery;
         }
+		
+		public function sel_username($user_id) {
+            $signinquery = mysqli_query($this->dbcon, "SELECT user_id, firstname , user_type FROM user WHERE user_id = '$user_id'");
+            return $signinquery;
+        }
 
         public function fetch_level($id,$set_lebel) {
             $result = mysqli_query($this->dbcon, "SELECT * FROM level WHERE level_id = '$id' and set_lebel = '$set_lebel' ");
@@ -69,7 +74,7 @@
         }
 		
 		public function sel_score_status($level_id,$userid) {
-            $result = mysqli_query($this->dbcon, "SELECT point, status FROM `aprove_list_score` where level_id = '$level_id' and user_id = '$userid' ");
+            $result = mysqli_query($this->dbcon, "SELECT point, status,remark FROM `aprove_list_score` where level_id = '$level_id' and user_id = '$userid' ");
             return $result;
         }
 
@@ -80,7 +85,7 @@
         }
 		
 		public function basic_report($userid) {
-            $result = mysqli_query($this->dbcon, "SELECT level_id,sub_lebel,level_label,set_lebel FROM `level` where set_lebel = 'basic' and level_id in (SELECT level_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid')");
+            $result = mysqli_query($this->dbcon, "SELECT level_id,sub_lebel,level_label,set_lebel FROM `level` where set_lebel = 'basic' and level_id in (SELECT level_id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid' UNION select level_id from user_add where user_id = '$userid')");
             //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
             return $result;
         }
@@ -145,6 +150,12 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             return $result;
         }
 		
+		public function fetch_only_onescore($level_id, $userid) {
+            $result = mysqli_query($this->dbcon, "SELECT * FROM `score` where score_id in (SELECT score_id FROM `list` WHERE level_id = '$level_id' and score_id in (select score_id from list where list_id in (select list_id from transaction where user_id = '$userid') union select score_id from user_add where level_id = '$level_id' and user_id = '$userid' ) GROUP by `score_id`)");
+            //SELECT * FROM `score` where score_id in (SELECT score_id FROM `list` WHERE level_id = '5' GROUP by `score_id`)
+            return $result;
+        }
+		
 		// select_listby_score
         public function select_listby_score($level_id, $score_id) {
             $result = mysqli_query($this->dbcon, "SELECT * FROM `list` where level_id = '$level_id' and score_id = '$score_id' ");
@@ -153,12 +164,13 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 		
 		public function sel_countevidence($level_id, $userid, $score_id) {
-            $result = mysqli_query($this->dbcon, "SELECT count(*) as count_evidence FROM transaction where list_id in (select list_id from list where level_id = '$level_id' and score_id = '$score_id') and user_id = '$userid'");
+            $result = mysqli_query($this->dbcon, "select sum(count) as count_evidence from ( SELECT count(*) as count FROM transaction where list_id in (select list_id from list where level_id = '$level_id' and score_id = '$score_id') and user_id = '$userid' UNION all SELECT count(*) as count FROM user_add where level_id = '$level_id' and score_id = '$score_id' and user_id = '$userid') as temp");
             return $result;
         }
 
-		public function sel_count_useradd($level_id, $userid, $score_id) {
-            $result = mysqli_query($this->dbcon, "SELECT count(*) as count_evidence FROM user_add where level_id = '$level_id' and score_id = '$score_id' and user_id = '$userid'");
+		public function sel_count_transaction($level_id, $userid) {
+            $result = mysqli_query($this->dbcon, "SELECT count(DISTINCT(score_id)) as count_transaction FROM `list` WHERE level_id = '$level_id' and score_id in (select score_id from list where list_id in (select list_id from transaction where user_id = '$userid') union select score_id from user_add where level_id = '$level_id' and user_id = '$userid')");
+			//$result = mysqli_query($this->dbcon, "SELECT count(score_id) as count_transaction FROM `list` WHERE level_id = '$level_id' and score_id in (select score_id from list where list_id in (select list_id from transaction where user_id = '$userid') GROUP by score_id)");
             return $result;
         }
 
@@ -271,7 +283,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 		
 		public function update_transactionID($level_id,$user_id) {
-            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `list_id` in (select list_id FROM list where level_id = '$level_id') and user_id = '$user_id'");
+            $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `list_id` in (select list_id FROM list where level_id = '$level_id') and user_id = '$user_id' and `status` = 'save'");
             return $up_tran_status;
         }
 		
