@@ -398,7 +398,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                  AND $search_txt
                  AND $user_txt
                 GROUP BY USER";
-                echo "<p>". $sql ."</p>";
+                //echo "<p>". $sql ."</p>";
 
             $fetch = mysqli_query($this->dbcon,$sql);
             return $fetch;
