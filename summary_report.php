@@ -52,61 +52,75 @@
 											if (($row['type']=="-") and ($type_before!=$row['type']) ) {
 												?>
 												<tr>
+												<td><h5 style="color:#019128;"><b><?php if ($row['level_label']=="eco_champion") {echo "Eco-Champion";} elseif ($row['level_label']=="eco_excellence") {echo "Eco-Excellence";} elseif ($row['level_label']=="eco_worldclass") {echo "Eco-World Class";};?></b></h5></td>
+												</tr>
+												<tr>
 												<td height="30" colspan="2"><b><font style="color:2874A6;">เงื่อนไขเบื้องต้น</font></b></td>
 												</tr>
 											<?php } elseif ($row['type']=="control" and ($type_before!=$row['type'])) { ?>
-												<?php if ($sub_lebel_before!=$row['sub_lebel']) {
-												
-												?>
+												<?php if ($row['sub_lebel']!=$sub_lebel_before) {												
+												?>												
 												<tr>
 												<td colspan="2" height="30"><b><font style="color:2874A6;"><?php echo $row['sub_lebel'];?></font></b></td>
 												</tr>
 												<?php }?>
 												<tr>
 												<td height="25"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;เกณฑ์บังคับ</font></td>
-												 <td width="14%" align="center"><?php  	$fetch_score_status = new DB_con();
+												 <td width="15%" align="center"><?php  	$fetch_score_status = new DB_con();
 																						$sql2 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 																						$num2 = mysqli_fetch_array($sql2);
 																						if ($num2['status']== "pass"){
 																						echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
-																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;ไม่&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;&nbsp;</span>";}
+																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>ไม่ผ่านพิจารณา</span>";}
 																						elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
 												 ?></td>
 												</tr>
-											<?php } elseif ($row['type']=="measure" and ($type_before!=$row['type'])) {?>
+											<?php } elseif ($row['type']=="measure") {?>
 												<?php if ($sub_lebel_before!=$row['sub_lebel']) {	?>
+												<?php if ($level_label_before!=$row['level_label']) { ?>
+												<tr>
+												<td><hr><h5 style="color:#019128;"><b><?php if ($row['level_label']=="eco_champion") {echo "Eco-Champion";} elseif ($row['level_label']=="eco_excellence") {echo "Eco-Excellence";} elseif ($row['level_label']=="eco_worldclass") {echo "Eco-World Class";};?></b></h5></td>
+												</tr>
+												<?php }?>
 												<tr>
 												<td colspan="2" height="30"><b><font style="color:2874A6;"><?php echo $row['sub_lebel'];?></font></b></td>
 												</tr>
 												<?php }?>
 												<tr>
 												<td height="25"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;เกณฑ์คะแนน</font></td>
-												 <td width="14%" align="center"><?php  	$fetch_score_status = new DB_con();
+												 <td width="15%" align="center"><?php  	$fetch_score_status = new DB_con();
 																						$sql2 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 																						$num2 = mysqli_fetch_array($sql2);
 																						if (($num2['point']!= "") and ($num2['status']!= "reject")){
-																						echo "<span class='alert-success'>&nbsp;&nbsp;&nbsp;".$num2['point']."&nbsp;คะแนน&nbsp;&nbsp;&nbsp;</span>";
+																						echo "<span class='alert-success'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$num2['point']."&nbsp;คะแนน&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>";
 																						$point_count = $point_count + $num2['point']; }
-																						elseif (($num2['point']!= "") and ($num2['status']== "reject")) {echo "<span class='alert-danger'>&nbsp;ไม่&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;&nbsp;</span>";}
+																						elseif (($num2['point']!= "") and ($num2['status']== "reject")) {echo "<span class='alert-danger'>ไม่ผ่านพิจารณา</span>";}
 																						else {echo "-";}
 																						
 																						 
 												 ?></td>
 												</tr>
 											<?php } else if($row['type']=="control" and ($sub_lebel_before!=$row['sub_lebel']) ) { ?>
+											
+												<?php if ($level_label_before!=$row['level_label']) { ?>
+												<tr>
+												<td><hr><h5 style="color:#019128;"><b><?php if ($row['level_label']=="eco_champion") {echo "Eco-Champion";} elseif ($row['level_label']=="eco_excellence") {echo "Eco-Excellence";} elseif ($row['level_label']=="eco_worldclass") {echo "Eco-World Class";};?></b></h5></td>
+												</tr>
+												<?php }?>
+												
 												<tr>
 												<td colspan="2" height="30"><b><font style="color:2874A6;"><?php echo $row['sub_lebel'];?></font></b></td>
 												</tr>
 												<tr>
 												<td height="25"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;เกณฑ์บังคับ</font></td>
-												 <td width="14%" align="center"><?php  	$fetch_score_status = new DB_con();
+												 <td width="15%" align="center"><?php  	$fetch_score_status = new DB_con();
 																						$sql2 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 																						$num2 = mysqli_fetch_array($sql2);
 																						if ($num2['status']== "pass"){
 																						echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
-																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;ไม่&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;&nbsp;</span>";}
+																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>ไม่ผ่านพิจารณา</span>";}
 																						elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
@@ -115,13 +129,13 @@
 											<?php } ?>
 										<?php if (($row['type']!="control") and ($row['type']!="measure")) {?>
 									<tr>
-									  <td width="86%" height="30"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo iconv_substr($row['sub_lebel'], 0, 90, 'utf-8');?>...</font></td>
-									  <td width="14%" align="center"><?php  	$fetch_score_status = new DB_con();
+									  <td width="85%" height="30"><font style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo iconv_substr($row['sub_lebel'], 0, 90, 'utf-8');?>...</font></td>
+									  <td width="15%" align="center"><?php  	$fetch_score_status = new DB_con();
 																				$sql2 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 																				$num2 = mysqli_fetch_array($sql2);
 																				if ($num2['status']== "pass"){
 																				echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
-																				elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>&nbsp;ไม่&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;&nbsp;</span>";}
+																				elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>ไม่ผ่านพิจารณา</span>";}
 																				elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
@@ -130,14 +144,15 @@
 										<?php }?>
 										<?php 	$type_before =$row['type'];
 												$sub_lebel_before =$row['sub_lebel'];
+												$level_label_before = $row['level_label'];
 												}?>
 								 </tbody>
 								</table>
 									<table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tbody>
     <tr>
-      <td width="86%" height="35" align="right" valign="bottom">รวมคะแนนทั้งหมด :&nbsp;</td>
-      <td width="14%" height="35" align="center" valign="bottom"><?php echo "&nbsp;".$point_count."&nbsp;คะแนน"?></td>
+      <td width="85%" height="35" align="right" valign="bottom">รวมคะแนนทั้งหมด :&nbsp;</td>
+      <td width="15%" height="35" align="center" valign="bottom"><?php echo "&nbsp;".$point_count."&nbsp;คะแนน"?></td>
     </tr>
   </tbody>
 </table>

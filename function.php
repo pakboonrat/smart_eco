@@ -282,6 +282,12 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             return $up_tran_status;
         }
 		
+		public function update_approve_list_score($level_id,$user_id,$remark) {
+            $up_approve_list_score = mysqli_query($this->dbcon, "UPDATE `aprove_list_score` set `status` = 'recheck' ,`remark` = '',`old_remark` = '$remark'  where level_id = '$level_id' and user_id = '$user_id'");
+            return $up_approve_list_score;
+        }
+
+		
 		public function update_transactionID($level_id,$user_id) {
             $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `list_id` in (select list_id FROM list where level_id = '$level_id') and user_id = '$user_id' and `status` = 'save'");
             return $up_tran_status;

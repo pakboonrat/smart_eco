@@ -52,8 +52,14 @@
 				//$sql = $userdata->updateuser($username ,$password, $email, $user_type , $firstname, $surname, $phone_no, $department ,$useractive,$userid );
 				//updateuser($username ,$password ,$email ,$user_type, $firstname, $surname, $phone_no, $department,  $active, $userid)
 				if ($sql) {
-					echo "<script>alert('แก้ไขข้อมูลเรียบร้อย !');</script>";
-					echo "<script>window.location.href='nikom_all.php?usertype='$user_type''</script>";
+					echo "<script>alert('แก้ไขข้อมูลเรียบร้อย !!');</script>";
+					echo "<script>location.replace('http://smartecosis.com/nikom_all.php?usertype=".$user_type."')";
+					
+					//'$user_type''</script>";
+					
+					//location.replace("https://www.w3schools.com")
+					//echo $user_type;
+					echo "</script>";
 				} else {
 					echo "<script>alert('Something went wrong! Please try again!');</script>";
 					echo "<script>window.location.href='nikom_all.php?usertype='$user_type''</script>";
@@ -110,14 +116,20 @@ function validateForm() {
       <nav class="nav-tabs" id="nav-tabs">
       </nav>
     </header>
-  <div class="content-columns">
+   <div class="content-columns">
+			
     <?php    if($_SESSION['user_type']=="ADMIN"){ ?>     
             <form name="myForm" method="post" onSubmit="return validateForm()">
-<table width="100%" border="0" align="left" cellpadding="1" cellspacing="1">
+				<div class="col" >
+				<div class="item">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table table-striped table-hover" id="section1">
+  <tbody>
   <tr>
     <td width="10%" align="left">Username</td>
     <td width="15%" align="center">ชื่อ</td>
+	<?php if (($_GET['usertype'])=='AUDITOR') { ?>
     <td width="15%" align="center">นามสกุล</td>
+	<?php } ?>
     <td width="12%" align="center">Email</td>
     <td width="17%" align="center"><?php if (($_GET['usertype'])=='USER'){ ?> ระดับประเมิน<?} else {?> เบอร์โทร<?} ?></td>
     <td width="4%" align="center">Active</td>
@@ -144,7 +156,9 @@ function validateForm() {
     }?>>
     <td><?php echo $row_user['username']; ?></td>
     <td><?php echo $row_user['firstname']; ?></td>
+	 <?php if (($_GET['usertype'])=='AUDITOR') { ?>
     <td><?php echo $row_user['surname']; ?></td>
+	  <?php } ?>
     <td><?php echo $row_user['email']; ?></td>
     <td align="center"><?php if (($_GET['usertype'])=='USER')
 			{
@@ -163,14 +177,13 @@ function validateForm() {
 					else {?><img src="images/delete.gif" width="20" height="20">
 				<?} ?></td>
     <td align="center"><?php $irow_count++;?>
-      <a href="nikom_all.php?usertype=<?php echo $user_type;?>&edit=edit&userid=<?php echo $row_user['user_id']; ?>"><img src="images/edit.gif" width="25" height="25"></a></td>
+      <a href="nikom_all.php?usertype=<?php echo $user_type;?>&edit=edit&userid=<?php echo $row_user['user_id']; ?>#section2"><img src="images/edit.gif" width="25" height="25"></a></td>
     <td align="center"><a href="nikom_all.php?usertype=<?php echo $user_type;?>&edit=delete&userid=<?php echo $row_user['user_id']; ?>" onClick="return confirm('คุณยืนยันที่จะลบข้อมูล?');"><img src="images/delete.gif" width="28" height="24"></a></td>
     <td></td>
   </tr><?php  }; ?>
 
-</table><br>
-<br>
-<br>
+	</tbody></table></div>
+
 <br>
 	<?php 
 		$edit_type = $_GET['edit'];
@@ -221,7 +234,7 @@ function validateForm() {
         $userdata = mysqli_fetch_array($result);
 
 		 ?>
-		<table width="90%" border="0" cellspacing="1" cellpadding="1">
+		<table width="90%" border="0" cellspacing="1" cellpadding="1" id="section2">
   <tr>
     <td height="10">&nbsp;</td>
     <td height="10">&nbsp;</td>
@@ -250,12 +263,12 @@ function validateForm() {
    <tr>
     <td height="10"><label for="surname">ระดับประเมิน</label></td>
     <td height="10"><select name="format_id" size="1" id="format_id">
-        <option value="1" <?php if ($userdata['format_id']==1){ echo "selected";} ?>>Champion ปีแรก</option>
-        <option value="2" <?php if ($userdata['format_id']==2){ echo "selected";} ?>>Surveillance Champion</option>
-        <option value="3" <?php if ($userdata['format_id']==3){ echo "selected";} ?>>Excellence ปีแรก</option>
-        <option value="4" <?php if ($userdata['format_id']==4){ echo "selected";} ?>>Surveillance Excellence</option>
-        <option value="5" <?php if ($userdata['format_id']==5){ echo "selected";} ?>>WorldClass ปีแรก</option>
-        <option value="6" <?php if ($userdata['format_id']==6){ echo "selected";} ?>>Surveillance WorldClass</option>
+        <option value="1" <?php if ($userdata['format_id']==1){ echo "selected";} ?>>Certified Eco-Champion</option>
+        <option value="2" <?php if ($userdata['format_id']==2){ echo "selected";} ?>>Surveillance Eco-Champion</option>
+        <option value="3" <?php if ($userdata['format_id']==3){ echo "selected";} ?>>Certified Eco-Excellence</option>
+        <option value="4" <?php if ($userdata['format_id']==4){ echo "selected";} ?>>Surveillance Eco-Excellence</option>
+        <option value="5" <?php if ($userdata['format_id']==5){ echo "selected";} ?>>Certified Eco-World Class</option>
+        <option value="6" <?php if ($userdata['format_id']==6){ echo "selected";} ?>>Surveillance Eco-World Class</option>
       </select></td>
 			</tr> <?php  } else {  ?>
 			<input name="format_id" type="hidden" value="0">
@@ -285,10 +298,7 @@ function validateForm() {
     </form>   
   </div>
       <?php }; ?>
-</div>
- 
 
-</div>
 </body>
 </html>
 
