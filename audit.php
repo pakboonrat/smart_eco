@@ -25,6 +25,7 @@ function validateForm() {
 </script>
 
 <?php include('style-header.php'); ?>
+<script src="notify.js"></script>
 </head>
 <body>
 <div class="site-wrap">
@@ -35,7 +36,18 @@ function validateForm() {
       <div class="breadcrumbs">
         <a href="audit.php">Home</a>
       </div>
-      <h1>ตรวจพิจารณา : </h1>
+      <h1 class="1">ตรวจพิจารณา : </h1>
+      <!-- run code -->
+  <script class="demo">
+
+
+
+$(function() {
+  $(".1").notify("HELLO!")
+
+
+});
+</script>
       <nav class="nav-tabs" id="nav-tabs">
        <a href="audit.php" >
           ตรวจพิจารณา </a>
@@ -60,7 +72,7 @@ function validateForm() {
     <?php 
           $fetchdata = new DB_con();
           //$sql = $fetchdata->fetch_transaction_By_USER(" status = 'consider' "); //fetch_AUDIT_By_USER
-          $sql = $fetchdata->fetch_AUDIT_By_USER("ALL","consider");
+          $sql = $fetchdata->fetch_AUDIT_By_USER("ALL","not pass");
           if( mysqli_num_rows($sql) != 0 ){
            
           while($row = mysqli_fetch_array($sql)) { 

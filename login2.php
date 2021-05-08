@@ -49,6 +49,7 @@
 <div class="inner-header flex">
 <!--Just the logo.. Don't mind this-->
     <div class="form-center">
+        <div><img src="images/Eco.jpg" width="400px" ></div>
         <div style="margin:0 0 50px 0;">
             <h1>
                     <svg id="Capa_1" class="logo"  enable-background="new 0 0 512 512" height="42" viewBox="0 0 512 512" width="42" 
