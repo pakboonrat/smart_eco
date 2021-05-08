@@ -36,18 +36,9 @@ function validateForm() {
       <div class="breadcrumbs">
         <a href="audit.php">Home</a>
       </div>
-      <h1 class="1">ตรวจพิจารณา : </h1>
+      <h1 >ตรวจพิจารณา : </h1>
       <!-- run code -->
-  <script class="demo">
-
-
-
-$(function() {
-  $(".1").notify("HELLO!")
-
-
-});
-</script>
+  
       <nav class="nav-tabs" id="nav-tabs">
        <a href="audit.php" >
           ตรวจพิจารณา </a>

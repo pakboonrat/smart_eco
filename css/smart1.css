@@ -104,6 +104,54 @@ body {
   right: -2px;
 }
 
+.name00 {
+  font-size: 1.3rem;
+  position: relative;
+  margin: 2rem 0 2rem 0;
+  padding: 0 2.5rem 0.5rem 2rem;
+  width: calc(100% - 3rem);
+}
+.name00 svg {
+  position: absolute;
+  fill: rgb(8, 8, 8);
+  width: 16px;
+  height: 16px;
+  right: 0;
+  top: 7px;
+  visibility: hidden;
+}
+
+.notifyjs-foo-base {
+  opacity: 0.85;
+  width: 200px;
+  background: #F5F5F5;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.notifyjs-foo-base .title {
+  width: 100px;
+  float: left;
+  margin: 10px 0 0 10px;
+  text-align: right;
+}
+
+.notifyjs-foo-base .buttons {
+  width: 70px;
+  float: right;
+  font-size: 9px;
+  padding: 5px;
+  margin: 2px;
+}
+
+.notifyjs-foo-base button {
+  font-size: 9px;
+  padding: 5px;
+  margin: 2px;
+  width: 60px;
+}
+
+
 main {
   border-top-left-radius: 2rem;
   background: #ebecee;

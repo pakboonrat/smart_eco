@@ -556,6 +556,20 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
         }
+
+        public function fetch_notif_USER($user) {
+
+            $sql_txt = "SELECT N.id as id , M.title as title, M.body as body , M.user_id as user_id ,  M.create_time as times
+                        FROM notification N , message M    
+                        WHERE M.message_id=N.message_id 
+                         AND N.user_id = '$user' 
+                         AND N.read_at is null ORDER by id ";
+            $fetch = mysqli_query($this->dbcon, $sql_txt);
+            //  echo $sql_txt ;
+
+
+            return $fetch;
+        }
         
 
         
