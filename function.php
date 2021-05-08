@@ -282,6 +282,12 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             return $up_tran_status;
         }
 		
+		public function update_approve_list_score($level_id,$user_id,$remark) {
+            $up_approve_list_score = mysqli_query($this->dbcon, "UPDATE `aprove_list_score` set `status` = 'recheck' ,`remark` = '',`old_remark` = '$remark'  where level_id = '$level_id' and user_id = '$user_id'");
+            return $up_approve_list_score;
+        }
+
+		
 		public function update_transactionID($level_id,$user_id) {
             $up_tran_status = mysqli_query($this->dbcon, "UPDATE `transaction` SET `status`='consider' WHERE `list_id` in (select list_id FROM list where level_id = '$level_id') and user_id = '$user_id' and `status` = 'save'");
             return $up_tran_status;
@@ -338,8 +344,6 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 $search_txt = "T1.status != 0 ";
             }elseif( $status == 'pass'){
                 $search_txt = "T1.status = 1 ";
-            }elseif( $status == 'not pass'){
-                $search_txt = "T1.status = 2 ";
             }else{
                 $search_txt = " TRUE ";
             }
@@ -352,7 +356,8 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                         CASE  
                             WHEN  T3.status='consider' THEN 1 
                             WHEN  A3.firstname is not null THEN 1 
-                            WHEN  T3.status in ('consider','pass','reject') AND A3.firstname is null THEN 1
+                            WHEN  T3.status in ('consider','pass','reject') AND A3.firstname is null THEN 1 
+                        
                         ELSE 0 END AS status , A3.firstname as firstname 
 					FROM transaction  T3 
 					LEFT JOIN 
@@ -360,16 +365,9 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
   						FROM aprove,user 
   						where aprove.audit_id=user.user_id 
 					) A3 ON T3.t_id=A3.t_id 
-                    
-					UNION 
-                    SELECT DISTINCT A4.user_id as user_id ,
-                    CASE  
-                            WHEN  A4.status='pass' THEN 2
-                        
-                        ELSE 0 END AS status , U4.firstname as firstname
-                    FROM aprove_list_score A4 ,user U4 
-					WHERE
-                    A4.audit_id = U4.user_id
+					, list
+					LEFT JOIN aprove_list_score ON aprove_list_score.level_id = list.level_id
+                 	WHERE T3.list_id = list.list_id
                  	
                  
                     UNION
@@ -377,21 +375,27 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                     CASE  
                             WHEN  UADD3.status='consider' THEN 1 
                             WHEN  UA3.firstname is not null THEN 1 
-                            WHEN  UADD3.status in ('consider','pass','reject') AND UA3.firstname is null THEN 1
+                            WHEN  UADD3.status in ('consider','pass','reject') AND UA3.firstname is null THEN 1 
+                        
                         ELSE 0 END AS status ,  UA3.firstname as firstname 
 					FROM user_add  UADD3 
 					LEFT JOIN 
 					( 	select DISTINCT aprove_user_add.add_id,user.firstname 
   						FROM aprove_user_add,user 
   						where aprove_user_add.audit_id=user.user_id 
-					) UA3 ON UADD3.add_id=UA3.add_id
+					) UA3 ON UADD3.add_id=UA3.add_id 
+					, list
+					LEFT JOIN aprove_list_score ON aprove_list_score.level_id = list.level_id 
+                 			AND aprove_list_score.score_id = list.score_id
+					WHERE UADD3.level_id = list.level_id 
+                 			AND UADD3.score_id = list.score_id
                  
                 ) T1 ON U1.user_id=T1.user_id
                 WHERE U1.user_type = 'USER'
                  AND $search_txt
                  AND $user_txt
                 GROUP BY USER";
-                echo "<p>". $sql ."</p>";
+                //echo $sql;
 
             $fetch = mysqli_query($this->dbcon,$sql);
             return $fetch;

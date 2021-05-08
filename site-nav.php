@@ -37,7 +37,7 @@
 			  ?></a></li>
           <?php } ?>
          
-      </li>
+     
 		<?php }
             if($_SESSION['user_type']=="ADMIN"){
 
@@ -54,22 +54,22 @@
 					elseif ($row['level_label']== 'eco_worldclass') {echo "ECO-WORLD CLASS";};
 			  ?></a></li>
           <?php } ?>          
-        </ul>
-      </li>
-      <li><a href="nikom_all.php?usertype=USER">ผู้ใช้นิคม</a></li>
-      <li><a href="nikom_all.php?usertype=AUDITOR">ผู้ตรวจประเมิน</a></li>
+       
+      <li <?php if ((basename($_SERVER["SCRIPT_FILENAME"], '.php')=='nikom_all') and ($_GET['usertype']=='USER')) {echo "class='active'";}?>><a href="nikom_all.php?usertype=USER">ผู้ใช้นิคม</a></li>
+      <li <?php if ((basename($_SERVER["SCRIPT_FILENAME"], '.php')=='nikom_all') and ($_GET['usertype']=='AUDITOR')) {echo "class='active'";}?>><a href="nikom_all.php?usertype=AUDITOR">ผู้ตรวจประเมิน</a></li>
       <?php } ?>
    		<?php 
             if($_SESSION['user_type']=="AUDITOR"){
 
         ?>
-      <li><a href="audit.php">ตรวจพิจารณา</a></li>
-
+      <li <?php if ((basename($_SERVER["SCRIPT_FILENAME"], '.php')=='audit') || (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='approve')) {echo "class='active'";}?>><a href="audit.php">ตรวจพิจารณา</a></li>
+	  <li <?php if ((basename($_SERVER["SCRIPT_FILENAME"], '.php')=='nikom_report') || (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='status_report1') || (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='summary_report1') ) {echo "class='active'";}?>><a href="nikom_report.php">รายงานสรุปผลของนิคม</a></li>
+	  <li <?php if (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='certificate') {echo "class='active'";}?>><a href="certificate.php">รายงานการตรวจประเมิน</a></li>
       <?php } ?> 
 	    <?php  if($_SESSION['user_type']=="USER"){
         ?>
 	  <li <?php if (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='status_report') {echo "class='active'";}?>><a href="status_report.php">สถานะการส่งพิจารณา</a></li>
-	  <li <?php if (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='cer_download') {echo "class='active'";}?>><a href="#">ดาวน์โหลดใบรับรอง</a></li>
+	  <li <?php if (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='summary_report') {echo "class='active'";}?>><a href="summary_report.php">รายงานสรุปผล</a></li>
       <li <?php if (basename($_SERVER["SCRIPT_FILENAME"], '.php')=='database') {echo "class='active'";}?>><a href="database.php?yearsel=<?php echo date("Y"); ?>">DATABASE</a></li>
 	  <?php } ?>
       <li><a href="logout.php"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-unlock" viewBox="0 0 16 16">
