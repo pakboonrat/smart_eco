@@ -23,7 +23,7 @@
       <div class="breadcrumbs">
         <a href="audit.php">Home</a>
       </div>
-      <h1>สถานะการส่งพิจารณา : </h1>
+      <h1>สถานะการส่งพิจารณา : &nbsp;<?php echo $_SESSION['fname'];?></h1>
 
     </header>
 
@@ -51,6 +51,8 @@
 										  <tbody>
 											  <?php	$fetchdata2 = new DB_con();
 													$sql2 = $fetchdata2->basic_report_tran($row['level_id'],$_SESSION['id']);
+													//echo $row['level_id'];
+													//echo $_SESSION['id'];
 													while($row2 = mysqli_fetch_array($sql2)) { 
 											  ?>
 										    <tr>

@@ -3,17 +3,22 @@ if(isset($_GET['act'])){
 	if($_GET['act']== 'excel'){
 		
 		
-		header("Content-Disposition: attachment; filename=export.xls");
+		header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		
-		
-		header("Content-Type: application/vnd.ms-excel");
-		
+		//header("Content-Disposition: attachment; filename=export.xlsx");
+		//header('Cache-Control: max-age=0');  
 
+		//header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment; filename=export.xlsx');
+		
+		
+		
+		
 	}
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"xmlns:x="urn:schemas-microsoft-com:office:excel"xmlns="http://www.w3.org/TR/REC-html40">
 	<head>
 		<meta charset="utf-8">
 		<title>devbanban</title>
