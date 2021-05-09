@@ -25,7 +25,7 @@ function validateForm() {
 </script>
 
 <?php include('style-header.php'); ?>
-<script src="notify.js"></script>
+
 </head>
 <body>
 <div class="site-wrap">
