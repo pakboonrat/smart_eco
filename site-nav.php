@@ -44,7 +44,7 @@
     $sql = $updatelevel->fetch_notif_USER($_SESSION['id']);
     if( mysqli_num_rows($sql) != 0 ){
       while($row_notif = mysqli_fetch_array($sql)) { 
-        //  $notif_txt .= "  $.notify('".$row_notif['title']."');   " ; 
+          // $notif_txt .= "  $.notify('".$row_notif['title']."');   " ; 
         //  $notif_txt .= " $.notify.addStyle('foo', {
         //                     html: 
         //                       '<div>

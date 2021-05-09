@@ -72,6 +72,7 @@
 																						if ($num2['status']== "pass"){
 																						echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
 																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>ไม่ผ่านพิจารณา</span>";}
+																						elseif ($num2['status']== "recheck") {echo "<span class='alert-warning'>&nbsp;&nbsp;รอพิจารณา&nbsp;&nbsp;</span>";}
 																						elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
@@ -97,6 +98,7 @@
 																						echo "<span class='alert-success'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$num2['point']."&nbsp;คะแนน&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>";
 																						$point_count = $point_count + $num2['point']; }
 																						elseif (($num2['point']!= "") and ($num2['status']== "reject")) {echo "<span class='alert-danger'>ไม่ผ่านพิจารณา</span>";}
+																						elseif (($num2['point']!= "") and ($num2['status']== "recheck")) {echo "<span class='alert-warning'>&nbsp;&nbsp;รอพิจารณา&nbsp;&nbsp;</span>";}
 																						else {echo "-";}
 																						
 																						 
@@ -121,6 +123,7 @@
 																						if ($num2['status']== "pass"){
 																						echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
 																						elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>ไม่ผ่านพิจารณา</span>";}
+																						elseif ($num2['status']== "recheck") {echo "<span class='alert-warning'>&nbsp;&nbsp;รอพิจารณา&nbsp;&nbsp;</span>";}
 																						elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
@@ -136,6 +139,7 @@
 																				if ($num2['status']== "pass"){
 																				echo "<span class='alert-success'>&nbsp;&nbsp;ผ่านพิจารณา&nbsp;&nbsp;</span>";}
 																				elseif ($num2['status']== "reject") {echo "<span class='alert-danger'>ไม่ผ่านพิจารณา</span>";}
+																				elseif ($num2['status']== "recheck") {echo "<span class='alert-warning'>&nbsp;&nbsp;รอพิจารณา&nbsp;&nbsp;</span>";}
 																				elseif ($num2['status']== "") {echo "-";}
 																						
 																						 
@@ -154,8 +158,10 @@
       <td width="85%" height="35" align="right" valign="bottom">รวมคะแนนทั้งหมด :&nbsp;</td>
       <td width="15%" height="35" align="center" valign="bottom"><?php echo "&nbsp;".$point_count."&nbsp;คะแนน"?></td>
     </tr>
+
   </tbody>
 </table>
+
 
 								</div>
 							</td>
