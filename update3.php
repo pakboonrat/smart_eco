@@ -67,6 +67,9 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
          }elseif($_POST['approve_action'] == "ไม่ผ่านการพิจารณา"  ){
             $status = "reject";
             $sql_pass = " " ;
+
+
+
          }
 
     $status_app = mysqli_real_escape_string($con,$status);
@@ -100,6 +103,14 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
    //$query = $sql_pass . $query ;
    
    if (mysqli_query($con,$query)){
+
+        if($status_app == "reject" ){
+            $notif = new DB_con();
+            $notif_sent = $notif->send_notif_USER($audit, $user_id,"สถานะการพิจารณา : ไม่ผ่านการอนุมัติ ");
+            // $notif_sent > return 0 , 1  // send_notif_USER(USER_ID ผู้ส่ง , USER_ID คนรับ  ,"ข้อความ");
+        }
+
+
         $result_sql = true;
         $result_sql1 = true;
 

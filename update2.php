@@ -31,6 +31,15 @@ if(isset($_POST['input_type'])){
          if (mysqli_query($con,$query) and $comment != "" ){
             mysqli_query($con,$query2);
             echo 1;
+            
+            if($t_status == "reject" ){
+               $user_id = mysqli_real_escape_string($con,$_POST['user_id']);
+               $notif = new DB_con();
+               $notif_sent = $notif->send_notif_USER($audit, $user_id,"สถานะ : ไม่ผ่านการอนุมัติ ");
+               // $notif_sent > return 0 , 1  // send_notif_USER(USER_ID ผู้ส่ง , USER_ID คนรับ  ,"ข้อความ");
+            }
+
+
          }else{
          echo 1;
          }
@@ -61,6 +70,15 @@ if(isset($_POST['input_type'])){
          if (mysqli_query($con,$query) and $comment != "" ){
             mysqli_query($con,$query2);
             echo 1;
+
+            if($t_status == "reject" ){
+               $user_id = mysqli_real_escape_string($con,$_POST['user_id']);
+               $notif = new DB_con();
+               $notif_sent = $notif->send_notif_USER($audit, $user_id,"การส่งหลักฐาน สถานะ : ไม่ผ่านการอนุมัติ ");
+               // $notif_sent > return 0 , 1  // send_notif_USER(USER_ID ผู้ส่ง , USER_ID คนรับ  ,"ข้อความ");
+            }
+
+            
          }else{
          echo 1;
          }

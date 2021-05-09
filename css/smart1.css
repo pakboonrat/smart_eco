@@ -97,7 +97,27 @@ body {
   content: "";
   width: 8px;
   height: 8px;
-  background: #4777ce;
+  background: #cc0b14;
+  border-radius: 20px;
+  position: absolute;
+  top: 6px;
+  right: -2px;
+}
+
+.name:visited  svg {
+  position: absolute;
+  fill: gray;
+  width: 16px;
+  height: 16px;
+  right: 0;
+  top: 7px;
+}
+
+.name:visited ::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #2d4064;
   border-radius: 20px;
   position: absolute;
   top: 6px;
@@ -113,11 +133,22 @@ body {
 }
 .name00 svg {
   position: absolute;
-  fill: rgb(8, 8, 8);
+  fill: rgb(88, 88, 88);
   width: 16px;
   height: 16px;
   right: 0;
   top: 7px;
+  visibility: hidden;
+}
+.name00::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #000000;
+  border-radius: 20px;
+  position: absolute;
+  top: 6px;
+  right: -2px;
   visibility: hidden;
 }
 

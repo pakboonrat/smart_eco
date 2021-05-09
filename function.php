@@ -570,6 +570,22 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 
             return $fetch;
         }
+
+        public function send_notif_USER( $User_id_sender , $user_id_reciever ,$txt_send) {
+            // INSERT INTO `message` (`message_id`, `user_id`, `title`, `body`, `create_time`) VALUES (NULL, '6', 'ตรวจสอบแล้ว ไม่ผ่านการอนุมัติ', NULL, current_timestamp());
+
+            $sql_txt = "INSERT INTO `message` (`message_id`, `user_id`, `title`, `body`, `create_time`) 
+                        VALUES (NULL, $user_id_reciever , '$txt_send' , NULL, current_timestamp());
+                        INSERT INTO `notification` ( `user_id`, `message_id`) 
+                        VALUES ($User_id_sender, ( SELECT LAST_INSERT_ID() ));
+                         ";
+            // echo $sql_txt ;
+            $fetch = mysqli_multi_query($this->dbcon, $sql_txt);
+            //  echo $sql_txt ;
+
+
+            return $fetch;
+        }
         
 
         

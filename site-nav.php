@@ -42,31 +42,49 @@
     $updatelevel = new DB_con();
     $notif_txt = "";
     $sql = $updatelevel->fetch_notif_USER($_SESSION['id']);
-    while($row_notif = mysqli_fetch_array($sql)) { 
-      //  $notif_txt .= "  $.notify('".$row_notif['title']."');   " ; 
-      //  $notif_txt .= " $.notify.addStyle('foo', {
-      //                     html: 
-      //                       '<div>
-      //                         <div class='clearfix'> 
-      //                           <div class='title' data-notify-html='title'/>
-      //                           <div class='buttons'>
-      //                             <button class='no'>Cancel</button>
-      //                             <button class='yes' data-notify-text='button'></button>
-      //                           </div>
-      //                         </div>
-      //                       </div>'
-      //                   });" ;
+    if( mysqli_num_rows($sql) != 0 ){
+      while($row_notif = mysqli_fetch_array($sql)) { 
+        //  $notif_txt .= "  $.notify('".$row_notif['title']."');   " ; 
+        //  $notif_txt .= " $.notify.addStyle('foo', {
+        //                     html: 
+        //                       '<div>
+        //                         <div class='clearfix'> 
+        //                           <div class='title' data-notify-html='title'/>
+        //                           <div class='buttons'>
+        //                             <button class='no'>Cancel</button>
+        //                             <button class='yes' data-notify-text='button'></button>
+        //                           </div>
+        //                         </div>
+        //                       </div>'
+        //                   });" ;
 
-      $notif_txt .= "  $.notify({
-                          title: '".$row_notif['title']." <a href=approve.php?userid=".$row_notif['user_id']." >กด</a> ',
-                          button: 'Confirm'
-                        }, { 
-                          style: 'foo',
-                          autoHide: false,
-                          clickToHide: false
-                        }); ";
-       
-       } ?>
+        $notif_txt .= "  $.notify({
+                            title: ' <a href=approve.php?userid=".$row_notif['user_id']." >".$row_notif['title']."</a> ',
+                            button: 'Confirm'
+                          }, { 
+                            style: 'foo',
+                            autoHide: false,
+                            clickToHide: false
+                          }); ";
+        
+        } 
+      }else{
+        echo "<script>
+                $('.name').toggleClass('name00');
+              </script> " ;
+      }
+
+      //ตัวอย่าง การส่ง ข้อความ send_notif_USER(5, 4,"tesssss");
+      // $notif_sent > return 0 , 1  
+      // send_notif_USER(USER_ID ผู้ส่ง , USER_ID คนรับ  ,"ข้อความ");
+      //
+      // $sql = $updatelevel->send_notif_USER(5, 4,"tesssss");
+      // if($sql) {
+      //   echo "ID-------- : ";
+      // }
+      
+      
+       ?>
     
       <div class="0">
       <svg class="11" width="24" height="24" viewBox="0 0 24 24" onclick=" <?php echo $notif_txt ; ?> ">

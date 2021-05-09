@@ -730,6 +730,7 @@ $(document).ready(function() {
 		}else{
 
 				var audit = $('#audit').val();
+				var user_id = $('#user').val();
 				if(index!="" && approve_action!="" && audit!=""){
 					$.ajax({
 						url: "update2.php",
@@ -739,6 +740,7 @@ $(document).ready(function() {
 							comment: comment,
 							approve_action: approve_action,
 							audit: audit,
+							user_id:user_id,
 							input_type: input_type				
 						},
 						cache: false,
