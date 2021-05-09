@@ -520,7 +520,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             L.set_lebel as set_lebel , score.score_des as score_des , score.point as point , aprove_list_score.status as status 
             ,aprove_list_score.aprove_id AS app_id
             ,aprove_list_score.aprove_date AS aprove_date
-            ,aprove_list_score.remark AS remark
+            ,aprove_list_score.remark AS remark , aprove_list_score.old_remark AS old_remark
             FROM transaction T ,list
             LEFT JOIN score on list.score_id = score.score_id , level L 
             LEFT JOIN aprove_list_score on L.level_id = aprove_list_score.level_id and aprove_list_score.user_id = $user_id
@@ -532,7 +532,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             select DISTINCT L.level_id as level_id , L.level_label as level_label , L.sub_lebel as sub_lebel ,L.type as type , L.set_lebel as set_lebel , score.score_des as score_des , score.point as point , aprove_list_score.status as status 
             ,aprove_list_score.aprove_id AS app_id
             ,aprove_list_score.aprove_date AS aprove_date
-            ,aprove_list_score.remark AS remark
+            ,aprove_list_score.remark AS remark , aprove_list_score.old_remark AS old_remark
             FROM user_add 
             LEFT JOIN score on user_add.score_id = score.score_id , level L
             LEFT JOIN aprove_list_score on aprove_list_score.level_id = L.level_id and aprove_list_score.user_id = $user_id
@@ -566,9 +566,9 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             // INSERT INTO `message` (`message_id`, `user_id`, `title`, `body`, `create_time`) VALUES (NULL, '6', 'ตรวจสอบแล้ว ไม่ผ่านการอนุมัติ', NULL, current_timestamp());
 
             $sql_txt = "INSERT INTO `message` (`message_id`, `user_id`, `title`, `body`, `create_time`) 
-                        VALUES (NULL, $user_id_reciever , '$txt_send' , NULL, current_timestamp());
+                        VALUES (NULL, $User_id_sender , '$txt_send' , NULL, current_timestamp());
                         INSERT INTO `notification` ( `user_id`, `message_id`) 
-                        VALUES ($User_id_sender, ( SELECT LAST_INSERT_ID() ));
+                        VALUES ( $user_id_reciever , ( SELECT LAST_INSERT_ID() ));
                          ";
             // echo $sql_txt ;
             $fetch = mysqli_multi_query($this->dbcon, $sql_txt);

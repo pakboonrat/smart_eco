@@ -161,6 +161,10 @@ function validateForm() {
 							$check_label = "-reject";
 							$badge_color = "-danger";
 							$status_display = "<span class='red-reject'> *** ไม่ผ่านการพิจารณา </span>";
+						}elseif( strtolower($row['status']) == "recheck" ){
+							$check_label = "-recheck";
+							$badge_color = "-warning";
+							$status_display = "<span class='-recheck'> *** ส่งพิจารณาใหม่อีกครั้ง </span>";
 						}else{
 							$check_label = "-uncheck";
 							$badge_color = "-secondary";
@@ -560,12 +564,21 @@ function validateForm() {
 								</div>
 								<div class="mail">
 									<div class="pl-0 pb-2">
+										<?php if($row['status'] == "recheck"){  ?>
+										<div class="col-10 pb-2">ข้อคิดเห็น ครั้งก่อน  : <?php  echo $row['old_remark'] ; ?>  </div>
+										<?php }else{  ?> 	
 										<div class="col-10 pb-2">ข้อคิดเห็น : <?php  echo $row['remark'] ; ?>  </div>
-										<?php if( isset($row['status']) ){ 
+										<?php } if( isset($row['status']) ){ 
 													if($row['status'] != "cancle"){  
 														$input_disable="disabled"; ?>
-															<div class="col-10">สถานะ : <?php  echo $status_display ; ?> </div> 
-												<?php }else{ 
+															<div class="col-10">สถานะ : <?php  echo $status_display ; ?> </div>
+															<?php if($row['status'] == "recheck"){  
+																$input_disable=" "; ?>
+															<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
+															</div>
+															<input type="hidden" id="recheck_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['app_id'];?>">
+
+												<?php } }else{ 
 														$input_disable=""; 
 														
 														?>
@@ -594,7 +607,7 @@ function validateForm() {
 										<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
 										<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ไม่ผ่านการพิจารณา">
 										<?php if( isset($row['status']) ){  
-												if($row['status'] != "cancle"){  ?>
+												if($row['status'] != "cancle" AND $row['status'] != "recheck" ){  ?>
 													<input type="submit" name="cancle_<?php echo $row['app_id'];?>" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
 													<input type="hidden" id="cancle_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['app_id'];?>">
 											<?php }
@@ -812,6 +825,9 @@ $(document).ready(function() {
 				console.log("this.value:"+ this.value );
 				passT = $('#passT_'+input_type+'_'+level_id+'_'+score_id).val();
 				passU = $('#passU_'+input_type+'_'+level_id+'_'+score_id).val();
+				recheck = $('#recheck_'+input_type+'_'+level_id+'_'+score_id).val();
+				
+				
 
 				if( typeof(passT) === 'undefined' ){
 					passT = " ";
@@ -820,11 +836,20 @@ $(document).ready(function() {
 				if( typeof(passU) === 'undefined' ){
 					passU = " ";
 				}
+				
+				if( typeof(recheck) === 'undefined' ){
+					recheck = " ";
+				}
 
 
-				cancle_app_id = passT+"::"+passU;
+				cancle_app_id = passT+"::"+passU+"::"+recheck;
 				console.log("cancle_app_id:"+ cancle_app_id);
 				// var comment = $('#approve_'+input_type+'_'+level_id+'_'+score_id).val();
+
+			}else if( this.value === "ไม่ผ่านการพิจารณา" ){
+				recheck = $('#recheck_'+input_type+'_'+level_id+'_'+score_id).val();
+				cancle_app_id = recheck;
+				console.log("22cancle_app_id:"+ cancle_app_id);
 
 			}
 
@@ -899,7 +924,7 @@ $(document).ready(function() {
 							// }
 
 							success: function (data) {
-								
+								// console.log(data);
 								if (data === '1') {
 									alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
 									window.history.back();
