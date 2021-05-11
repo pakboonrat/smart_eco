@@ -70,6 +70,7 @@
 		
 		public function level_headeradmin($level_label) {
             $result = mysqli_query($this->dbcon, "SELECT DISTINCT set_lebel FROM level where level_label = '$level_label' ");
+            
             return $result;
         }
 		
@@ -184,6 +185,11 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             return $result;
         }
 
+        public function fetch_level_menuuser2() {
+            $result = mysqli_query($this->dbcon, "SELECT DISTINCT level_label FROM level WHERE level_id  ORDER BY level_label ASC");
+            return $result;
+        }
+
         public function insertlevel($level_label ,$year_set ,$set_lebel ,$sub_lebel) {
             $reg = mysqli_query($this->dbcon, "INSERT INTO level(level_label ,year_set ,set_lebel ,sub_lebel ) VALUES('$level_label' ,'$year_set' ,'$set_lebel' ,'$sub_lebel')");
             //echo "INSERT INTO user(username,password, email,user_type, firstname, surname , active ) VALUES('$username' ,'$password' ,'$email' ,'$user_type', '$firstname', '$surname', $active)" ;
@@ -212,7 +218,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 		
 		public function selectuseredit($userid) {
-            $selectuser = mysqli_query($this->dbcon, "SELECT * FROM `user` where user_id = $userid");
+            $selectuser = mysqli_query($this->dbcon, "SELECT * , F.description as F_des FROM `user` , format F where user_id = $userid AND user.format_id = F.format_id "   );
             return $selectuser;
         }
 		
@@ -341,41 +347,42 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             if( $status == 'ALL'){
                 $search_txt = " TRUE ";
             }elseif( $status == 'consider'){
-                $search_txt = "T1.status != 0 ";
+                $search_txt = " T1.status != 0 ";
             }elseif( $status == 'pass'){
-                $search_txt = "T1.status = 1 ";
+                $search_txt = " T1.status = 1 ";
             }elseif( $status == 'not pass'){
-                $search_txt = "T1.status != 2 AND T1.status != 0";
+                $search_txt = " T1.status != 2 AND T1.status != 0";
 
             }else{
                 $search_txt = " TRUE ";
             }
 
-                $sql="SELECT U1.user_id as USER , U1.firstname as firstname, 
+                $sql="SELECT U1.user_id as USER , U1.firstname as firstname, GROUP_CONCAT(LV.level_label ) as level_label ,
                 GROUP_CONCAT(T1.firstname ) AS AUDIT
-                FROM user U1
+                FROM level LV, user U1
                 LEFT JOIN 
-                (   SELECT DISTINCT T3.user_id as user_id ,
-                        CASE  
-                        WHEN T3.user_id = aprove_list_score.user_id AND T3.status in ('pass') AND A3.firstname is NULL AND aprove_list_score.status = 'pass' THEN 2 
-                        WHEN T3.user_id = aprove_list_score.user_id AND T3.status in ('pass') AND A3.firstname is NOT NULL AND aprove_list_score.status = 'pass' THEN 2 
-                        WHEN T3.user_id = aprove_list_score.user_id AND T3.status in ('consider','pass','reject') AND aprove_list_score.status != 'pass' THEN 1 
-                        WHEN T3.status in ('consider','pass','reject') AND aprove_list_score.user_id is NULL AND aprove_list_score.status is NULL THEN 1 
-                        WHEN T3.user_id != aprove_list_score.user_id THEN 0
-
-                        ELSE 0 END AS status , A3.firstname as firstname 
-					FROM transaction  T3 
-					LEFT JOIN 
-					( 	select DISTINCT aprove.t_id,user.firstname 
-  						FROM aprove,user 
-                        where aprove.audit_id=user.user_id ) A3 ON T3.t_id=A3.t_id
-                    LEFT JOIN aprove_list_score on T3.user_id = aprove_list_score.user_id
+                (   SELECT DISTINCT  T3.user_id as user_id ,
+                    CASE  
+                    WHEN T3.user_id = aprove_list_score.user_id AND T3.status in ('pass') AND A3.firstname is NULL AND aprove_list_score.status = 'pass' THEN 2 
+                    WHEN T3.user_id = aprove_list_score.user_id AND T3.status in ('pass') AND A3.firstname is NOT NULL AND aprove_list_score.status = 'pass' THEN 2 
+                    WHEN T3.user_id = aprove_list_score.user_id AND T3.status in ('consider','pass','reject') AND aprove_list_score.status != 'pass' AND aprove_list_score.level_id = L.level_id THEN 1 
+                    WHEN T3.status in ('consider','pass','reject') AND aprove_list_score.user_id is NULL AND aprove_list_score.status is NULL THEN 1
+                    WHEN T3.status in ('consider','pass','reject') AND T3.user_id not in ( SELECT A4.user_id from  aprove_list_score A4  WHERE A4.user_id = T3.user_id AND A4.level_id = L.level_id AND  A4.status = 'pass' ) THEN 1
+                    WHEN T3.user_id != aprove_list_score.user_id THEN 0
+                    ELSE 0 END AS status , A3.firstname as firstname , L.level_id as LEVEL
+                    FROM list L , transaction  T3 
+                        LEFT JOIN 
+                        ( 	select DISTINCT aprove.t_id,user.firstname 
+                            FROM aprove,user 
+                            where aprove.audit_id=user.user_id ) A3 ON T3.t_id=A3.t_id
+                    LEFT JOIN aprove_list_score on T3.user_id = aprove_list_score.user_id 
+                    WHERE T3.list_id = L.list_id
                     
 					UNION 
                     SELECT DISTINCT A4.user_id as user_id ,
                     CASE  
                         WHEN  A4.status='pass' THEN 2
-                        ELSE 0 END AS status , U4.firstname as firstname
+                        ELSE 0 END AS status , U4.firstname as firstname , A4.level_id as LEVEL
                     FROM aprove_list_score A4 ,user U4 
 					WHERE
                     A4.audit_id = U4.user_id
@@ -389,7 +396,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                             WHEN  UADD3.user_id = aprove_list_score.user_id  AND UADD3.status in  ('consider','pass','reject') AND  aprove_list_score.status != 'pass' THEN 1
                             WHEN  UADD3.status in  ('consider','pass','reject') AND aprove_list_score.user_id is NULL AND   aprove_list_score.status is NULL THEN 1
 
-                        ELSE 0 END AS status ,  UA3.firstname as firstname 
+                        ELSE 0 END AS status ,  UA3.firstname as firstname , UADD3.level_id as LEVEL
 					FROM user_add  UADD3 
 					LEFT JOIN 
 					( 	select DISTINCT aprove_user_add.add_id,user.firstname 
@@ -398,18 +405,20 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 					) UA3 ON UADD3.add_id=UA3.add_id 
                     LEFT JOIN aprove_list_score on UADD3.level_id = aprove_list_score.level_id
 					, list
-					-- LEFT JOIN aprove_list_score ON aprove_list_score.level_id = list.level_id 
-                 	-- 		AND aprove_list_score.score_id = list.score_id
-					-- WHERE UADD3.level_id = list.level_id 
-                 	-- 		AND UADD3.score_id = list.score_id
+					
                  
                 ) T1 ON U1.user_id=T1.user_id
-                WHERE U1.user_type = 'USER'
+                WHERE U1.user_type = 'USER' AND T1.LEVEL=LV.level_id
                  AND $search_txt
                  AND $user_txt
                 GROUP BY USER";
-                //echo $sql;
+                
 
+                //  LEFT JOIN aprove_list_score ON aprove_list_score.level_id = list.level_id 
+                //  	AND aprove_list_score.score_id = list.score_id
+				// 	 WHERE UADD3.level_id = list.level_id 
+                //  	AND UADD3.score_id = list.score_id
+            //  echo $sql;
             $fetch = mysqli_query($this->dbcon,$sql);
             return $fetch;
 
@@ -502,7 +511,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
         }
 
-        public function fetch_approve_level($user_id,$set_lebel) {
+        public function fetch_approve_level($user_id,$set_lebel , $level_label ) {
 
             if($set_lebel==""){
                 $set_lebel_buff = " " ;
@@ -534,11 +543,12 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             ,aprove_list_score.aprove_id AS app_id
             ,aprove_list_score.aprove_date AS aprove_date
             ,aprove_list_score.remark AS remark , aprove_list_score.old_remark AS old_remark
-            FROM transaction T ,list
+            FROM  transaction T ,list
             LEFT JOIN score on list.score_id = score.score_id , level L 
             LEFT JOIN aprove_list_score on L.level_id = aprove_list_score.level_id and aprove_list_score.user_id = $user_id
             WHERE TRIM(T.list_id) = trim(list.list_id) AND trim(list.level_id) = trim(L.level_id) 
             AND T.user_id = $user_id  $set_lebel_buff  and LOWER(TRIM(T.status)) in (\"consider\",\"pass\",\"reject\")
+            AND list.level_id in (select distinct level_id FROM level WHERE level_label = '$level_label')
             
             UNION
 
@@ -546,16 +556,16 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             ,aprove_list_score.aprove_id AS app_id
             ,aprove_list_score.aprove_date AS aprove_date
             ,aprove_list_score.remark AS remark , aprove_list_score.old_remark AS old_remark
-            FROM user_add 
+            FROM user U , format_todo_list F , user_add 
             LEFT JOIN score on user_add.score_id = score.score_id , level L
             LEFT JOIN aprove_list_score on aprove_list_score.level_id = L.level_id and aprove_list_score.user_id = $user_id
             where trim(L.level_id) = trim(user_add.level_id) AND user_add.user_id = $user_id  $set_lebel_buff  and LOWER(TRIM(user_add.status)) in (\"consider\",\"pass\",\"reject\") 
-            
+            AND U.user_id = user_add.user_id and  U.user_id = $user_id  AND user_add.level_id in (select distinct level_id FROM level WHERE level_label = '$level_label')
             ORDER by level_label , set_lebel,level_id " ;
 
             $fetch = mysqli_query($this->dbcon, $sql_txt);
 
-            // echo $sql_txt ;
+            //  echo $sql_txt ;
 
             return $fetch;
 			//UPDATE `transaction` SET `status`="consider" WHERE `user_id` = 3
@@ -588,6 +598,14 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             //  echo $sql_txt ;
 
 
+            return $fetch;
+        }
+
+
+        public function fetch_format( ) {
+
+            $sql_txt = "SELECT F.description as description ,F.format_id as format_id , GROUP_CONCAT(L.level_id) as level_id FROM format F,`format_todo_list` L WHERE F.format_id = L.format_id group by F.description ";
+            $fetch = mysqli_query($this->dbcon, $sql_txt);
             return $fetch;
         }
         

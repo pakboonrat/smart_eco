@@ -67,7 +67,7 @@ function validateForm() {
 	  		$user_con = new DB_con();
             $sqluser = $user_con->selectuseredit($user_id);
                 while($rowuser = mysqli_fetch_array($sqluser)) {
-                    echo $rowuser['firstname'] ." ". $rowuser['surname'];
+                    echo $rowuser['firstname'] ." ". $rowuser['surname']." :: " . $rowuser['F_des'];
 				}
 			?> </h1><input type="hidden" id="audit" value="<?php echo $_SESSION['id']; ?>">
 					<input type="hidden" id="user" value="<?php echo $user_id; ?>">
@@ -98,25 +98,47 @@ function validateForm() {
             $sql = $updatelevel->level_headeradmin($level_label);
             $set_lebel_array = array();
             $active_class = "class=\"active\" " ;
+			$set_lebel="";
             while($row = mysqli_fetch_array($sql)) {
-            array_push($set_lebel_array,$row['set_lebel']);
+            
+			if (strtolower($row['set_lebel'])== 'basic'){ 
+				$set_lebel_array[$row['set_lebel']] =  "เงื่อนไขเบื้องต้น";
+			}elseif( strtolower($row['set_lebel'])== 'guidelines' ) {
+				$set_lebel_array[$row['set_lebel']] =  "หลักเกณฑ์การขอรับรองการเป็นเมืองอุตสาหกรรมเชิงนิเวศ";
+				}
+
             $i = 0;
+			
             
         ?>
         <a href="approve.php?userid=<?php echo $user_id; ?>&level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
-            if(!isset($_GET['set_lebel'])){ 
-                echo $active_class;
-            }elseif (strtolower($row['set_lebel']) == strtolower($_GET['set_lebel'])) {
-                echo "class=\"active\" ";
-            }; ?>  >
-            <?php if (strtolower($row['set_lebel'])== 'basic'){ echo "เงื่อนไขเบื้องต้น";}
-			else {
-				  echo "หลักเกณฑ์การขอรับรองการเป็นเมืองอุตสาหกรรมเชิงนิเวศ";
+            if( isset($_GET['set_lebel0'])){
+				
+				if( strtolower($_GET['set_lebel0']) == strtolower($row['set_lebel']) ){
+					echo $active_class;
+					$set_lebel = $row['set_lebel'];
 				}
+                
+            }elseif( isset($_GET['set_lebel'])){ 
+				if( strtolower($_GET['set_lebel']) == strtolower($row['set_lebel']) ){
+					echo $active_class;
+					$set_lebel = $row['set_lebel'];
+				}
+				
+            }else{
+				if( $set_lebel=="" ){
+					echo $active_class;
+					$set_lebel = $row['set_lebel'];
+					
+				}
+			} ?>  >
+            <?php 
+			// $active_class="";
+			echo $set_lebel_array[$row['set_lebel']] ;
 			?>
           
         </a>
-        <?php $active_class=""; } ?>
+        <?php  }  ;?>
         
       </nav>
 	</header>
@@ -132,7 +154,7 @@ function validateForm() {
 
 				
 				$fetchdata = new DB_con();
-				$sql = $fetchdata->fetch_approve_level($user_id ,$set_lebel);
+				$sql = $fetchdata->fetch_approve_level($user_id ,$set_lebel , $_GET['level_label']);
 				// fetch_approve_level   ,   fetch_transaction_list_level
 				if(!empty($sql)){
 				$label_var = "";	
