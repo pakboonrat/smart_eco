@@ -44,32 +44,71 @@ function validateForm() {
 
   <div class="content-columns">
     <?php    if($_SESSION['user_type']=="AUDITOR"){ ?>     
-<div class="col-10" >
+<div class="col-12" >
 <div class="item">
 
 
   <table class="table table-striped table-hover">
     <thead>
         <tr>
-          <th scope="col-lg-2 col-md-4 ">ชื่อนิคม</th>
+          <th scope="col-lg-1 col-md-1 ">ชื่อนิคม</th>
         <!-- <th width="32%" align="center">ชื่อนิคม</th> -->
-        <th scope="col-lg-1 col-md-2"></th>
-        <th scope="col-lg-4 col-md-5">รอตรวจประเมิน</th>
+        <th scope="col-lg-1 col-md-1">ผู้ตรวจ</th>
+        
+        <?php 
+
+
+          $fetchdata = new DB_con();
+          $sql = $fetchdata->fetch_level_menuuser2();
+          if( mysqli_num_rows($sql) != 0 ){
+            $num_col = 0;
+            $format = array();
+          while($row_format = mysqli_fetch_array($sql)) { 
+            $num_col += 1;
+            $format[$num_col] = $row_format['level_label'];
+            $format_des[$num_col] = $row_format['level_label'];
+            if ( $row_format['level_label']== 'eco_champion') {
+              $format_des['eco_champion'] = "ECO-CHAMPION";
+            }elseif($row_format['level_label']== 'eco_excellence'){
+              $format_des['eco_excellence'] = "ECO-EXCELLENCE";
+            }elseif($row_format['level_label']== 'eco_worldclass'){
+              $format_des['eco_worldclass'] = "ECO-WORLD CLASS";
+            }
+					 
+      ?>
+        <th scope="col-lg-2 col-md-1"><?php echo $format_des[$row_format['level_label']];?></th>
+        <?php   } 
+        }?>
+
         </tr>
     </thead>
-    <?php 
+    <?php  
           $fetchdata = new DB_con();
           //$sql = $fetchdata->fetch_transaction_By_USER(" status = 'consider' "); //fetch_AUDIT_By_USER
-          $sql = $fetchdata->fetch_AUDIT_By_USER("ALL","consider");
+          // $sql = $fetchdata->fetch_AUDIT_By_USER("ALL","consider");
+          $sql = $fetchdata->fetch_AUDIT_By_USER("ALL","not pass");
+
           if( mysqli_num_rows($sql) != 0 ){
            
           while($row = mysqli_fetch_array($sql)) { 
       ?>
       <tbody>
       <tr>
-        <th scope="row"><?php echo $row['firstname'];?></th>
-        <td><?php echo $row['AUDIT'];?></td>
-        <td><a href="approve.php?userid=<?php echo $row['USER'];?>">รายละเอียด</a></td>
+        <th scope="row"><?php echo $row['firstname'];?> </th>
+        <td><?php if(isset($row['AUDIT'])){ echo $row['AUDIT']; }else{  echo "- "; } ?></td>
+        
+        <?php 
+          for ($x = 1; $x <= $num_col; $x++) {
+            
+            if( strpos($row['level_label'] ,$format[$x]  ) !== false ){
+              ?>
+              <td><a href='approve.php?userid=<?php echo $row['USER'] ; ?>&level_label=<?php echo $format[$x]; ?>&set_lebel0=basic' >รายละเอียด </a></td>
+              <?php 
+            }else{
+              echo "<td>  </td>";
+            }
+          }
+        ?>
       </tr>
       </tbody>
       <?php }

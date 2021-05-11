@@ -67,7 +67,7 @@ function validateForm() {
 	  		$user_con = new DB_con();
             $sqluser = $user_con->selectuseredit($user_id);
                 while($rowuser = mysqli_fetch_array($sqluser)) {
-                    echo $rowuser['firstname'] ." ". $rowuser['surname'];
+                    echo $rowuser['firstname'] ." ". $rowuser['surname']." :: " . $rowuser['F_des'];
 				}
 			?> </h1><input type="hidden" id="audit" value="<?php echo $_SESSION['id']; ?>">
 					<input type="hidden" id="user" value="<?php echo $user_id; ?>">
@@ -98,25 +98,47 @@ function validateForm() {
             $sql = $updatelevel->level_headeradmin($level_label);
             $set_lebel_array = array();
             $active_class = "class=\"active\" " ;
+			$set_lebel="";
             while($row = mysqli_fetch_array($sql)) {
-            array_push($set_lebel_array,$row['set_lebel']);
+            
+			if (strtolower($row['set_lebel'])== 'basic'){ 
+				$set_lebel_array[$row['set_lebel']] =  "เงื่อนไขเบื้องต้น";
+			}elseif( strtolower($row['set_lebel'])== 'guidelines' ) {
+				$set_lebel_array[$row['set_lebel']] =  "หลักเกณฑ์การขอรับรองการเป็นเมืองอุตสาหกรรมเชิงนิเวศ";
+				}
+
             $i = 0;
+			
             
         ?>
         <a href="approve.php?userid=<?php echo $user_id; ?>&level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
-            if(!isset($_GET['set_lebel'])){ 
-                echo $active_class;
-            }elseif (strtolower($row['set_lebel']) == strtolower($_GET['set_lebel'])) {
-                echo "class=\"active\" ";
-            }; ?>  >
-            <?php if (strtolower($row['set_lebel'])== 'basic'){ echo "เงื่อนไขเบื้องต้น";}
-			else {
-				  echo "หลักเกณฑ์การขอรับรองการเป็นเมืองอุตสาหกรรมเชิงนิเวศ";
+            if( isset($_GET['set_lebel0'])){
+				
+				if( strtolower($_GET['set_lebel0']) == strtolower($row['set_lebel']) ){
+					echo $active_class;
+					$set_lebel = $row['set_lebel'];
 				}
+                
+            }elseif( isset($_GET['set_lebel'])){ 
+				if( strtolower($_GET['set_lebel']) == strtolower($row['set_lebel']) ){
+					echo $active_class;
+					$set_lebel = $row['set_lebel'];
+				}
+				
+            }else{
+				if( $set_lebel=="" ){
+					echo $active_class;
+					$set_lebel = $row['set_lebel'];
+					
+				}
+			} ?>  >
+            <?php 
+			// $active_class="";
+			echo $set_lebel_array[$row['set_lebel']] ;
 			?>
           
         </a>
-        <?php $active_class=""; } ?>
+        <?php  }  ;?>
         
       </nav>
 	</header>
@@ -132,7 +154,7 @@ function validateForm() {
 
 				
 				$fetchdata = new DB_con();
-				$sql = $fetchdata->fetch_approve_level($user_id ,$set_lebel);
+				$sql = $fetchdata->fetch_approve_level($user_id ,$set_lebel , $_GET['level_label']);
 				// fetch_approve_level   ,   fetch_transaction_list_level
 				if(!empty($sql)){
 				$label_var = "";	
@@ -161,6 +183,10 @@ function validateForm() {
 							$check_label = "-reject";
 							$badge_color = "-danger";
 							$status_display = "<span class='red-reject'> *** ไม่ผ่านการพิจารณา </span>";
+						}elseif( strtolower($row['status']) == "recheck" ){
+							$check_label = "-recheck";
+							$badge_color = "-warning";
+							$status_display = "<span class='-recheck'> *** ส่งพิจารณาใหม่อีกครั้ง </span>";
 						}else{
 							$check_label = "-uncheck";
 							$badge_color = "-secondary";
@@ -560,12 +586,21 @@ function validateForm() {
 								</div>
 								<div class="mail">
 									<div class="pl-0 pb-2">
+										<?php if($row['status'] == "recheck"){  ?>
+										<div class="col-10 pb-2">ข้อคิดเห็น ครั้งก่อน  : <?php  echo $row['old_remark'] ; ?>  </div>
+										<?php }else{  ?> 	
 										<div class="col-10 pb-2">ข้อคิดเห็น : <?php  echo $row['remark'] ; ?>  </div>
-										<?php if( isset($row['status']) ){ 
+										<?php } if( isset($row['status']) ){ 
 													if($row['status'] != "cancle"){  
 														$input_disable="disabled"; ?>
-															<div class="col-10">สถานะ : <?php  echo $status_display ; ?> </div> 
-												<?php }else{ 
+															<div class="col-10">สถานะ : <?php  echo $status_display ; ?> </div>
+															<?php if($row['status'] == "recheck"){  
+																$input_disable=" "; ?>
+															<div><textarea name="comment" id="comment_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="col-10 col-lg-8"  rows="4" style="overflow:hidden"></textarea>
+															</div>
+															<input type="hidden" id="recheck_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['app_id'];?>">
+
+												<?php } }else{ 
 														$input_disable=""; 
 														
 														?>
@@ -594,7 +629,7 @@ function validateForm() {
 										<input type="submit" <?php echo $input_disable ;?> name="approve"  id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ผ่านอนุมัติ">
 										<input type="submit" <?php echo $input_disable ;?> name="approve2" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ไม่ผ่านการพิจารณา">
 										<?php if( isset($row['status']) ){  
-												if($row['status'] != "cancle"){  ?>
+												if($row['status'] != "cancle" AND $row['status'] != "recheck" ){  ?>
 													<input type="submit" name="cancle_<?php echo $row['app_id'];?>" id="approve_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" class="submit_app" value="ยกเลิก">
 													<input type="hidden" id="cancle_<?php echo $row['type'];?>_<?php echo $app_level_id."_".$app_score_id;?>" value="<?php echo $row['app_id'];?>">
 											<?php }
@@ -730,6 +765,7 @@ $(document).ready(function() {
 		}else{
 
 				var audit = $('#audit').val();
+				var user_id = $('#user').val();
 				if(index!="" && approve_action!="" && audit!=""){
 					$.ajax({
 						url: "update2.php",
@@ -739,6 +775,7 @@ $(document).ready(function() {
 							comment: comment,
 							approve_action: approve_action,
 							audit: audit,
+							user_id:user_id,
 							input_type: input_type				
 						},
 						cache: false,
@@ -810,6 +847,9 @@ $(document).ready(function() {
 				console.log("this.value:"+ this.value );
 				passT = $('#passT_'+input_type+'_'+level_id+'_'+score_id).val();
 				passU = $('#passU_'+input_type+'_'+level_id+'_'+score_id).val();
+				recheck = $('#recheck_'+input_type+'_'+level_id+'_'+score_id).val();
+				
+				
 
 				if( typeof(passT) === 'undefined' ){
 					passT = " ";
@@ -818,11 +858,20 @@ $(document).ready(function() {
 				if( typeof(passU) === 'undefined' ){
 					passU = " ";
 				}
+				
+				if( typeof(recheck) === 'undefined' ){
+					recheck = " ";
+				}
 
 
-				cancle_app_id = passT+"::"+passU;
+				cancle_app_id = passT+"::"+passU+"::"+recheck;
 				console.log("cancle_app_id:"+ cancle_app_id);
 				// var comment = $('#approve_'+input_type+'_'+level_id+'_'+score_id).val();
+
+			}else if( this.value === "ไม่ผ่านการพิจารณา" ){
+				recheck = $('#recheck_'+input_type+'_'+level_id+'_'+score_id).val();
+				cancle_app_id = recheck;
+				console.log("22cancle_app_id:"+ cancle_app_id);
 
 			}
 
@@ -897,7 +946,7 @@ $(document).ready(function() {
 							// }
 
 							success: function (data) {
-								
+								// console.log(data);
 								if (data === '1') {
 									alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
 									window.history.back();

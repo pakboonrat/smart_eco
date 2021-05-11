@@ -23,6 +23,7 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
     $comment = mysqli_real_escape_string($con,$_POST['comment']);
     $user_id = mysqli_real_escape_string($con,$_POST['user_id']);
     $audit = mysqli_real_escape_string($con,$_POST['audit']);
+    $recheck = " ";
     if($_POST['input_type'] == '-') {
         $input_type = "basic";
     }else{
@@ -51,11 +52,19 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
                     $query_passU = " UPDATE user_add SET status='pass' WHERE add_id in (".$pass_var[1].");" ;
                 }
 
+                if( $pass_var[2] ==""){
+                    $recheck = " ";
+                }else{
+                    $recheck = mysqli_real_escape_string($con,$pass_var[2]);
+                    
+                }
+
                 $sql_pass = $query_passT . $query_passU ;
             }else{
 
                 $sql_pass = " ";
                 $query_passT = "";
+                $recheck = " ";
             };
 
             
@@ -67,6 +76,14 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
          }elseif($_POST['approve_action'] == "ไม่ผ่านการพิจารณา"  ){
             $status = "reject";
             $sql_pass = " " ;
+            if(isset($_POST['cancle_app_id']) ){
+                $recheck = mysqli_real_escape_string($con,$_POST['cancle_app_id']);
+            }else{
+                $recheck=" ";
+            }
+
+
+
          }
 
     $status_app = mysqli_real_escape_string($con,$status);
@@ -74,32 +91,40 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
 
 
     
+        if($recheck != " " ){
+            $query = " UPDATE `aprove_list_score` SET `status` = '$status_app' , `remark` = '$comment'  WHERE `aprove_list_score`.`aprove_id` = $recheck ;" ;
+            //UPDATE `aprove_list_score` SET `status` = 'recheck' WHERE `aprove_list_score`.`aprove_id` = 54;
 
-
-   if($input_type == 'control' OR $input_type == 'basic'){
+        }elseif($input_type == 'control' OR $input_type == 'basic'){
         
+            $query = "INSERT INTO `aprove_list_score`   (`user_id`,  `type`         , `level_id`, `score_id`, `status`, `point`, `score_des`, `audit_id`, `remark` ) 
+                    VALUES  ('$user_id', '$input_type'  , '$level_id', NULL, '$status_app', '', '', '$audit', '$comment') ;";
+            //   INTO `aprove_list_score` ( `user_id`, `type`, `level_id`, `score_id`, `status`, `point`, `score_des`, `audit_id`, `remark`, ) 
+            //   VALUES ( '$user_id', '$input_type', '$level_id', NULL, '$status_app', '', '', '$audit', '')";
+                //mysqli_query($con,$query);
+
+        }elseif($_POST['input_type'] == 'measure' && isset($_POST['point']) && isset($_POST['score_des']) ){
+            $point = mysqli_real_escape_string($con,$_POST['point']);
+            $score_des = mysqli_real_escape_string($con,$_POST['score_des']);
+            $query = "INSERT INTO `aprove_list_score` (`user_id`, `type` , `level_id`, `score_id`, `status`, `point`, `score_des`, `audit_id`, `remark` ) 
+                    VALUES  (                       '$user_id','$input_type','$level_id',$score_id, '$status_app', '$point', '$score_des', '$audit', '$comment') ;";
+    //   INTO `aprove_list_score` ( `user_id`, `type`, `level_id`, `score_id`, `status`, `point`, `score_des`, `audit_id`, `remark`, ) 
+    //   VALUES ( '$user_id', '$input_type', '$level_id', NULL, '$status_app', '', '', '$audit', '')";
+        //mysqli_query($con,$query);
         
-
-        $query = "INSERT INTO `aprove_list_score`   (`user_id`,  `type`         , `level_id`, `score_id`, `status`, `point`, `score_des`, `audit_id`, `remark` ) 
-                VALUES  ('$user_id', '$input_type'  , '$level_id', NULL, '$status_app', '', '', '$audit', '$comment') ;";
-   //   INTO `aprove_list_score` ( `user_id`, `type`, `level_id`, `score_id`, `status`, `point`, `score_des`, `audit_id`, `remark`, ) 
-   //   VALUES ( '$user_id', '$input_type', '$level_id', NULL, '$status_app', '', '', '$audit', '')";
-    //mysqli_query($con,$query);
-
-    }elseif($_POST['input_type'] == 'measure' && isset($_POST['point']) && isset($_POST['score_des']) ){
-        $point = mysqli_real_escape_string($con,$_POST['point']);
-        $score_des = mysqli_real_escape_string($con,$_POST['score_des']);
-        $query = "INSERT INTO `aprove_list_score` (`user_id`, `type` , `level_id`, `score_id`, `status`, `point`, `score_des`, `audit_id`, `remark` ) 
-                VALUES  (                       '$user_id','$input_type','$level_id',$score_id, '$status_app', '$point', '$score_des', '$audit', '$comment') ;";
-   //   INTO `aprove_list_score` ( `user_id`, `type`, `level_id`, `score_id`, `status`, `point`, `score_des`, `audit_id`, `remark`, ) 
-   //   VALUES ( '$user_id', '$input_type', '$level_id', NULL, '$status_app', '', '', '$audit', '')";
-    //mysqli_query($con,$query);
-      
-   }
+    }
 
    //$query = $sql_pass . $query ;
    
    if (mysqli_query($con,$query)){
+
+        if($status_app == "reject" ){
+            $notif = new DB_con();
+            $notif_sent = $notif->send_notif_USER($audit, $user_id,"สถานะการพิจารณา : ไม่ผ่านการอนุมัติ ");
+            // $notif_sent > return 0 , 1  // send_notif_USER(USER_ID ผู้ส่ง , USER_ID คนรับ  ,"ข้อความ");
+        }
+
+
         $result_sql = true;
         $result_sql1 = true;
 
@@ -121,6 +146,7 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
        $result_sql = $result_sql AND $result_sql1;
 
        echo $result_sql;
+    // echo $query." // ".$recheck." >> ".$_POST['cancle_app_id'];
     
     
 
