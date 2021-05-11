@@ -601,12 +601,41 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             return $fetch;
         }
 
+        public function fetch_notif_USER($user) {
+
+            $sql_txt = "SELECT N.id as id , M.title as title, M.body as body , M.user_id as user_id ,  M.create_time as times
+                        FROM notification N , message M    
+                        WHERE M.message_id=N.message_id 
+                         AND N.user_id = '$user' 
+                         AND N.read_at is null ORDER by id ";
+            $fetch = mysqli_query($this->dbcon, $sql_txt);
+            //  echo $sql_txt ;
+
+
+            return $fetch;
+        }
+
+
+        public function reject_notif_USER($user) {
+
+            $sql_txt = "SELECT ALC.status as T1  FROM `aprove_list_score` ALC WHERE ALC.status = 'reject' AND ALC.user_id = $user
+                        UNION
+                        SELECT T.status as T1  FROM transaction T WHERE T.status = 'reject' AND T.user_id = $user
+                        UNION
+                        SELECT U.status as T1  FROM user_add U WHERE U.status = 'reject' AND U.user_id = $user ";
+            $fetch = mysqli_query($this->dbcon, $sql_txt);
+            //  echo $sql_txt ;
+            return $fetch;
+            mysqli_free_result($fetch);
+        }            
+
 
         public function fetch_format( ) {
 
             $sql_txt = "SELECT F.description as description ,F.format_id as format_id , GROUP_CONCAT(L.level_id) as level_id FROM format F,`format_todo_list` L WHERE F.format_id = L.format_id group by F.description ";
             $fetch = mysqli_query($this->dbcon, $sql_txt);
             return $fetch;
+            
         }
         
 

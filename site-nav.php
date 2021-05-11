@@ -41,38 +41,43 @@
     <?php echo $_SESSION['fname']; 
     $updatelevel = new DB_con();
     $notif_txt = "";
-    $sql = $updatelevel->fetch_notif_USER($_SESSION['id']);
+    $sql = $updatelevel->reject_notif_USER($_SESSION['id']);
     if( mysqli_num_rows($sql) != 0 ){
       while($row_notif = mysqli_fetch_array($sql)) { 
-          // $notif_txt .= "  $.notify('".$row_notif['title']."');   " ; 
-        //  $notif_txt .= " $.notify.addStyle('foo', {
-        //                     html: 
-        //                       '<div>
-        //                         <div class='clearfix'> 
-        //                           <div class='title' data-notify-html='title'/>
-        //                           <div class='buttons'>
-        //                             <button class='no'>Cancel</button>
-        //                             <button class='yes' data-notify-text='button'></button>
-        //                           </div>
-        //                         </div>
-        //                       </div>'
-        //                   });" ;
-
-        $notif_txt .= "  $.notify({
-                            title: ' <a href=approve.php?userid=".$row_notif['user_id']." >".$row_notif['title']."</a> ',
-                            button: 'Confirm'
-                          }, { 
-                            style: 'foo',
-                            autoHide: false,
-                            clickToHide: false
-                          }); ";
-        
-        } 
-      }else{
-        echo "<script>
-                $('.name').toggleClass('name00');
-              </script> " ;
+        echo " มี reject "; 
       }
+      echo " มี reject "; 
+    }
+
+      //     // $notif_txt .= "  $.notify('".$row_notif['title']."');   " ; 
+      //   //  $notif_txt .= " $.notify.addStyle('foo', {
+      //   //                     html: 
+      //   //                       '<div>
+      //   //                         <div class='clearfix'> 
+      //   //                           <div class='title' data-notify-html='title'/>
+      //   //                           <div class='buttons'>
+      //   //                             <button class='no'>Cancel</button>
+      //   //                             <button class='yes' data-notify-text='button'></button>
+      //   //                           </div>
+      //   //                         </div>
+      //   //                       </div>'
+      //   //                   });" ;
+
+      //   $notif_txt .= "  $.notify({
+      //                       title: ' <a href=approve.php?userid=".$row_notif['user_id']." >".$row_notif['title']."</a> ',
+      //                       button: 'Confirm'
+      //                     }, { 
+      //                       style: 'foo',
+      //                       autoHide: false,
+      //                       clickToHide: false
+      //                     }); ";
+        
+      //   } 
+      // }else{
+      //   echo "<script>
+      //           $('.name').toggleClass('name00');
+      //         </script> " ;
+      // }
 
       //ตัวอย่าง การส่ง ข้อความ send_notif_USER(5, 4,"tesssss");
       // $notif_sent > return 0 , 1  
