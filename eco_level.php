@@ -5,7 +5,7 @@
         header("location: login.php");
     } elseif ((strtoupper($_SESSION['user_type']) == "USER") or (strtoupper($_SESSION['user_type']) == "ADMIN") ) {
 
-
+	}
     include_once('function.php');
 
     if (isset($_POST['submit'])) {
@@ -465,28 +465,29 @@
 														<div id="collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">
 															<div class="card-body">
 															<script>
-															Filevalidation<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?> = () => {
-															const fi = document.getElementById('file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>');
-															
-															// Check if any file is selected.
-															if (fi.files.length > 0) {
-																for (const i = 0; i <= fi.files.length - 1; i++) {
-													 
-																	const fsize = fi.files.item(i).size;
-																	const file = Math.round((fsize / 1024));
-																	// The size of the file.
-																	if (file >= 9216) {
-																		alert(
-																		  "ไฟล์ขนาดใหญ่เกินไป, กรุณาเลือกไฟล์ขนาดเล็กกว่า 9 Mb");
-																		  document.getElementById("file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>").value = "";
-																		  return false;
-																	} else if (file < 1) {
-																		alert(
-																		  "File too small, please select a file greater than 2mb");
-																		  return false;
-																	} 
-																}
-																}
+															Filevalidation<?php echo $row_oflist['list_id'];?>
+															<?php echo $row_score['score_id'];?> = () => {
+																const fi = document.getElementById('file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>');
+																
+																// Check if any file is selected.
+																if (fi.files.length > 0) {
+																	for (const i = 0; i <= fi.files.length - 1; i++) {
+														
+																		const fsize = fi.files.item(i).size;
+																		const file = Math.round((fsize / 1024));
+																		// The size of the file.
+																		if (file >= 9216) {
+																			alert(
+																			"ไฟล์ขนาดใหญ่เกินไป, กรุณาเลือกไฟล์ขนาดเล็กกว่า 9 Mb");
+																			document.getElementById("file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>").value = "";
+																			return false;
+																		} else if (file < 1) {
+																			alert(
+																			"File too small, please select a file greater than 2mb");
+																			return false;
+																		} 
+																	}
+																	}
 															}
 															function validateForm<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>() {
 																	var x = document.getElementById('file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>').value;
@@ -746,9 +747,10 @@
 												
                                                 <div class="card">
                                                     <div class="card-header" id="headingOne">
-                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?><?php if ($num22['status']!= "pass"){?>
-<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
-                  >></button>
+                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?>
+													<?php if ($num22['status']!= "pass"){?>
+																<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
+																>></button>
                                                     </p><?php }?>
                                                     </div>
                                                     <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
@@ -1056,5 +1058,5 @@
 
 <?php 
 
-}
-?>
+} echo "test";
+ ?>
