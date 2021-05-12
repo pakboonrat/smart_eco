@@ -82,6 +82,7 @@ function validateForm() {
 
         </tr>
     </thead>
+    <tbody>
     <?php  
           $fetchdata = new DB_con();
           //$sql = $fetchdata->fetch_transaction_By_USER(" status = 'consider' "); //fetch_AUDIT_By_USER
@@ -92,17 +93,17 @@ function validateForm() {
            
           while($row = mysqli_fetch_array($sql)) { 
       ?>
-      <tbody>
+      
       <tr>
         <th scope="row"><?php echo $row['firstname'];?> </th>
-        <td><?php if(isset($row['AUDIT'])){ echo $row['AUDIT']; }else{  echo "- "; } ?></td>
+        <td><?php  if(isset($row['AUDIT_ALL'])){ echo $row['AUDIT_ALL']; }else{  echo "- "; } ?></td>
         
         <?php 
           for ($x = 1; $x <= $num_col; $x++) {
             
             if( strpos($row['level_label'] ,$format[$x]  ) !== false ){
               ?>
-              <td><a href='approve.php?userid=<?php echo $row['USER'] ; ?>&level_label=<?php echo $format[$x]; ?>&set_lebel0=basic' >รายละเอียด </a></td>
+              <td><button class="btn btn-primary" onclick="window.location.href='approve.php?userid=<?php echo $row['USER'] ; ?>&level_label=<?php echo $format[$x]; ?>&level_txt=<?php echo $format_des[$format[$x]]; ?>&set_lebel0=basic'" >ตรวจประเมิน</button></td>
               <?php 
             }else{
               echo "<td>  </td>";
@@ -110,11 +111,12 @@ function validateForm() {
           }
         ?>
       </tr>
-      </tbody>
       <?php }
     } else{  ?>
-    </tbody>
+    
     <?php   } ?>
+    <tr class="table-success" > - <td> - </td><td></td><td></td> </tr>
+    </tbody>
 </table><br>
 <br>
 <br>

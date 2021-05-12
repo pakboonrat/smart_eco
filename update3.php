@@ -37,13 +37,14 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
 
             // pass cancle_app_id       // ค่า list T และ M โดยมี :: คั่น
             if(isset($_POST['cancle_app_id']) ){
-                $pass_var = explode("::", $_POST['cancle_app_id'] );
+                $pass_var = explode("::=::", $_POST['cancle_app_id'] );
                 // $pass_var[0]  >> 
                 // $pass_var[1]  >> 
                 if( $pass_var[0] ==""){
                     $query_passT = " ";
                 }else{
                     $query_passT = " UPDATE transaction SET status='pass' WHERE t_id in (".$pass_var[0].");" ;
+                    
                 }
 
                 if( $pass_var[1] ==""){
@@ -92,6 +93,7 @@ if( $_POST['input_type'] != 'cancle' && isset($_POST['input_type']) && isset($_P
 
     
         if($recheck != " " ){
+            // $recheck != " "  แปลว่า มีการเตรียม ตัวแปร สำหรับการทำ recheck
             $query = " UPDATE `aprove_list_score` SET `status` = '$status_app' , `remark` = '$comment'  WHERE `aprove_list_score`.`aprove_id` = $recheck ;" ;
             //UPDATE `aprove_list_score` SET `status` = 'recheck' WHERE `aprove_list_score`.`aprove_id` = 54;
 

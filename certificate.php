@@ -41,7 +41,11 @@ function validateForm() {
   <main>
     <header>
       <div class="breadcrumbs">
+      <?php if($_SESSION['user_type']=="AUDITOR"){  ?> 
+        <a href="audit.php">Home</a>
+      <?php }else{ ?>    
         <a href="index.php">Home</a>
+      <?php } ?>
       </div>
       <h1>รายงานการตรวจประเมิน : </h1>
       <nav class="nav-tabs" id="nav-tabs">

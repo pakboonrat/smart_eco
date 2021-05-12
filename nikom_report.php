@@ -11,7 +11,7 @@
 <html lang="en" class="pc chrome88 js">
 <head>
 <meta charset="UTF-8">
-<title>Edit User</title>
+<title>Auditor reports</title>
 <script>
 function validateForm() {
   var x = document.forms["myForm"]["username"].value;
@@ -41,7 +41,11 @@ function validateForm() {
   <main>
     <header>
       <div class="breadcrumbs">
+      <?php if($_SESSION['user_type']=="AUDITOR"){  ?> 
+        <a href="audit.php">Home</a>
+      <?php }else{ ?>    
         <a href="index.php">Home</a>
+      <?php } ?>
       </div>
       <h1>รายงานสรุปผลของนิคม : </h1>
       <nav class="nav-tabs" id="nav-tabs">

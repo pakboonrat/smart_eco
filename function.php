@@ -357,8 +357,8 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 $search_txt = " TRUE ";
             }
 
-                $sql="SELECT U1.user_id as USER , U1.firstname as firstname, GROUP_CONCAT(LV.level_label ) as level_label ,
-                GROUP_CONCAT(T1.firstname ) AS AUDIT
+                $sql="SELECT U1.user_id as USER , U1.firstname as firstname, GROUP_CONCAT(distinct LV.level_label ) as level_label ,
+                GROUP_CONCAT(distinct T1.firstname ) AS AUDIT , GROUP_CONCAT(distinct T6.firstname ) AS AUDIT_ALL
                 FROM level LV, user U1
                 LEFT JOIN 
                 (   SELECT DISTINCT  T3.user_id as user_id ,
@@ -408,6 +408,24 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
 					
                  
                 ) T1 ON U1.user_id=T1.user_id
+                LEFT JOIN 
+                (   
+                    SELECT DISTINCT  T6.user_id as user_id , U6.firstname as firstname 
+                    FROM transaction  T6 , aprove A6 , user U6
+                    WHERE T6.t_id=A6.t_id AND A6.audit_id=U6.user_id
+                    
+                    UNION
+                    SELECT DISTINCT UD6.user_id as user_id ,  user6.firstname as firstname 
+					FROM user_add  UD6 , aprove_user_add AP6 , user user6
+					WHERE UD6.add_id=AP6.add_id AND AP6.audit_id=user6.user_id 
+                    
+                    UNION
+                    SELECT DISTINCT AL6.user_id as user_id , ALU6.firstname as firstname 
+                    FROM aprove_list_score AL6 , user ALU6 
+                    WHERE AL6.audit_id=ALU6.user_id 
+                ) T6 on U1.user_id=T6.user_id
+ 
+
                 WHERE U1.user_type = 'USER' AND T1.LEVEL=LV.level_id
                  AND $search_txt
                  AND $user_txt
@@ -418,7 +436,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 //  	AND aprove_list_score.score_id = list.score_id
 				// 	 WHERE UADD3.level_id = list.level_id 
                 //  	AND UADD3.score_id = list.score_id
-            //  echo $sql;
+            echo $sql;
             $fetch = mysqli_query($this->dbcon,$sql);
             return $fetch;
 
@@ -601,28 +619,15 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
             return $fetch;
         }
 
-        public function fetch_notif_USER($user) {
-
-            $sql_txt = "SELECT N.id as id , M.title as title, M.body as body , M.user_id as user_id ,  M.create_time as times
-                        FROM notification N , message M    
-                        WHERE M.message_id=N.message_id 
-                         AND N.user_id = '$user' 
-                         AND N.read_at is null ORDER by id ";
-            $fetch = mysqli_query($this->dbcon, $sql_txt);
-            //  echo $sql_txt ;
-
-
-            return $fetch;
-        }
 
 
         public function reject_notif_USER($user) {
 
-            $sql_txt = "SELECT ALC.status as T1  FROM `aprove_list_score` ALC WHERE ALC.status = 'reject' AND ALC.user_id = $user
+            $sql_txt = "SELECT 1 as T1  FROM `aprove_list_score` ALC WHERE ALC.status = 'reject' AND ALC.user_id = $user
                         UNION
-                        SELECT T.status as T1  FROM transaction T WHERE T.status = 'reject' AND T.user_id = $user
+                        SELECT 2 as T1  FROM transaction T WHERE T.status = 'reject' AND T.user_id = $user
                         UNION
-                        SELECT U.status as T1  FROM user_add U WHERE U.status = 'reject' AND U.user_id = $user ";
+                        SELECT 2 as T1  FROM user_add U WHERE U.status = 'reject' AND U.user_id = $user ";
             $fetch = mysqli_query($this->dbcon, $sql_txt);
             //  echo $sql_txt ;
             return $fetch;
