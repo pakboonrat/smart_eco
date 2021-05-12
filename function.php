@@ -105,10 +105,16 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 
 		public function basic_report_tran($level_id,$userid) {
-            $result = mysqli_query($this->dbcon, "SELECT status,list_label,transaction.list_id,t_id as id FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid' and level_id = '$level_id' UNION SELECT status,list_label,level_id,add_id as id FROM user_add WHERE user_id = '$userid' and level_id = '$level_id' ");
+            $result = mysqli_query($this->dbcon, "SELECT T1.status as status ,L1.list_label as list_label , T1.list_id,T1.t_id as id , A2.a_date , A2.firstname as fname FROM transaction T1 INNER JOIN list L1 ON T1.list_id = L1.list_id LEFT JOIN ( SELECT A1.t_id , U1.firstname , A1.aprove_date AS a_date FROM aprove A1 , user U1 WHERE A1.audit_id = U1.user_id ) A2 ON A2.t_id = T1.t_id WHERE T1.user_id = '$userid' and L1.level_id = '$level_id' UNION SELECT AD.status as status ,AD.list_label as list_label, AD.level_id,AD.add_id as id , AA2.a_date , AA2.firstname as fname FROM user_add AD LEFT JOIN ( SELECT AU1.add_id , UU1.firstname , AU1.aprove_date AS a_date FROM aprove_user_add AU1 , user UU1 WHERE AU1.audit_id = UU1.user_id ) AA2 ON AA2.add_id = AD.add_id WHERE AD.user_id = '$userid' and AD.level_id = '$level_id' ");
             //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
             return $result;
         }
+		
+		//public function sel_name_time($t_id) {
+          //  $result = mysqli_query($this->dbcon, "select aprove.t_id,user.firstname,aprove.aprove_date from aprove INNER JOIN user ON aprove.audit_id = user.user_id where aprove.t_id = '$t_id' ");
+            //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
+            //return $result;
+        //}
 		
 		public function count_basic_report_tran($level_id,$userid) {
             $result = mysqli_query($this->dbcon, "select sum(count) as tran_total_count from (SELECT count(*) as count FROM `transaction` INNER JOIN list ON transaction.list_id = list.list_id WHERE user_id = '$userid' and level_id = '$level_id' UNION all SELECT count(*) as count FROM user_add WHERE user_id = '$userid' and level_id = '$level_id' ) as temp ");

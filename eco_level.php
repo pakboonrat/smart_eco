@@ -5,7 +5,7 @@
         header("location: login.php");
     } elseif ((strtoupper($_SESSION['user_type']) == "USER") or (strtoupper($_SESSION['user_type']) == "ADMIN") ) {
 
-
+	}
     include_once('function.php');
 
     if (isset($_POST['submit'])) {
@@ -420,195 +420,74 @@
 								echo "</p>";
 							$fetchdata3 = new DB_con();
 							
-							//---------------check table transaction if there is any transaction will show only one score----------------
-							$check_in_transaction = new DB_con();
-							//echo "Level_ID = ".$row['level_id'];
-							$count_transac_result = $check_in_transaction->sel_count_transaction($row['level_id'],$_SESSION['id']);
-							$num_select_transaction = mysqli_fetch_array($count_transac_result);
-							//echo "Transaction is :".$num_select_transaction['count_transaction'];
-							if ($num_select_transaction['count_transaction'] == 0 ) {
-								$sql3 = $fetchdata3->fetch_score($row['level_id']);
-							} else {
-								$sql3 = $fetchdata3->fetch_only_onescore($row['level_id'],$_SESSION['id']);
-							}
-							if( $sql3 !="" ){ 
-							?>
-								
-									<?php //-----------------start write score_id on web-----------------
-									while($row_score = mysqli_fetch_array($sql3)) {
-									?>
-										<?php //echo $row['level_id']; ?><?php //echo "Level_ID = ".$row['level_id']." Score_id =".$row_score['score_id']; ?>
-										<div class="card">
-											<div class="card-header" id="headingOne" <?php 	$count_evidence = new DB_con();
-																							//echo "Level_ID = ".$row['level_id']." Score_id =".$row_score['score_id'];
-																							$c_result = $count_evidence->sel_countevidence($row['level_id'],$_SESSION['id'], $row_score['score_id']);
-																							$num_evidence = mysqli_fetch_array($c_result);
-																							//$count_useradd = new DB_con();
-																							//$cuseradd_result = $count_useradd->sel_count_useradd($row['level_id'],$_SESSION['id'], $row_score['score_id']);
-																							//$num_uadd_evidence = mysqli_fetch_array($cuseradd_result);
-																							
-																							if (($num_evidence['count_evidence'] > 0)) { echo "style='background-color: lightblue'";}?>>
-												<h5 class="mb-0">
-													<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>" aria-expanded="true" aria-controls="collapseOne">ส่งข้อมูลเกณฑ์คะแนน #<?php echo $row_score['score_des']; ?>
-													</button>
-												</h5>
-											</div>
-											<div id="collapseOne<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>">  
-											<div class="card-body">
-												<?php $fetchdata4 = new DB_con();
-												$sql4 = $fetchdata4->select_listby_score($row['level_id'],$row_score['score_id']);
-												while($row_oflist = mysqli_fetch_array($sql4)) {
+								<?php //-----------------start write score_id on web-----------------
+								while($row_score = mysqli_fetch_array($sql3)) {
+								?>
+									<?php //echo $row['level_id']; ?><?php //echo "Level_ID = ".$row['level_id']." Score_id =".$row_score['score_id']; ?>
+									<div class="card">
+										<div class="card-header" id="headingOne" <?php 	$count_evidence = new DB_con();
+																						//echo "Level_ID = ".$row['level_id']." Score_id =".$row_score['score_id'];
+																						$c_result = $count_evidence->sel_countevidence($row['level_id'],$_SESSION['id'], $row_score['score_id']);
+																						$num_evidence = mysqli_fetch_array($c_result);
+																						//$count_useradd = new DB_con();
+																						//$cuseradd_result = $count_useradd->sel_count_useradd($row['level_id'],$_SESSION['id'], $row_score['score_id']);
+																						//$num_uadd_evidence = mysqli_fetch_array($cuseradd_result);
+																						
+																						if (($num_evidence['count_evidence'] > 0)) { echo "style='background-color: lightblue'";}?>>
+											  <h5 class="mb-0">
+												<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>" aria-expanded="true" aria-controls="collapseOne">ส่งข้อมูลเกณฑ์คะแนน #<?php echo $row_score['score_des']; ?>
+												</button>
+											  </h5>
+										</div>
+										<div id="collapseOne<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row['level_id']; ?><?php echo $row_score['score_id']; ?>">  
+										  <div class="card-body">
+											<?php $fetchdata4 = new DB_con();
+											$sql4 = $fetchdata4->select_listby_score($row['level_id'],$row_score['score_id']);
+											while($row_oflist = mysqli_fetch_array($sql4)) {
+												
+											//echo $row_oflist['list_label'];?>
+											<?php 	include_once('function.php'); 
+													$transactiondata = new DB_con();
+													$result = $transactiondata->selecttransaction($_SESSION['id'], $row_oflist['list_id']);
+													$transactionfile = mysqli_fetch_array($result);
+													if ($transactionfile == 0) 
+													{?>
+													<div class="card">
+													
+														<div class="card-header" id="headingOne">
+														<?php echo $row_oflist['list_label'];
+														//------------------show evidence in each of score--------------?>
+														<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">>></button>
+														</div>
+														<div id="collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">
+															<div class="card-body">
+															<script>
+															Filevalidation<?php echo $row_oflist['list_id'];?>
+															<?php echo $row_score['score_id'];?> = () => {
+																const fi = document.getElementById('file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>');
+																
+																// Check if any file is selected.
+																if (fi.files.length > 0) {
+																	for (const i = 0; i <= fi.files.length - 1; i++) {
 														
-													//echo $row_oflist['list_label'];?>
-													<?php 	include_once('function.php'); 
-															$transactiondata = new DB_con();
-															$result = $transactiondata->selecttransaction($_SESSION['id'], $row_oflist['list_id']);
-															$transactionfile = mysqli_fetch_array($result);
-															if ($transactionfile == 0) { ?>
-																<div class="card">
-																
-																	<div class="card-header" id="headingOne">
-																	<?php echo $row_oflist['list_label'];
-																	//------------------show evidence in each of score--------------?>
-																	<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">>></button>
-																	</div>
-																	<div id="collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">
-																		<div class="card-body">
-																		<script>
-																		Filevalidation<?php echo $row_oflist['list_id'];?>
-																		<?php echo $row_score['score_id'];?> = () => {
-																			const fi = document.getElementById('file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>');
-																			
-																			// Check if any file is selected.
-																			if (fi.files.length > 0) {
-																				for (const i = 0; i <= fi.files.length - 1; i++) {
-																	
-																					const fsize = fi.files.item(i).size;
-																					const file = Math.round((fsize / 1024));
-																					// The size of the file.
-																					if (file >= 9216) {
-																						alert(
-																						"ไฟล์ขนาดใหญ่เกินไป, กรุณาเลือกไฟล์ขนาดเล็กกว่า 9 Mb");
-																						document.getElementById("file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>").value = "";
-																						return false;
-																					} else if (file < 1) {
-																						alert(
-																						"File too small, please select a file greater than 2mb");
-																						return false;
-																					} 
-																				}
-																			}
-																		}
-																		function validateForm<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>() {
-																				var x = document.getElementById('file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>').value;
-																			
-																			if ( (x == "") ){
-																				alert("ท่านยังไม่ได้แนบไฟล์");
-																				return false;
-																			}
-																		}
-																		</script>
-																		<form name="myForm" method="POST" action="eco_level.php" enctype="multipart/form-data" onSubmit="return validateForm<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>()">
-																				<div class="item2">
-																					<table width="100%" border="0" cellspacing="0" cellpadding="0">
-																					<tr>
-																						<td width="200" align="right" valign="top"><p style="font-size:14px;">รายละเอียด :&nbsp;&nbsp;</p></td>
-																						<td width="913"><label for="description"></label>
-																						&nbsp;<textarea name="description" id="description" cols="50" rows="5"style="overflow:hidden"></textarea></td>
-																					</tr>
-																					<tr>
-																						<td height="30" align="right"><span><font style="font-size:14px;">เลือกไฟล์&nbsp;:&nbsp;</font></span>&nbsp;</td>
-																						<td height="30">&nbsp;&nbsp;<input type="file" id="file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" name="uploadedFile" onchange="Filevalidation<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>()"/></td>
-																					</tr>
-																					</table>
-																					<input name="level_label" type="hidden" id="level_label" value="<?php echo $_GET['level_label'];?>">
-																					<input name="user_id" type="hidden" id="user_id" value="<?php echo $_SESSION['id'];?>">
-																					<input id="level_id" name="level_id" type="hidden" value="<?php echo $row['level_id']; ?>">
-																					<input name="list_id" type="hidden" id="list_id" value="<?php echo $row_oflist['list_id'];?>">
-																					<input name="typeof_rule" type="hidden" id="typeof_rule" value="<?php echo $_GET['set_lebel'];?>">
-																				</div>
-																				<table width="100%" border="0" cellspacing="0" cellpadding="0">
-																				<tr>
-																						<td height="30" width="200">&nbsp;</td>
-																						<td height="30" align="left"><input type="submit" name="uploadBtn" value="บันทึกข้อมูล" /></td>
-																					</tr>
-																				</table>
-																			</form>
-																		</div>
-																	</div>
-																</div>
-															<?php 
-															} else {//-----------if found in transaction------------ ?>
-															
-																<div class="card">
-																<div class="card-header" id="headingOne" style="background-color: lightblue">
-																	<?php echo $row_oflist['list_label'];
-																	//----------------show evidence in each of score-----------?>
-																	<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">&nbsp;<font style="font-size:14px;color:#0A910D;">(สถานะ&nbsp;:&nbsp;
-																		<?php if (($transactionfile['status'])=="save") {echo "บันทึก";} 
-																		elseif (($transactionfile['status'])=="consider") {echo "รอพิจารณา";}
-																		elseif (($transactionfile['status'])=="pass") {echo "ผ่านพิจารณา";}
-																		elseif (($transactionfile['status'])=="reject") {echo "<span class='alert-danger'>ไม่อนุมัติ&nbsp;";
-																															$fetch_reason = new DB_con();
-																															$reason = $fetch_reason->select_reason($transactionfile['t_id']);
-																															$rea = mysqli_fetch_array($reason);
-																															echo "เนื่องจาก : ".$rea['remark']."</span>";
-																		}
-																		else {echo "-";}?>&nbsp;เมื่อ :&nbsp;
-																		<?php //echo $transactionfile['save_date'];
-																		$str_date = date("j",strtotime($transactionfile['save_date']));
-																		$str_Year = date("Y",strtotime($transactionfile['save_date']))+543;
-																		$str_Month = date("n",strtotime($transactionfile['save_date']));
-																		$strMonthCut = Array("","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.");
-																		$strMonthThai=$strMonthCut[$str_Month];
-																		echo $str_date."-".$strMonthThai."-".$str_Year;?>)</font>&nbsp;>>
-																	</button>
-																</div>
-																	<div id="collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">
-																		<div class="card-body">
-																			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-																				<tr>
-																					<td width="200" align="right" valign="top"><p style="font-size:14px;">รายละเอียด :&nbsp;&nbsp;</p></td>
-																					<td width="913"><p style="font-size:14px;">
-																						&nbsp;<?php echo $transactionfile['remark'];?></p></td>
-																				</tr>
-																				<tr><td height="30" align="right"></td><td colspan="2"><div class='mail-doc'><div class='mail-doc-wrapper'>
-																					<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' class='feather feather-file-text'>
-																					<path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'></path>
-																					<path d='M14 2v6h6M16 13H8M16 17H8M10 9H8'></path></svg>
-																				<a href="useraddfile/<?php echo $transactionfile['save_filename']; ?>" target="_blank" style="text-decoration: none"><?php echo $transactionfile['ori_filename'];?></a>&nbsp;
-																			<?php if($num22['status']!= "pass") {
-																					?><a href="eco_level.php?level_label=eco_champion&edit=delete&tran_id=<?php echo $transactionfile['t_id'];?>&set_lebel=<?php echo $_GET['set_lebel'];?>" onClick="return confirm('คุณยืนยันที่จะลบข้อมูล?');"><img src="images/delete.gif" width="30" height="26"><font style="font-size:16px;">&nbsp;ลบข้อมูล</font></a><?php }?></div></div></td></tr>
-																			</table>
-																		</div>
-																	</div>
-																</div>	
-																
-															<?php;
-															}//-----------end check data in transaction----------------?>	
-												<?php }?>
-											
-												<?php //------------------select from user manual add in each score-------?>
-												<?php  //---------------------select from user manual add--------------- 
-													$fetchdata_user = new DB_con();
-													$level_id = $row['level_id'];
-													$score_id = $row_score['score_id'];
-													$sql_useradd = $fetchdata_user->fetch_useradd($level_id,$_SESSION['id'],$score_id);
-													while($useradd_list = mysqli_fetch_array($sql_useradd)) {
-														?>
-														<div class="card">
-														<div class="card-header" style="background-color: lightblue">
-															<table width="100%" border="0" cellspacing="0" cellpadding="0">
-																	<tr>
-																		<td width="130" align="right" valign="top"><p style="font-size:14px;">ข้อมูลเพิ่มเติม :&nbsp;</p></td>
-																		<td width="550"><p style="font-size:14px;">
-																			&nbsp;<?php echo $useradd_list['list_label'];?></p></td>
-																		<td width="446" align="right"><p style="font-size:14px;color:#0A910D;">&nbsp;(สถานะ&nbsp;:&nbsp;
-																<?php if (($useradd_list['status'])=="save") {echo "บันทึก";} 
-																elseif (($useradd_list['status'])=="consider") {echo "รอพิจารณา";}
-																elseif (($useradd_list['status'])=="pass") {echo "ผ่านพิจารณา";}
-																elseif (($useradd_list['status'])=="reject") {echo "<span class='alert-danger'>ไม่อนุมัติ</span>";
-																													
+																		const fsize = fi.files.item(i).size;
+																		const file = Math.round((fsize / 1024));
+																		// The size of the file.
+																		if (file >= 9216) {
+																			alert(
+																			"ไฟล์ขนาดใหญ่เกินไป, กรุณาเลือกไฟล์ขนาดเล็กกว่า 9 Mb");
+																			document.getElementById("file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>").value = "";
+																			return false;
+																		} else if (file < 1) {
+																			alert(
+																			"File too small, please select a file greater than 2mb");
+																			return false;
+																		} 
+																	}
+																	}
+															}
+															function validateForm<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>() {
+																	var x = document.getElementById('file<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>').value;
 																
 																}
 																else {echo "-";}?>
@@ -751,28 +630,42 @@
 												<?php }else{ ?>
 																								
 												
-												<div id="accordionu<?php echo $row_list['list_id'];?>">
-													<?php //---------------select transaction if found show file/delete/change color-----------
-														include_once('function.php'); 
-														$transactiondata = new DB_con();
-														$result = $transactiondata->selecttransaction($_SESSION['id'], $row_list['list_id']);
-														$transactionfile = mysqli_fetch_array($result);
-														if ($transactionfile == 0) {
-													?>
-													
-													<div class="card">
-														<div class="card-header" id="headingOne">
-														<p class="mb-0"><?php echo $row_list['list_label']; ?>
-														<?php if ($num22['status']!= "pass"){?>
-																	<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
-																	>></button>
-														</p><?php }?>
-														</div>
-														<div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
-														<div class="card-body">
-														<script>
-																Filevalidation<?php echo $row_list['list_id'];?> = () => {
-																const fi = document.getElementById('file<?php echo $row_list['list_id'];?>');
+                                                <div class="card">
+                                                    <div class="card-header" id="headingOne">
+                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?>
+													<?php if ($num22['status']!= "pass"){?>
+																<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
+																>></button>
+                                                    </p><?php }?>
+                                                    </div>
+                                                    <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
+													<div class="card-body">
+													<script>
+															Filevalidation<?php echo $row_list['list_id'];?> = () => {
+															const fi = document.getElementById('file<?php echo $row_list['list_id'];?>');
+															
+															// Check if any file is selected.
+															if (fi.files.length > 0) {
+																for (const i = 0; i <= fi.files.length - 1; i++) {
+													 
+																	const fsize = fi.files.item(i).size;
+																	const file = Math.round((fsize / 1024));
+																	// The size of the file.
+																	if (file >= 9216) {
+																		alert(
+																		  "ไฟล์ขนาดใหญ่เกินไป, กรุณาเลือกไฟล์ขนาดเล็กกว่า 9 Mb");
+																		  document.getElementById("file<?php echo $row_list['list_id'];?>").value = "";
+																		  return false;
+																	} else if (file < 1) {
+																		alert(
+																		  "File too small, please select a file greater than 2mb");
+																		  return false;
+																	} 
+																}
+																}
+															}
+															function validateForm<?php echo $row_list['list_id'];?>() {
+																	var x = document.getElementById('file<?php echo $row_list['list_id'];?>').value;
 																
 																// Check if any file is selected.
 																if (fi.files.length > 0) {
@@ -1074,7 +967,6 @@
 </html>
 
 <?php 
-	
-if( true ){ 
-}
-?>
+
+} echo "test";
+ ?>
