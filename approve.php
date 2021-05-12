@@ -62,6 +62,7 @@ function validateForm() {
     <header>
       <div class="breadcrumbs">
         <a href="audit.php">Home</a>
+		<?php if(isset($_GET['level_txt'])){  ?> <span id="level_txt"> > <?php $level_txt=$_GET['level_txt'] ; echo $_GET['level_txt'] ; ?> </span> <?php }else{ $level_txt=""; }   ?>
       </div>
       <h1>ตรวจพิจารณา : <?php
 	  		$user_con = new DB_con();
@@ -111,7 +112,7 @@ function validateForm() {
 			
             
         ?>
-        <a href="approve.php?userid=<?php echo $user_id; ?>&level_label=<?php echo $level_label; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
+        <a href="approve.php?userid=<?php echo $user_id; ?>&level_label=<?php echo $level_label; ?>&level_txt=<?php echo $level_txt; ?>&set_lebel=<?php echo $row['set_lebel']; ?>" <?php 
             if( isset($_GET['set_lebel0'])){
 				
 				if( strtolower($_GET['set_lebel0']) == strtolower($row['set_lebel']) ){
@@ -175,22 +176,27 @@ function validateForm() {
 
 			   ?>
 					<?php
+						$status_sub_control = "" ; //เมื่อปุ่มใหญ่พิจารณาแล้ว ( pass , reject , recheck ) จะเปลี่ยนเป็น disabled ( ในปุ่มย่อยจะ กดไม่ได้ )
 						if( strtolower($row['status']) == "pass" ){
 							$check_label = "";
 							$badge_color = "-info";
 							$status_display = "ผ่านการพิจารณา";
+							$status_sub_control = "disabled" ;
 						}elseif( strtolower($row['status']) == "reject" ){
 							$check_label = "-reject";
 							$badge_color = "-danger";
 							$status_display = "<span class='red-reject'> *** ไม่ผ่านการพิจารณา </span>";
+							$status_sub_control = "disabled" ;
 						}elseif( strtolower($row['status']) == "recheck" ){
 							$check_label = "-recheck";
 							$badge_color = "-warning";
 							$status_display = "<span class='-recheck'> *** ส่งพิจารณาใหม่อีกครั้ง </span>";
+							$status_sub_control = "" ;
 						}else{
 							$check_label = "-uncheck";
 							$badge_color = "-secondary";
 							$status_display = " - ";
+							$status_sub_control = "" ;
 						}
 
 						
@@ -349,8 +355,8 @@ function validateForm() {
 																	<td  height="10"></td>
 																</tr>
 																<tr>
-																	<td><input type="submit" name="approve" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="ผ่านอนุมัติ"></td>
-																	<td><input type="submit" name="approve2" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="Reject"></td>
+																	<td><input type="submit" <?php echo $status_sub_control ; ?> name="approve" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="ผ่านอนุมัติ"></td>
+																	<td><input type="submit" <?php echo $status_sub_control ; ?>  name="approve2" id="approve_<?php echo $row_list['t_id'];?>_t" class="submit" value="Reject"></td>
 																</tr>
 																</table>
 															</div>
@@ -403,7 +409,7 @@ function validateForm() {
 													<span class='assign-date ml-4'>". $row_list['app_date']." </span>
 												</div>	
 
-											<div><button type='submit' class='cancle_app' id='cancle_t_".$row_list['t_id']."'  >ยกเลิกการพิจารณา</button></div>
+											<div><button type='submit' ". $status_sub_control ."  class='cancle_app' id='cancle_t_".$row_list['t_id']."'  >ยกเลิกการพิจารณา</button></div>
 
 
 										</div>
@@ -470,8 +476,8 @@ function validateForm() {
 														<td  height="10"></td>
 													</tr>
 													<tr>
-														<td><input type="submit" name="approve" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="ผ่านอนุมัติ"></td>
-														<td><input type="submit" name="approve2" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="Reject"></td>
+														<td><input type="submit" <?php echo $status_sub_control ; ?>  name="approve" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="ผ่านอนุมัติ"></td>
+														<td><input type="submit" <?php echo $status_sub_control ; ?>  name="approve2" id="approve_<?php echo $row_list3['add_id'];?>_a" class="submit" value="Reject"></td>
 													</tr>
 													</table>
 													</div>
@@ -516,7 +522,7 @@ function validateForm() {
 													<span class='assign-date  ml-4'> ". $row_list3['app_date']. "</span>
 												</div>
 											</div>
-											<div><button type='submit' class='cancle_app' id='cancle_u_".$row_list3['add_id']."'  >ยกเลิกการพิจารณา</button></div>
+											<div><button type='submit' ". $status_sub_control ."  class='cancle_app' id='cancle_u_".$row_list3['add_id']."'  >ยกเลิกการพิจารณา</button></div>
 										</div>
 									</div>
 									";
@@ -825,7 +831,10 @@ $(document).ready(function() {
 
 	$('.submit_app').on('click', function() {
 
-			// $("#submit").attr("disabled", "disabled");
+			$(this).attr("disabled", "disabled");
+			// setTimeout(function(){
+			// 	$(this).prop('disabled', false);
+			// }, 3000);
 			var id = this.id;
 			var splitid = id.split('_');
 			var input_type = splitid[1]; // comment_measure ดูค่าหลัง _ ที่ 1 ว่าเป็น measure หรือ control ( t = เพิ่มในตาราง aprove , a = เพิ่มในตาราง aprove_user_add)
@@ -864,7 +873,7 @@ $(document).ready(function() {
 				}
 
 
-				cancle_app_id = passT+"::"+passU+"::"+recheck;
+				cancle_app_id = passT+"::=::"+passU+"::=::"+recheck;
 				console.log("cancle_app_id:"+ cancle_app_id);
 				// var comment = $('#approve_'+input_type+'_'+level_id+'_'+score_id).val();
 
@@ -894,7 +903,8 @@ $(document).ready(function() {
 
 			if(comment.trim() ==="" && input_type !== "cancle" ){
 				alert("  ไม่สามารถบันทึกข้อมูลได้ ! \n : เนื่องจากยังไม่ได้ กรอกข้อคิดเห็น   \n : กรุณากรอกข้อคิดเห็น  " );
-
+				$(this).removeAttr('disabled');
+				$(this).prop('disabled', false);
 
 			}else{
 				
@@ -947,6 +957,66 @@ $(document).ready(function() {
 
 							success: function (data) {
 								// console.log(data);
+								// passT = " ";
+								// passU = " ";
+								
+								if( approve_action  === "ผ่านอนุมัติ"){
+
+									if( passT.trim() !== "" ){
+										var appove_array = passT.split(",");
+										for (var i in appove_array) {
+											console.log(appove_array[i]);
+											
+											var comment_app = $('#comment_'+appove_array[i]).val();
+											if( comment_app.trim() == "" ){
+												comment_app = "ผ่านการอนุมัตเนื่องจากการ พิจารณาหัวข้อหลัก";
+											}
+											console.log(comment_app);
+											// index :: t_id , add_id 
+											// comment :: remark ใน DB 
+											// 'approve_action' == "ผ่านอนุมัติ"
+											//  input_type == 't' / a  :: t คือ aprove  , a คือ user_add
+											//  user_id 
+											//  only_insert_aprove_user_add == true
+											//  only_insert_aprove == true
+											approve_action = "ผ่านอนุมัติ";
+											input_type = 't';
+											only_insert_aprove = true; 
+											only_insert_aprove_user_add = false;
+											insert_aprove(appove_array[i],comment_app, approve_action , audit , user_id , input_type , only_insert_aprove , only_insert_aprove_user_add  )
+
+										}
+									} else if ( passU.trim() !== "" ){
+										var appove_array = passU.split(",");
+										for (var i in appove_array) {
+											console.log(appove_array[i]);
+											
+											var comment_app = $('#comment_'+appove_array[i]).val();
+											if( comment_app.trim() == "" ){
+												comment_app = "ผ่านการอนุมัตเนื่องจากการ พิจารณาหัวข้อหลัก";
+											}
+											console.log(comment_app);
+											// index :: t_id , add_id 
+											// comment :: remark ใน DB 
+											// 'approve_action' == "ผ่านอนุมัติ"
+											//  input_type == 't' / a  :: t คือ aprove  , a คือ user_add
+											//  user_id 
+											//  only_insert_aprove_user_add == true
+											//  only_insert_aprove == true
+											approve_action = "ผ่านอนุมัติ";
+											input_type = 'a';
+											only_insert_aprove = false;
+											only_insert_aprove_user_add = true; 
+											insert_aprove(appove_array[i],comment_app, approve_action , audit , user_id , input_type , only_insert_aprove , only_insert_aprove_user_add  )
+
+										}
+									}
+
+
+
+								}
+								
+
 								if (data === '1') {
 									alert(" บันทึกการตรวจพิจารณาสำเร็จ !  ");
 									window.history.back();
@@ -1019,6 +1089,49 @@ $(document).ready(function() {
 			}
 	});
 });
+
+function insert_aprove(index,comment, approve_action , audit , user_id , input_type , only_insert_aprove , only_insert_aprove_user_add  ) {
+	// index :: t_id , add_id 
+	// comment :: remark ใน DB 
+	// 'approve_action' == "ผ่านอนุมัติ"
+	//  input_type == 't' / a  :: t คือ aprove  , a คือ user_add
+	//  user_id 
+	//  only_insert_aprove_user_add == true
+	//  only_insert_aprove == true
+	if(index!="" && approve_action!="" && audit!="" && input_type!="" && user_id!=""  ){
+					$.ajax({
+						url: "update2.php",
+						type: "POST",
+						data: {
+							t_id: index,
+							comment: comment,
+							approve_action: approve_action,
+							audit: audit,
+							user_id:user_id,
+							input_type: input_type				
+						},
+						cache: false,
+
+
+						success: function (data) {
+							if (data === '1') {
+								alert(" ระบบได้บันทึกข้อมูล >> หัวข้อย่อยเรียบร้อย !  ");
+							}
+							else {
+								alert("  ไม่สามารถบันทึก :  รายการหัวข้อย่อย !");
+							}
+						},
+						error: function ()
+						{
+							alert("ไม่สามารถบันทึก :  ข้อมูลหัวข้อย่อยได้ !");
+						}
+					});
+				}
+				else{
+					alert('error !');
+				}
+}
+
 </script>
 </html>
 

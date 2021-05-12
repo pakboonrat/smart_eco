@@ -442,7 +442,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 //  	AND aprove_list_score.score_id = list.score_id
 				// 	 WHERE UADD3.level_id = list.level_id 
                 //  	AND UADD3.score_id = list.score_id
-            //  echo $sql;
+            echo $sql;
             $fetch = mysqli_query($this->dbcon,$sql);
             return $fetch;
 
