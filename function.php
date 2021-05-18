@@ -363,8 +363,8 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 $search_txt = " TRUE ";
             }
 
-                $sql="SELECT U1.user_id as USER , U1.firstname as firstname, GROUP_CONCAT(distinct LV.level_label ) as level_label ,
-                GROUP_CONCAT(distinct T1.firstname ) AS AUDIT , GROUP_CONCAT(distinct T6.firstname ) AS AUDIT_ALL
+                $sql="SELECT U1.user_id as USER , U1.firstname as firstname, GROUP_CONCAT(distinct LV.level_label ) as level_label , GROUP_CONCAT(distinct T1.status ) AS G_status,
+                GROUP_CONCAT(distinct T1.firstname ) AS AUDIT , GROUP_CONCAT(distinct T6.firstname ) AS AUDIT_ALL , T1.status as status
                 FROM level LV, user U1
                 LEFT JOIN 
                 (   SELECT DISTINCT  T3.user_id as user_id ,
@@ -396,13 +396,12 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                     UNION
                     SELECT DISTINCT UADD3.user_id as user_id ,
                     CASE  
-                            WHEN  UADD3.user_id != aprove_list_score.user_id THEN 0
-                            WHEN  UADD3.user_id = aprove_list_score.user_id  AND UADD3.status in ('pass') AND UA3.firstname is null AND aprove_list_score.status = 'pass' THEN 2
-                            WHEN  UADD3.user_id = aprove_list_score.user_id  AND UADD3.status in ('pass') AND UA3.firstname is not null AND aprove_list_score.status = 'pass' THEN 2
-                            WHEN  UADD3.user_id = aprove_list_score.user_id  AND UADD3.status in  ('consider','pass','reject') AND  aprove_list_score.status != 'pass' THEN 1
-                            WHEN  UADD3.status in  ('consider','pass','reject') AND aprove_list_score.user_id is NULL AND   aprove_list_score.status is NULL THEN 1
-
-                        ELSE 0 END AS status ,  UA3.firstname as firstname , UADD3.level_id as LEVEL
+                    WHEN  UADD3.user_id = aprove_list_score.user_id  AND UADD3.status in ('pass') AND UA3.firstname is null AND aprove_list_score.status = 'pass' THEN 2
+                    WHEN  UADD3.user_id = aprove_list_score.user_id  AND UADD3.status in ('pass') AND UA3.firstname is not null AND aprove_list_score.status = 'pass' THEN 2
+                    WHEN  UADD3.user_id = aprove_list_score.user_id  AND UADD3.status in  ('consider','pass','reject') AND  aprove_list_score.status != 'pass' THEN 1
+                    WHEN  UADD3.status in  ('consider','pass','reject') AND aprove_list_score.user_id is NULL THEN 1
+                    WHEN  UADD3.status in ('consider','pass','reject') AND ( ( aprove_list_score.user_id is NULL ) OR ( UADD3.user_id != aprove_list_score.user_id )) THEN 1
+                    WHEN  UADD3.user_id != aprove_list_score.user_id THEN 0 ELSE 0 END AS status ,  UA3.firstname as firstname , UADD3.level_id as LEVEL
 					FROM user_add  UADD3 
 					LEFT JOIN 
 					( 	select DISTINCT aprove_user_add.add_id,user.firstname 
@@ -435,7 +434,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 WHERE U1.user_type = 'USER' AND T1.LEVEL=LV.level_id
                  AND $search_txt
                  AND $user_txt
-                GROUP BY USER";
+                GROUP BY USER ORDER BY status ASC,firstname ASC; ";
                 
 
                 //  LEFT JOIN aprove_list_score ON aprove_list_score.level_id = list.level_id 
