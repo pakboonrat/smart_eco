@@ -6,10 +6,18 @@
     //print_r($_SERVER["REMOTE_HOST"]); 
     if ($_SERVER['SERVER_NAME'] == "smartecosis.com") {
         
+        //define('DB_HOST', 'localhost'); // Your hostname
+        //define('DB_USER', 'smarteco_admin'); // Database Username
+        //define('DB_PASS', 'smartECO*2021'); // Database Password
+        //define('DB_NAME', 'smarteco_001'); // Database Name
+
+        
+
         define('DB_HOST', 'localhost'); // Your hostname
-        define('DB_USER', 'smarteco_admin'); // Database Username
+        define('DB_USER', 'pinitnunt_smartecoadmin'); // Database Username
         define('DB_PASS', 'smartECO*2021'); // Database Password
-        define('DB_NAME', 'smarteco_001'); // Database Name
+        define('DB_NAME', 'pinitnunt_smarteco001'); // Database Name
+
     }elseif( $_SERVER['SERVER_NAME'] = "localhost" ){
         
         define('DB_HOST', '127.0.0.1'); // Your hostname 127.0.0.1
