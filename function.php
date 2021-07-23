@@ -3,7 +3,9 @@
     //$remote = $_SERVER["REMOTE_ADDR"]; 
     //$ip = getenv(REMOTE_ADDR); 
     //print_r("Your IP Address is $remote "); 
-    //print_r($_SERVER["REMOTE_HOST"]); 
+    //print_r($_SERVER["REMOTE_HOST"]);
+    //print_r($_SERVER['SERVER_NAME'] );
+    
     if ($_SERVER['SERVER_NAME'] == "smartecosis.com") {
         
         //define('DB_HOST', 'localhost'); // Your hostname
@@ -11,7 +13,6 @@
         //define('DB_PASS', 'smartECO*2021'); // Database Password
         //define('DB_NAME', 'smarteco_001'); // Database Name
 
-        
 
         define('DB_HOST', 'localhost'); // Your hostname
         define('DB_USER', 'pinitnunt_smartecoadmin'); // Database Username
@@ -88,8 +89,10 @@
         }
 
         public function fetchdata($level_label,$set_lebel,$userid) {
+            
             $result = mysqli_query($this->dbcon, "SELECT * FROM level WHERE level_label = '$level_label' and set_lebel = '$set_lebel' and level_id in (SELECT level_id FROM `format_todo_list` where format_id = (SELECT format_id FROM `user` where user_id = '$userid')) ");
             //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
+            
             return $result;
         }
 		
@@ -148,8 +151,10 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
         }
 
         public function fetchdata_admin($level_label,$set_lebel,$userid) {
+            
             $result = mysqli_query($this->dbcon, "SELECT * FROM level WHERE level_label = '$level_label' and set_lebel = '$set_lebel' ");
             //SELECT * FROM level WHERE level_label ='eco_champion' and set_lebel = 'basic' 
+            //return $result;
             return $result;
         }
 
@@ -450,7 +455,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                 //  	AND aprove_list_score.score_id = list.score_id
 				// 	 WHERE UADD3.level_id = list.level_id 
                 //  	AND UADD3.score_id = list.score_id
-            echo $sql;
+                //  echo $sql;
             $fetch = mysqli_query($this->dbcon,$sql);
             return $fetch;
 
@@ -643,7 +648,7 @@ select level_id,sub_lebel,level_label,set_lebel,type from `level` where set_lebe
                         UNION
                         SELECT 2 as T1  FROM user_add U WHERE U.status = 'reject' AND U.user_id = $user ";
             $fetch = mysqli_query($this->dbcon, $sql_txt);
-            //  echo $sql_txt ;
+            //echo $sql_txt ;
             return $fetch;
             mysqli_free_result($fetch);
         }            

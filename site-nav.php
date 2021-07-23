@@ -38,7 +38,12 @@
       
 
 
-    <?php echo $_SESSION['fname']; 
+    <?php 
+    if (isset($_SESSION['fname'])) {
+      echo $_SESSION['fname']; 
+    }else{
+      echo "  SESSION  fname  is not set";
+    }
     $updatelevel = new DB_con();
     $notif_txt = "";
     $sql = $updatelevel->reject_notif_USER($_SESSION['id']);

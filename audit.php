@@ -87,14 +87,14 @@ function validateForm() {
           $fetchdata = new DB_con();
           //$sql = $fetchdata->fetch_transaction_By_USER(" status = 'consider' "); //fetch_AUDIT_By_USER
           // $sql = $fetchdata->fetch_AUDIT_By_USER("ALL","consider");
-          $sql = $fetchdata->fetch_AUDIT_By_USER("ALL","not pass");
+          $sql = $fetchdata->fetch_AUDIT_By_USER("ALL","consider");
 
           if( mysqli_num_rows($sql) != 0 ){
            
           while($row = mysqli_fetch_array($sql)) { 
       ?>
       
-      <tr>
+      <tr <?php if( ($row['status']==2) AND (strpos($row['G_status'] ,"1"  ) === false  ) ){ echo "class=\"table-success\""; }  ?>>
         <th scope="row"><?php echo $row['firstname'];?> </th>
         <td><?php  if(isset($row['AUDIT_ALL'])){ echo $row['AUDIT_ALL']; }else{  echo "- "; } ?></td>
         
@@ -115,7 +115,7 @@ function validateForm() {
     } else{  ?>
     
     <?php   } ?>
-    <tr class="table-success" > - <td> - </td><td></td><td></td> </tr>
+    
     </tbody>
 </table><br>
 <br>
