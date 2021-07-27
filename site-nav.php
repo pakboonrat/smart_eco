@@ -47,7 +47,9 @@
     $updatelevel = new DB_con();
     $notif_txt = "";
     $sql = $updatelevel->reject_notif_USER($_SESSION['id']);
-    if( mysqli_num_rows($sql) != 0 ){
+    // echo "sql:<br>";
+    // echo mysqli_num_rows($sql) ;
+    if( mysqli_num_rows($sql) > 0 ){
       while($row_notif = mysqli_fetch_array($sql)) {
         if( $row_notif['T1'] == "1"){
            
@@ -126,7 +128,11 @@
             while($row = mysqli_fetch_array($sql)) {
               
         ?>
-          <li <?php if (($_GET['level_label']=='eco_champion') and ($row['level_label']== 'eco_champion')) {echo "class='active'";}
+          <li <?php 
+          
+          $_GET['level_label'] =$_GET['level_label'] ?? "null"; 
+          
+          if (($_GET['level_label']=='eco_champion') and ($row['level_label']== 'eco_champion')) {echo "class='active'";}
 					elseif (($_GET['level_label']=='eco_excellence') and ($row['level_label']== 'eco_excellence')) {echo "class='active'";}
 					elseif (($_GET['level_label']=='eco_worldclass') and ($row['level_label']== 'eco_worldclass')) {echo "class='active'";}?>><a href="eco_level.php?level_label=<?php echo $row['level_label'];?>&set_lebel=<?php if ($row['level_label']== 'eco_champion') {echo "basic";} else {echo "Guidelines";}?>"><?php if ($row['level_label']== 'eco_champion')  { echo "ECO-CHAMPION";}
 					elseif ($row['level_label']== 'eco_excellence') {echo "ECO-EXCELLENCE";}

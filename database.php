@@ -34,7 +34,7 @@
 
 
 			// check if file has one of the following extensions
-			$allowedfileExtensions = array('jpg', 'gif', 'png', 'zip', 'txt', 'xls', 'doc', 'pdf', 'xlsx', 'docx');
+			$allowedfileExtensions = array('jpg', 'gif', 'png', 'zip', 'txt', 'pptx', 'ppt', 'xls', 'mp4', 'doc', 'pdf', 'xlsx', 'docx');
 
 			if (in_array($fileExtension, $allowedfileExtensions))
 			{
@@ -65,6 +65,8 @@
 		}
 		$_SESSION['message'] = $message;
 		//-----------------end upload---------------- 
+		$_GET['edit'] = $_GET['edit'] ?? "null";
+		$_GET['id'] = $_GET['id'] ?? "null";
 		$edit_type = $_GET['edit'];
 		$row_id = $_GET['id'];
 		if ($edit_type == "delete") {
@@ -80,11 +82,35 @@
 <meta charset="UTF-8">
 <title>Database</title>
 	<script>
+	    Filevalidation = () => {
+        const fi = document.getElementById('file');
+        // Check if any file is selected.
+        if (fi.files.length > 0) {
+            for (const i = 0; i <= fi.files.length - 1; i++) {
+ 
+                const fsize = fi.files.item(i).size;
+                const file = Math.round((fsize / 1024));
+                // The size of the file.
+                if (file >= 9216) {
+                    alert(
+                      "ไฟล์ขนาดใหญ่เกินไป, กรุณาเลือกไฟล์ขนาดเล็กกว่า 8 Mb");
+					  document.getElementById("file").value = "";
+					  return false;
+                } else if (file < 1) {
+                    alert(
+                      "File too small, please select a file greater than 2mb");
+					  return false;
+                } 
+            }
+			}
+		}
+		
 		function validateForm() {
 		  var x = document.forms["myForm"]["subject"].value;
+		  var y = document.forms["myForm"]["uploadedFile"].value;
 
-		  if ((x == "")) {
-			alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+		  if ((x == "") || (y == "") ){
+			alert("กรุณากรอกข้อมูลให้ครบถ้วน หรือยังไม่ได้แนบไฟล์");
 			return false;
 		  }
 		}
@@ -110,10 +136,11 @@
       </nav>
     </header>
   <div class="content-columns">
-    <div class="item2"><table width="98%" border="0" cellspacing="1" cellpadding="1">
+    <div class="col"><table width="98%" border="0" cellspacing="1" cellpadding="1">
   <tr>
     <td align="right"><label for="year_select"></label>
-      <select name="year_select" id="year_select" ONCHANGE="location = this.options[this.selectedIndex].value;">
+    ปี&nbsp;:&nbsp;
+      <select name="year_select" id="year_select" ONCHANGE="location = this.options[this.selectedIndex].value;" style="width: 80px;">
         <option value="database.php?yearsel=2021" <?php if ($_GET['yearsel']=='2021'){ echo "selected";} ?>>2564</option>
         <option value="database.php?yearsel=2022" <?php if ($_GET['yearsel']=='2022'){ echo "selected";} ?>>2565</option>
 		<option value="database.php?yearsel=2023" <?php if ($_GET['yearsel']=='2023'){ echo "selected";} ?>>2566</option>
@@ -122,9 +149,10 @@
 		<option value="database.php?yearsel=2026" <?php if ($_GET['yearsel']=='2026'){ echo "selected";} ?>>2569</option>
 		<option value="database.php?yearsel=2027" <?php if ($_GET['yearsel']=='2027'){ echo "selected";} ?>>2570</option>
 		<option value="database.php?yearsel=2028" <?php if ($_GET['yearsel']=='2028'){ echo "selected";} ?>>2571</option>
-      </select></td>
+  </select></td>
   </tr>
-</table>
+</table><br>
+
 
 	<?php		
 			include_once('function.php');
@@ -136,8 +164,8 @@
 			while($row_userfile = mysqli_fetch_array($sql1)) {
 		
 	?>
-	<div class="item2">
-	  <table width="95%" border="0" cellspacing="1" cellpadding="1">
+	<div class="item">
+	  <table width="90%" border="0" cellspacing="1" cellpadding="1">
 		<tr>
 		  <td width="73%" valign="top">เรื่อง : <?php echo $row_userfile['subject']; ?></td>
 		  <td width="27%" align="left"><a href="databasefile/<?php echo $row_userfile['save_filename']; ?>" target="_blank" style="text-decoration: none"><p style="font-size:14px;"><?php echo $row_userfile['ori_filename']; ?></p></a></td>
@@ -151,7 +179,7 @@
 	</div>
 	<?php  }; ?>
 <form name="myForm" method="POST" action="database.php" enctype="multipart/form-data" onSubmit="return validateForm()">
-      <div class="item2">
+      <div class="item">
         <table width="90%" border="0" cellspacing="1" cellpadding="1">
           <tr>
             <td width="23%" height="30" align="right" ><p style="font-size:16px;">เรื่อง :&nbsp;&nbsp;</p></td>
@@ -165,16 +193,16 @@
           </tr>
           <tr>
             <td height="30" align="right"><span><font style="font-size:16px;">เลือกไฟล์&nbsp;:&nbsp;</font></span>&nbsp;</td>
-            <td height="30">&nbsp;&nbsp;<input type="file" name="uploadedFile" /></td>
+            <td height="30">&nbsp;&nbsp;<input type="file" id="file" name="uploadedFile"/></td>
           </tr>
         </table>
       </div>&nbsp;&nbsp;&nbsp;<input type="submit" name="uploadBtn" value="บันทึกข้อมูล" />
             </form> 
            </div>
                
-  </div>
+ 
      
-</div>
+
  
 
 </div>

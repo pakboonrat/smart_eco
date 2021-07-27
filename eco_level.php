@@ -440,6 +440,8 @@
 							$fetch_score_status = new DB_con();
 							$sql22 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 							$num22 = mysqli_fetch_array($sql22);
+							$num22['status'] = $num22['status'] ?? "null"; 
+							$num22['remark'] = $num22['remark'] ?? "null"; 
 							if ($num22['status']== "reject"){
 							echo "&nbsp;ไม่ผ่านพิจารณาเนื่องจาก :&nbsp;&nbsp;<span class='alert-danger'>&nbsp;&nbsp;".$num22['remark']."&nbsp;&nbsp;</span>";}
 							echo "</p>";
@@ -494,7 +496,7 @@
 														<div class="card-header" id="headingOne">
 														<?php echo $row_oflist['list_label'];
 														//------------------show evidence in each of score--------------?>
-														<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">>></button>
+														<?php if($num22['status']!= "pass") {?><button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">>></button><?php }?>
 														</div>
 														<div id="collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">
 															<div class="card-body">
@@ -566,7 +568,7 @@
 													<div class="card-header" id="headingOne" style="background-color: lightblue">
 														<?php echo $row_oflist['list_label'];
 														//----------------show evidence in each of score-----------?>
-														<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">&nbsp;<font style="font-size:14px;color:#0A910D;">(สถานะ&nbsp;:&nbsp;
+														&nbsp;<font style="font-size:14px;color:#0A910D;">(สถานะ&nbsp;:&nbsp;
 													<?php if (($transactionfile['status'])=="save") {echo "บันทึก";} 
 													elseif (($transactionfile['status'])=="consider") {echo "รอพิจารณา";}
 													elseif (($transactionfile['status'])=="pass") {echo "ผ่านพิจารณา";}
@@ -583,7 +585,8 @@
 													$str_Month = date("n",strtotime($transactionfile['save_date']));
 													$strMonthCut = Array("","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.");
 													$strMonthThai=$strMonthCut[$str_Month];
-													echo $str_date."-".$strMonthThai."-".$str_Year;?>)</font>&nbsp;>></button>
+													echo $str_date."-".$strMonthThai."-".$str_Year;?>)</font>
+														<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" aria-expanded="true" aria-controls="collapseOne">>></button>
 														</div>
 														<div id="collapseOne<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_oflist['list_id'];?><?php echo $row_score['score_id'];?>">
 															<div class="card-body">
@@ -603,8 +606,8 @@
 														</div>
 													</div>	
 														
-													<?php;}//-----------end check data in transaction----------------?>	
-											<?php }?>
+													<?php; } //-----------end check data in transaction----------------?>	
+											<?php } ?>
 										  
 										  <?php //------------------select from user manual add in each score-------?>
 										  <?php  //---------------------select from user manual add--------------- 
@@ -754,6 +757,8 @@
 							$fetch_score_status = new DB_con();
 							$sql22 = $fetch_score_status->sel_score_status($row['level_id'],$_SESSION['id']);
 							$num22 = mysqli_fetch_array($sql22);
+							$num22['status'] = $num22['status'] ?? "null";
+							$num22['remark'] = $num22['remark'] ?? "null";
 							if ($num22['status']== "reject"){
 							echo "&nbsp;ไม่ผ่านพิจารณาเนื่องจาก :&nbsp;&nbsp;<span class='alert-danger'>&nbsp;&nbsp;".$num22['remark']."&nbsp;&nbsp;</span>";}
 							echo "</p>";
@@ -782,9 +787,9 @@
 												
                                                 <div class="card">
                                                     <div class="card-header" id="headingOne">
-                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?><?php  if ($num22['status']!= "pass"){?>
-<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
-                  >></button>
+                                                    <p class="mb-0"><?php echo $row_list['list_label']; ?><?php $num22['status'] = $num22['status'] ?? "null";   if ($num22['status']!= "pass"){?>
+<?php if($num22['status']!= "pass") {?><button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
+                  >></button><?php }?>
                                                     </p><?php }?>
                                                     </div>
                                                     <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
@@ -898,9 +903,7 @@
 													$strMonthCut = Array("","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.");
 													$strMonthThai=$strMonthCut[$str_Month];
 													echo $str_date."-".$strMonthThai."-".$str_Year;?>)</font>
-                                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">
-                                                        >>
-                                                        </button>
+                                                        <?php if($num22['status']!= "pass") {?><button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne<?php echo $row_list['list_id'];?>" aria-expanded="true" aria-controls="collapseOne">>></button><?php }?>
                                                     </p>
                                                     </div>
                                                     <div id="collapseOne<?php echo $row_list['list_id'];?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion<?php echo $row_list['list_id'];?>">
@@ -980,7 +983,7 @@
 														<path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'></path>
 														<path d='M14 2v6h6M16 13H8M16 17H8M10 9H8'></path></svg>														
 														<a href="useraddfile/<?php echo $useradd_list['save_filename'];?>" target="_blank" style="text-decoration: none"><?php echo $useradd_list['ori_filename'];?></a>&nbsp;
-														<?php if($num22['status']!= "pass") {?><a href="eco_level.php?level_label=eco_champion&edit=del_useradd&add_id=<?php echo $useradd_list['add_id'];?>&set_lebel=<?php echo $_GET['set_lebel'];?>" onClick="return confirm('คุณยืนยันที่จะลบข้อมูล?');"><img src="images/delete.gif" width="30" height="26"><font style="font-size:16px;">&nbsp;ลบข้อมูล</font></a><?php }?></div></div></td>
+														<?php $num22['status'] = $num22['status'] ?? "null";  if($num22['status']!= "pass") {?><a href="eco_level.php?level_label=eco_champion&edit=del_useradd&add_id=<?php echo $useradd_list['add_id'];?>&set_lebel=<?php echo $_GET['set_lebel'];?>" onClick="return confirm('คุณยืนยันที่จะลบข้อมูล?');"><img src="images/delete.gif" width="30" height="26"><font style="font-size:16px;">&nbsp;ลบข้อมูล</font></a><?php }?></div></div></td>
 												  </tr>
 												</table>
 												
@@ -990,7 +993,7 @@
 									<?php }; //---------------------end select from user manual add---------------  ?>
 									<?php if (strtoupper($_SESSION['user_type']) == "USER"){?>
 									<br>
-									<?php if($num22['status']!= "pass") {?>
+									<?php $num22['status'] = $num22['status'] ?? "null";  if($num22['status']!= "pass") {?>
 									<table width="100%"><tr><td align="center">
 									<button class="btn-info" data-toggle="collapse"
 										aria-expanded="false"
@@ -1116,4 +1119,4 @@
 <?php 
 
 }
-?>
+ ?>
